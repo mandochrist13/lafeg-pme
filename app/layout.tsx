@@ -7,13 +7,13 @@ import { ThemeProvider } from "@/components/theme-provider"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Répertoire des Textes Juridiques pour les PME Gabonaises",
+  title: "Guide numérique des PME",
   description:
-    "Accédez facilement à l'ensemble des textes juridiques, lois et règlements concernant les PME gabonaises.",
+    "Accédez facilement aux textes juridiques, lois et règlements concernant les PME gabonaises.",
   icons: {
     icon: "/images/logo-feg.png",
   },
-    generator: 'v0.dev'
+    generator: 'La Fédération des Entreprises du Gabon'
 }
 
 export default function RootLayout({
