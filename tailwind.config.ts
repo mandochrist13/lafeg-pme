@@ -25,6 +25,9 @@ const config = {
       },
     },
     extend: {
+      fontFamily:{
+        hyundai: ['"HyundaiSansTextOffice"', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

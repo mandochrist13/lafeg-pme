@@ -41,7 +41,7 @@ const HamburgerMenu = () => {
           ></span>
           <span
             className={`absolute w-full h-full bg-[#063a1e] top-[10px] transition-transform duration-300 ${
-              isOpen ? "top-[-3px] rotate-90" : ""
+              isOpen ? "right-[-3px] top-[1px] rotate-90" : ""
             }`}
           ></span>
         </span>
