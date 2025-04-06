@@ -12,7 +12,7 @@ const Loader = () => {
       setTimeout(() => {
         setLoading(false);
         localStorage.setItem("hasVisited", "true");
-      }, 2000); // Délai de 2 secondes
+      }, 20000); // Délai de 2 secondes
     } else {
       // Si l'utilisateur a déjà visité, on cache immédiatement
       setLoading(false);

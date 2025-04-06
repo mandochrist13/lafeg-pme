@@ -36,15 +36,9 @@ export default function ContenuSiteAdmin() {
           <TabsTrigger value="structures" className="flex items-center gap-1">
             <Briefcase className="h-4 w-4" /> Structures
           </TabsTrigger>
-          <TabsTrigger value="categories" className="flex items-center gap-1">
+          {/* <TabsTrigger value="categories" className="flex items-center gap-1">
             <FileText className="h-4 w-4" /> Catégories
-          </TabsTrigger>
-          <TabsTrigger value="apropos" className="flex items-center gap-1">
-            <Info className="h-4 w-4" /> À propos
-          </TabsTrigger>
-          <TabsTrigger value="contact" className="flex items-center gap-1">
-            <Phone className="h-4 w-4" /> Contact
-          </TabsTrigger>
+          </TabsTrigger> */}
         </TabsList>
 
         {/* Page d'accueil */}
@@ -436,7 +430,7 @@ export default function ContenuSiteAdmin() {
           </Card>
         </TabsContent>
 
-        {/* Catégories */}
+        {/* Catégories
         <TabsContent value="categories" className="space-y-4">
           <Card>
             <CardHeader>
@@ -559,134 +553,7 @@ export default function ContenuSiteAdmin() {
               </Button>
             </CardFooter>
           </Card>
-        </TabsContent>
-
-        {/* À propos */}
-        <TabsContent value="apropos" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Page À propos</CardTitle>
-              <CardDescription>Modifiez le contenu de la page À propos</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="apropos-title">Titre de la page</Label>
-                <Input id="apropos-title" defaultValue="À propos de notre plateforme" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="apropos-mission">Notre mission</Label>
-                <Textarea
-                  id="apropos-mission"
-                  defaultValue="Le Répertoire des Textes Juridiques pour les PME Gabonaises est une initiative de la Fédération des Entreprises du Gabon (FEG) visant à faciliter l'accès à l'information juridique pour les petites et moyennes entreprises."
-                  rows={4}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="apropos-numerique">Le Numérique des PME</Label>
-                <Textarea
-                  id="apropos-numerique"
-                  defaultValue="Le 'numérique des PME' désigne l'ensemble des technologies, outils et pratiques digitales que les petites et moyennes entreprises peuvent adopter pour moderniser leurs activités, améliorer leur efficacité et accroître leur compétitivité."
-                  rows={4}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="apropos-services">Nos services</Label>
-                <Textarea
-                  id="apropos-services"
-                  defaultValue="Une base de données complète et à jour des lois, décrets, arrêtés et autres textes juridiques pertinents pour les PME gabonaises, organisée par thématiques et facilement consultable."
-                  rows={4}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="apropos-equipe">Notre équipe</Label>
-                <Textarea
-                  id="apropos-equipe"
-                  defaultValue="Le Répertoire des Textes Juridiques pour les PME Gabonaises est porté par une équipe pluridisciplinaire composée de juristes, d'experts en développement des PME et de spécialistes du numérique, tous engagés pour la promotion de l'entrepreneuriat au Gabon."
-                  rows={4}
-                />
-              </div>
-            </CardContent>
-            <CardFooter className="flex justify-end">
-              <Button className="bg-[#063a1e] hover:bg-[#063a1e]/90">
-                <Save className="mr-2 h-4 w-4" /> Enregistrer
-              </Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-
-        {/* Contact */}
-        <TabsContent value="contact" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Page Contact</CardTitle>
-              <CardDescription>Modifiez les informations de contact</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="contact-title">Titre de la page</Label>
-                <Input id="contact-title" defaultValue="Contactez-nous" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="contact-description">Description</Label>
-                <Textarea
-                  id="contact-description"
-                  defaultValue="Notre équipe est à votre disposition pour répondre à vos questions concernant les textes juridiques et leur application pour votre PME."
-                  rows={3}
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="contact-address">Adresse</Label>
-                  <Textarea
-                    id="contact-address"
-                    defaultValue="Boulevard du Bord de Mer
-Immeuble FEG, 3ème étage
-Libreville, Gabon"
-                    rows={3}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="contact-phone">Téléphone</Label>
-                  <Input id="contact-phone" defaultValue="+241 XX XX XX XX" />
-                  <Input className="mt-2" defaultValue="+241 XX XX XX XX" />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="contact-email">Email</Label>
-                  <Input id="contact-email" defaultValue="contact@pme-gabon.ga" />
-                  <Input className="mt-2" defaultValue="info@pme-gabon.ga" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="contact-hours">Horaires d'ouverture</Label>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span>Lundi - Vendredi</span>
-                      <Input className="w-32" defaultValue="8h00 - 16h00" />
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Samedi</span>
-                      <Input className="w-32" defaultValue="9h00 - 12h00" />
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Dimanche</span>
-                      <Input className="w-32" defaultValue="Fermé" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="contact-map">Carte (URL de l'image)</Label>
-                <Input id="contact-map" defaultValue="/placeholder.svg?height=300&width=500" />
-              </div>
-            </CardContent>
-            <CardFooter className="flex justify-end">
-              <Button className="bg-[#063a1e] hover:bg-[#063a1e]/90">
-                <Save className="mr-2 h-4 w-4" /> Enregistrer
-              </Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
+        </TabsContent> */}
       </Tabs>
     </div>
   )

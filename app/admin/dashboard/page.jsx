@@ -10,10 +10,10 @@ export default function AdminDashboard() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold tracking-tight">Tableau de bord</h1>
-        <div className="flex items-center space-x-2">
+        {/* <div className="flex items-center space-x-2">
           <span className="text-sm text-muted-foreground">Dernière mise à jour:</span>
           <span className="text-sm font-medium">Aujourd'hui, 15:30</span>
-        </div>
+        </div> */}
       </div>
 
       {/* Statistiques */}
@@ -25,7 +25,7 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">248</div>
-            <p className="text-xs text-muted-foreground">+12 depuis le mois dernier</p>
+         
           </CardContent>
         </Card>
         <Card>
@@ -35,11 +35,6 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">42</div>
-            <div className="flex items-center pt-1">
-              <ArrowUpRight className="h-4 w-4 text-green-500 mr-1" />
-              <span className="text-xs text-green-500">+3.5%</span>
-              <span className="text-xs text-muted-foreground ml-1">depuis le mois dernier</span>
-            </div>
           </CardContent>
         </Card>
         <Card>
@@ -49,14 +44,9 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">36</div>
-            <div className="flex items-center pt-1">
-              <ArrowUpRight className="h-4 w-4 text-green-500 mr-1" />
-              <span className="text-xs text-green-500">+2.1%</span>
-              <span className="text-xs text-muted-foreground ml-1">depuis le mois dernier</span>
-            </div>
           </CardContent>
         </Card>
-        <Card>
+        {/* <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Utilisateurs</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
@@ -69,7 +59,7 @@ export default function AdminDashboard() {
               <span className="text-xs text-muted-foreground ml-1">depuis la semaine dernière</span>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       {/* Statistiques par catégorie */}
@@ -227,7 +217,7 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+      <div className="md:grid hidden gap-4 md:grid-cols-2 lg:grid-cols-7">
         {/* Activité récente */}
         <Card className="lg:col-span-4">
           <CardHeader>
@@ -467,7 +457,7 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-md transition-shadow">
+          {/* <Card className="hover:shadow-md transition-shadow">
             <CardContent className="p-4 text-center">
               <div className="mx-auto w-12 h-12 rounded-full bg-[#063a1e]/10 flex items-center justify-center mb-3">
                 <MessageSquare className="h-6 w-6 text-[#063a1e]" />
@@ -475,7 +465,7 @@ export default function AdminDashboard() {
               <h3 className="text-sm font-medium mb-1">Messages</h3>
               <p className="text-xs text-muted-foreground">Gérer les messages reçus</p>
             </CardContent>
-          </Card>
+          </Card> */}
 
           <Card className="hover:shadow-md transition-shadow">
             <CardContent className="p-4 text-center">
