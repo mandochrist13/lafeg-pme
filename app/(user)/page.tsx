@@ -2,15 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import {
-  ArrowRight,
-  FileText,
-  BookOpen,
-  ExternalLink,
-  Phone,
-  Mail,
-  MapPin,
-} from "lucide-react";
+import Captcha from "@/components/Captcha";
+import { ArrowRight, FileText, BookOpen, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -22,6 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
 
 export default function Home() {
   return (
@@ -63,18 +57,18 @@ export default function Home() {
       </div>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-[#063a1e] to-[#063a1e]/50 text-white p-10 md:p-16">
-        <div className="md:container">
-          <div className="grid grid-cols-1 md:flex md:justify-between gap-8 items-center">
-            <div className="space-y-6 w-full md:max-w-[40%]">
-              <h2 className="text-3xl text-center md:text-left md:text-4xl font-bold">
+      <section className="bg-gradient-to-r from-[#063a1e] to-[#063a1e]/50 text-white p-10 lg:p-16">
+        <div className="lg:container">
+          <div className="grid grid-cols-1 md:flex md:justify-between gap-8 lg:gap-12 items-center">
+            <div className="space-y-6 w-full md:max-w-[50%]">
+              <h2 className="text-3xl text-center md:text-left lg:text-4xl font-bold">
                 Les textes juridiques pour votre PME au Gabon
               </h2>
               <p className="text-white/90 text-center md:text-left text-lg">
                 Accédez facilement aux textes juridiques, lois et règlements
                 concernant les PME gabonaises.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row sm:justify-center md:justify-normal gap-4">
                 <Button
                   variant="secondary"
                   size="lg"
@@ -96,9 +90,9 @@ export default function Home() {
             <div className="hidden md:block group [transform:perspective(1500px)_rotateY(15deg)] rounded-xl shadow-[rgba(0,0,0,0.25)_0px_25px_50px_-12px] transition-transform duration-1000 ease-in-out hover:[transform:perspective(3000px)_rotateY(5deg)] ">
               <Image
                 src="/images/hero-img.jpg"
-                alt="Consultation juridique pour entreprises"
-                width={500}
-                height={400}
+                alt="Texte et loi pour les PME"
+                width={1000}
+                height={1000}
                 className="rounded-lg shadow-lg object-cover"
               />
             </div>
@@ -181,7 +175,7 @@ export default function Home() {
       <section className="py-12">
         <div className="container">
           <h2 className="text-2xl font-bold mb-8">Catégories principales</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Category 1 */}
             <Card className="hover:shadow-md transition-shadow">
               <CardHeader className="pb-3">
@@ -447,7 +441,7 @@ export default function Home() {
 
       {/* Subscription Section */}
       <section id="subscription" className="py-16 bg-[#EAEEEB]">
-        <div className="container">
+        <div className="md:container">
           <div className="max-w-4xl mx-auto">
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="grid grid-cols-1 md:grid-cols-2">
@@ -470,19 +464,13 @@ export default function Home() {
                       <span className="bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] text-[#063a1e] rounded-full h-5 w-5 flex items-center justify-center text-xs font-bold mt-0.5">
                         ✓
                       </span>
-                      <span>Événements et formations</span>
+                      <span>Structures d'Encadrement et d'Accompagnement</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] text-[#063a1e] rounded-full h-5 w-5 flex items-center justify-center text-xs font-bold mt-0.5">
                         ✓
                       </span>
-                      <span>Opportunités de financement</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] text-[#063a1e] rounded-full h-5 w-5 flex items-center justify-center text-xs font-bold mt-0.5">
-                        ✓
-                      </span>
-                      <span>Conseils pratiques pour votre PME</span>
+                      <span>Institutions Financières </span>
                     </li>
                   </ul>
                 </div>
@@ -494,15 +482,6 @@ export default function Home() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <label
-                          htmlFor="firstname"
-                          className="text-sm font-medium"
-                        >
-                          Prénom
-                        </label>
-                        <Input id="firstname" placeholder="Votre prénom" />
-                      </div>
-                      <div className="space-y-2">
-                        <label
                           htmlFor="lastname"
                           className="text-sm font-medium"
                         >
@@ -510,10 +489,19 @@ export default function Home() {
                         </label>
                         <Input id="lastname" placeholder="Votre nom" />
                       </div>
+                      <div className="space-y-2">
+                        <label
+                          htmlFor="firstname"
+                          className="text-sm font-medium"
+                        >
+                          Prénom
+                        </label>
+                        <Input id="firstname" placeholder="Votre prénom" />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <label htmlFor="email" className="text-sm font-medium">
-                        Email professionnel
+                        Email
                       </label>
                       <Input
                         id="email"
@@ -531,10 +519,28 @@ export default function Home() {
                       />
                     </div>
                     <div className="space-y-2">
+                      <label htmlFor="contact" className="text-sm font-medium">
+                        Contact
+                      </label>
+                      <Input
+                        id="contact"
+                        type="phone"
+                        placeholder="(+241) 74 00 00 00"
+                      />
+                    </div>
+                    <div className="space-y-2 ">
+                      <label htmlFor="company" className="text-sm font-medium">
+                        Adresse Entreprise
+                      </label>
+                      <AddressAutocomplete />
+                    </div>
+                    <Captcha />
+
+                    <div className="space-y-2">
                       <label className="text-sm font-medium">
                         Centres d'intérêt
                       </label>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid md:grid-cols-2 gap-2">
                         <div className="flex items-center gap-2">
                           <input
                             type="checkbox"
@@ -542,7 +548,8 @@ export default function Home() {
                             className="rounded text-[#dcdaa4]"
                           />
                           <label htmlFor="interest1" className="text-sm">
-                            Textes juridiques
+                            Textes législatifs et règlementaires des
+                            administrations publiques
                           </label>
                         </div>
                         <div className="flex items-center gap-2">
@@ -552,7 +559,7 @@ export default function Home() {
                             className="rounded text-[#dcdaa4]"
                           />
                           <label htmlFor="interest2" className="text-sm">
-                            Financement
+                            Textes législatifs et règlementaires pour les PME
                           </label>
                         </div>
                         <div className="flex items-center gap-2">
@@ -562,17 +569,7 @@ export default function Home() {
                             className="rounded text-[#dcdaa4]"
                           />
                           <label htmlFor="interest3" className="text-sm">
-                            Formation
-                          </label>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            id="interest4"
-                            className="rounded text-[#dcdaa4]"
-                          />
-                          <label htmlFor="interest4" className="text-sm">
-                            Événements
+                            textes juridiques régionaux et internationaux
                           </label>
                         </div>
                       </div>
@@ -599,18 +596,19 @@ export default function Home() {
                         .
                       </label>
                     </div>
-
-                    <Button
-                      type="submit"
-                      variant="secondary"
-                      size="lg"
-                      className="w-full bg-[#063a1e] relative hover:bg-white"
-                    >
-                      <span className="absolute inset-0 w-full h-full bg-[#dcdaa4] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0"></span>
-                      <span className="relative mr-3 z-10 transition-colors duration-500 ease-in-out group-hover:text-[#063a1e]">
-                        <p>S'abonner à la newsletter</p>
-                      </span>
-                    </Button>
+                    <div className="flex justify-center">
+                      <Button
+                        type="submit"
+                        variant="secondary"
+                        size="lg"
+                        className=" bg-[#063a1e] relative hover:bg-white"
+                      >
+                        <span className="absolute inset-0 w-full h-full bg-[#dcdaa4] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0"></span>
+                        <span className="relative mr-3 z-10 transition-colors duration-500 ease-in-out group-hover:text-[#063a1e]">
+                          <p>S'abonner à la newsletter</p>
+                        </span>
+                      </Button>
+                    </div>
                   </form>
                 </div>
               </div>
