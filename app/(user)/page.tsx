@@ -315,12 +315,14 @@ export default function Home() {
             ))}
           </div>
           <div className="mt-8 text-center">
-            <Button
-              size="lg"
-              className=" hover:text-[#063a1e] duration-300 ease-in-out hover:bg-white border hover:border-[#063a1e] font-medium"
-            >
-              Voir plus de mise à jour
-            </Button>
+            <Link href="/textes-juridiques">
+              <Button
+                size="lg"
+                className=" hover:text-[#063a1e] duration-300 ease-in-out hover:bg-white border hover:border-[#063a1e] font-medium"
+              >
+                Voir plus de mise à jour
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -402,12 +404,15 @@ export default function Home() {
                 </p>
               </CardContent>
               <CardFooter>
-                <Button
-                  variant="ghost"
-                  className="w-full text-[#063a1e] hover:text-[#063a1e]/90 hover:bg-[#063a1e]/10"
-                >
-                  Voir les liens
-                </Button>
+                <Link href="#lien" scroll={true}>
+                  <Button
+                    variant="ghost"
+                    className="w-full text-[#063a1e] hover:text-[#063a1e]/90 hover:bg-[#063a1e]/10"
+                  >
+                    <Link href="#lien">Voir les liens</Link>
+                    
+                  </Button>
+                </Link>
               </CardFooter>
             </Card>
           </div>
@@ -423,7 +428,7 @@ export default function Home() {
               Accédez aux sites des institutions et organismes officiels liés au
               droit des affaires au Gabon.
             </p>
-            <Link className="flex justify-center" href="/">
+            <Link className="flex justify-center" href="/#lien">
               <Button
                 variant="secondary"
                 size="lg"
@@ -450,8 +455,7 @@ export default function Home() {
                     Restez informé
                   </h2>
                   <p className="mb-6">
-                    Abonnez-vous à notre newsletter pour recevoir les dernières
-                    mises à jour sur :
+                    Abonnez-vous à notre newsletter pour recevoir des alertes :
                   </p>
                   <ul className="space-y-3">
                     <li className="flex items-start gap-2">
@@ -604,7 +608,7 @@ export default function Home() {
                         className=" bg-[#063a1e] relative hover:bg-white"
                       >
                         <span className="absolute inset-0 w-full h-full bg-[#dcdaa4] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0"></span>
-                        <span className="relative mr-3 z-10 transition-colors duration-500 ease-in-out group-hover:text-[#063a1e]">
+                        <span  className="relative mr-3 z-10 transition-colors duration-500 ease-in-out group-hover:text-[#063a1e]">
                           <p>S'abonner à la newsletter</p>
                         </span>
                       </Button>

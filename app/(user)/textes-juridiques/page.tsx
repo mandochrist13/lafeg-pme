@@ -147,7 +147,7 @@ export default function TextesJuridiques() {
               </CardContent>
             </Card>
 
-            <Card>
+            {/* <Card>
               <CardHeader className="pb-3">
                 <CardTitle>Ressources</CardTitle>
               </CardHeader>
@@ -165,7 +165,7 @@ export default function TextesJuridiques() {
                   <span>Sites officiels</span>
                 </Link>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
 
           {/* Main Content */}

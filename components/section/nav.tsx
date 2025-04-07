@@ -39,10 +39,11 @@ export default function Nav(){
                     { name: "Institutions Financières", path: "/institutions-financieres" },
                     { name: "SEA", path: "/structures-accompagnement" },
                     { name: "À propos", path: "/a-propos" },
-                    { name: "Contact", path: "/contact" },
+                    { name: "Contact", target: "_blank", path: "https://www.lafeg.ga/contact" },
                   ].map((link) => (
                     <li key={link.path}>
                       <Link
+                      target={link.target}
                         href={link.path}
                         className={`pb-1 relative font-bold cursor-pointer transition-all ease-in-out 
                   before:transition-[width] before:ease-in-out before:duration-700 before:absolute 
