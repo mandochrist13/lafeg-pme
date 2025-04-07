@@ -19,17 +19,20 @@ export default function Nav(){
                   alt="Logo FEG"
                   width={80}
                   height={80}
-                  className="h-16 w-auto"
+                  className="h-12 md:h-16 w-auto"
                 />
                 <div>
-                  <h1 className="text-2xl font-hyundai font-bold text-[#063a1e]">
-                    GUIDE NUMÉRIQUE <br className="md:hidden" /> DES PME
+                  <h1 className="md:text-2xl md:hidden lg:block font-hyundai font-bold text-[#063a1e]">
+                    GUIDE NUMÉRIQUE <br className="md:block xl:hidden" /> DES PME
+                  </h1>
+                  <h1 className="md:text-2xl hidden md:block lg:hidden font-hyundai font-bold text-[#063a1e]">
+                    GUIDE NUMÉRIQUE DES PME
                   </h1>
                 </div>
               </div>
               <HamburgerMenu />
               <nav className="hidden md:flex gap-6">
-                <ul className="hidden text-sm font-medium lg:flex flex-col p-4 md:p-0 mt-4 rounded-lg md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0">
+                <ul className="hidden text-sm font-medium lg:flex flex-col p-4 md:p-0 mt-4 rounded-lg md:flex-row md:space-x-5 rtl:space-x-reverse md:mt-0 md:border-0">
                   {[
                     { name: "Accueil", path: "/" },
                     { name: "Textes Juridiques", path: "/textes-juridiques" },

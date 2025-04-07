@@ -26,7 +26,7 @@ const HamburgerMenu = () => {
       {/* Label pour afficher l'icône hamburger */}
       <label
         htmlFor="hamburger"
-        className="fixed top-4 right-4 z-20 flex items-center justify-center w-16 h-16 bg-[#bdbd95] rounded-full shadow-xl cursor-pointer"
+        className="fixed top-4 right-4 z-20 flex items-center justify-center w-14 h-14 bg-[#bdbd95] rounded-full shadow-xl cursor-pointer"
         aria-label="Menu"
       >
         <span
@@ -49,12 +49,12 @@ const HamburgerMenu = () => {
 
       {/* Menu de navigation */}
       <nav
-        className={`fixed z-10 top-0 right-0  w-3/4 max-w-xs bg-[#063a1e] text-[#fff] font-semibold transform ${
+        className={`fixed z-10 top-0 right-0 w-3/4 max-w-xs bg-[#063a1e] text-[#fff] font-semibold transform ${
           isOpen ? "translate-x-0 flex" : "translate-x-full hidden"
         } transition-transform duration-500`}
       >
        
-        <ul className="mt-24 space-y-6 px-6 block md:hidden text-sm font-medium flex-col p-4  rounded-lg rtl:space-x-reverse">
+        <ul className="mt-24 space-y-6 px-6 block lg:hidden text-sm font-medium flex-col p-4  rounded-lg rtl:space-x-reverse">
               {[
                 { name: "Accueil", path: "/" },
                 { name: "Textes Juridiques", path: "/textes-juridiques" },
