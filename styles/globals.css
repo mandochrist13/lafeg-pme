@@ -5,6 +5,10 @@
 body {
   font-family: 'HyundaiSansTextOffice', sans-serif;
 }
+html {
+  scroll-behavior: smooth;
+}
+
 
 @font-face {
   font-family: 'HyundaiSansTextOffice';
