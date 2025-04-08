@@ -200,18 +200,21 @@ export default function TextesJuridiques() {
               <Tabs defaultValue="pmes">
                 <TabsList className="bg-gray-200 w-auto h-full flex flex-col md:flex-row justify-around items-center ">
                   <TabsTrigger
+                  
                     value="pmes"
                     className="w-full md:w-auto text-center px-4 py-2"
                   >
                     Textes pour les PME
                   </TabsTrigger>
                   <TabsTrigger
+                    
                     value="internationaux"
                     className="w-full md:w-auto text-center px-4 py-2"
                   >
                     Textes régionaux et internationaux
                   </TabsTrigger>
                   <TabsTrigger
+                   
                     value="administrations"
                     className="w-full md:w-auto text-center px-4 py-2"
                   >
@@ -219,7 +222,7 @@ export default function TextesJuridiques() {
                   </TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="pmes">
+                <TabsContent  id="pmes" value="pmes">
                   <p className="text-sm text-muted-foreground mb-6 ">
                     Affichage de 1-10 sur 48 résultats
                   </p>
@@ -330,7 +333,7 @@ export default function TextesJuridiques() {
                   </div>
                 </TabsContent>
 
-                <TabsContent value="internationaux">
+                <TabsContent id="internationaux" value="internationaux">
                   <p className="text-sm text-muted-foreground mb-6 ">
                     Affichage de 1-5 sur 12 résultats
                   </p>
@@ -441,7 +444,7 @@ export default function TextesJuridiques() {
                   </div>
                 </TabsContent>
 
-                <TabsContent value="administrations">
+                <TabsContent id="#administrations" value="administrations">
                   <p className="text-sm text-muted-foreground mb-6 ">
                     Affichage de 1-8 sur 8 résultats
                   </p>
