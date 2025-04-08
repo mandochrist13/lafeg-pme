@@ -67,6 +67,9 @@ export default function TextesJuridiques() {
                       <label htmlFor="cat4" className="text-sm">
                         Commerce
                       </label>
+
+
+                      
                     </div>
                     <div className="flex items-center gap-2">
                       <input type="checkbox" id="cat5" className="rounded text-[#063a1e]" />
