@@ -18,6 +18,8 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import incubateur from "@/components/data/sea/incubateur"
+import formation from "@/components/data/sea/formation"
 
 export default function StructuresAccompagnement() {
   return (
@@ -69,146 +71,87 @@ export default function StructuresAccompagnement() {
           {/* Incubateurs */}
           <TabsContent value="incubateurs" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Incubateur 1 */}
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-[#063a1e]/10 rounded-md flex items-center justify-center">
-                        <Image
-                          src="/placeholder.svg?height=40&width=40"
-                          alt="Logo incubateur"
-                          width={40}
-                          height={40}
-                          className="rounded"
-                        />
+            {incubateur.map((item) => (
+                <Card
+                  key={item.id}
+                  className="hover:shadow-md transition-shadow"
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex justify-between items-start">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-[#063a1e]/10 rounded-md flex items-center justify-center">
+                          <Image
+                            src={item.logo}
+                            alt="Logo banque"
+                            width={1000}
+                            height={1000}
+                            className="rounded bg-cover bg-center w-full h-full"
+                          />
+                        </div>
+                        <div>
+                          <CardTitle>{item.title}</CardTitle>
+                          <CardDescription>{item.type}</CardDescription>
+                        </div>
                       </div>
-                      <div>
-                        <CardTitle>Gabon Incubateur</CardTitle>
-                        <CardDescription>Incubateur d'entreprises</CardDescription>
+                      <div>{item.partenaire}</div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <p className="text-sm text-muted-foreground">
+                        {item.description}{" "}
+                      </p>
+                      <div className="space-y-2">
+                        <div className="flex items-start gap-2">
+                          <MapPin className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                          <span className="text-sm"> {item.adresse} </span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <Phone className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                          <a
+                            href={`tel:${item.tel}`}
+                            className="text-sm hover:underline underline-offset-4"
+                          >
+                            {item.tel}
+                          </a>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <Mail className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                          <a
+                            href={`mailto:${item.mail}`}
+                            className="text-sm hover:underline underline-offset-4"
+                          >
+                            {" "}
+                            {item.mail}{" "}
+                          </a>
+                        </div>
+                        <Link
+                          target="_blank"
+                             href={item.rs1}
+                          className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
+                        >
+                          {item.textrs1}
+                        </Link>
                       </div>
                     </div>
-                    <Badge>Partenaire FEG</Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <p className="text-sm text-muted-foreground">
-                      Gabon Incubateur est une structure d'accompagnement qui aide les entrepreneurs à transformer leurs
-                      idées en entreprises viables, avec un accent sur l'innovation et la technologie.
-                    </p>
-                    <div className="space-y-2">
-                      <div className="flex items-start gap-2">
-                        <MapPin className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">Quartier Batterie IV, Libreville, Gabon</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Phone className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">+241 XX XX XX XX</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Mail className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">contact@gabonincubateur.ga</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Globe className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">www.gabonincubateur.ga</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <div className="flex flex-wrap gap-2">
+                  </CardContent>
+                  <CardFooter className="flex justify-between">
                     <Badge variant="outline" className="text-[#063a1e]">
-                      Incubation
+                      Prêts PME
                     </Badge>
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      Mentorat
-                    </Badge>
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      Financement
-                    </Badge>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
-                  >
-                    Visiter le site <ExternalLink className="h-3 w-3" />
-                  </Button>
-                </CardFooter>
-              </Card>
-
-              {/* Incubateur 2 */}
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-[#063a1e]/10 rounded-md flex items-center justify-center">
-                        <Image
-                          src="/placeholder.svg?height=40&width=40"
-                          alt="Logo incubateur"
-                          width={40}
-                          height={40}
-                          className="rounded"
-                        />
-                      </div>
-                      <div>
-                        <CardTitle>JA Gabon</CardTitle>
-                        <CardDescription>Incubateur et accélérateur</CardDescription>
-                      </div>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <p className="text-sm text-muted-foreground">
-                      Junior Achievement (JA) Gabon propose des programmes d'incubation et d'accélération pour les
-                      jeunes entrepreneurs gabonais, avec un accent sur l'entrepreneuriat social.
-                    </p>
-                    <div className="space-y-2">
-                      <div className="flex items-start gap-2">
-                        <MapPin className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">Avenue de la Présidence, Libreville, Gabon</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Phone className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">+241 XX XX XX XX</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Mail className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">contact@jagabon.org</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Globe className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">www.jagabon.org</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      Incubation
-                    </Badge>
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      Formation
-                    </Badge>
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      Jeunes
-                    </Badge>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
-                  >
-                    Visiter le site <ExternalLink className="h-3 w-3" />
-                  </Button>
-                </CardFooter>
-              </Card>
-
-              {/* Incubateur 3 */}
+                    <Link target="_blank" href={item.site}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
+                      >
+                        Visiter le site <ExternalLink className="h-3 w-3" />
+                      </Button>
+                    </Link>
+                  </CardFooter>
+                </Card>
+              ))}
+              {/* Incubateur 3 
               <Card className="hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-start">
@@ -275,14 +218,14 @@ export default function StructuresAccompagnement() {
                     Visiter le site <ExternalLink className="h-3 w-3" />
                   </Button>
                 </CardFooter>
-              </Card>
+              </Card>*/}
             </div>
           </TabsContent>
 
           {/* Centres de formation */}
           <TabsContent value="formation" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Centre 1 */}
+              {/* Centre 1 
               <Card className="hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-start">
@@ -345,126 +288,96 @@ export default function StructuresAccompagnement() {
                   </Button>
                 </CardFooter>
               </Card>
+              */}
+              {formation.map((item) => (
+                <Card
+                  key={item.id}
+                  className="hover:shadow-md transition-shadow"
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex justify-between items-start">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-[#063a1e]/10 rounded-md flex items-center justify-center">
+                          <Image
+                            src={item.logo}
+                            alt="Logo banque"
+                            width={1000}
+                            height={1000}
+                            className="rounded bg-cover bg-center w-full h-full"
+                          />
+                        </div>
+                        <div>
+                          <CardTitle>{item.title}</CardTitle>
+                          <CardDescription>{item.type}</CardDescription>
+                        </div>
+                      </div>
+                      <div>{item.partenaire}</div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <p className="text-sm text-muted-foreground">
+                        {item.description}{" "}
+                      </p>
+                      <div className="space-y-2">
+                        <div className="flex items-start gap-2">
+                          <MapPin className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                          <span className="text-sm"> {item.adresse} </span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <Phone className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                          <a
+                            href={`tel:${item.tel}`}
+                            className="text-sm hover:underline underline-offset-4"
+                          >
+                            {item.tel}
+                          </a>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <Mail className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                          <a
+                            href={`mailto:${item.mail}`}
+                            className="text-sm hover:underline underline-offset-4"
+                          >
+                            {" "}
+                            {item.mail}{" "}
+                          </a>
+                        </div>
+                        <Link
+                          target="_blank"
+                             href={item.rs1}
+                          className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
+                        >
+                          {item.textrs1}
+                        </Link>
+                        <Link
+                          target="_blank"
+                          href={item.rs2}
+                          className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
+                        >
+                          {item.textrs2}
+                             </Link>
+                      </div>
+                    </div>
+                  </CardContent>
+                  <CardFooter className="flex justify-between">
+                    <Badge variant="outline" className="text-[#063a1e]">
+                      Prêts PME
+                    </Badge>
+                    <Link target="_blank" href={item.site}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
+                      >
+                        Visiter le site <ExternalLink className="h-3 w-3" />
+                      </Button>
+                    </Link>
+                  </CardFooter>
+                </Card>
+              ))}
 
-              {/* Centre 2 */}
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-[#063a1e]/10 rounded-md flex items-center justify-center">
-                        <BookOpen className="h-6 w-6 text-[#063a1e]" />
-                      </div>
-                      <div>
-                        <CardTitle>Institut Gabonais de Management (IGM)</CardTitle>
-                        <CardDescription>École de commerce et centre de formation</CardDescription>
-                      </div>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <p className="text-sm text-muted-foreground">
-                      L'IGM propose des formations continues et des programmes spécifiques pour les entrepreneurs et
-                      cadres de PME, avec un accent sur le management et l'entrepreneuriat.
-                    </p>
-                    <div className="space-y-2">
-                      <div className="flex items-start gap-2">
-                        <MapPin className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">Quartier Glass, Libreville, Gabon</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Phone className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">+241 XX XX XX XX</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Mail className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">contact@igm.ga</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Globe className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">www.igm.ga</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      Formation continue
-                    </Badge>
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      Management
-                    </Badge>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
-                  >
-                    Visiter le site <ExternalLink className="h-3 w-3" />
-                  </Button>
-                </CardFooter>
-              </Card>
-
-              {/* Centre 3 */}
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-[#063a1e]/10 rounded-md flex items-center justify-center">
-                        <BookOpen className="h-6 w-6 text-[#063a1e]" />
-                      </div>
-                      <div>
-                        <CardTitle>Centre de Formation Professionnelle (CFP)</CardTitle>
-                        <CardDescription>Centre de formation technique</CardDescription>
-                      </div>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <p className="text-sm text-muted-foreground">
-                      Le CFP propose des formations techniques et professionnelles adaptées aux besoins des PME dans
-                      divers secteurs comme l'industrie, l'artisanat et les services.
-                    </p>
-                    <div className="space-y-2">
-                      <div className="flex items-start gap-2">
-                        <MapPin className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">Quartier Akébé, Libreville, Gabon</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Phone className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">+241 XX XX XX XX</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Mail className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">contact@cfp.ga</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Globe className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">www.cfp.ga</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      Formation technique
-                    </Badge>
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      Certification
-                    </Badge>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
-                  >
-                    Visiter le site <ExternalLink className="h-3 w-3" />
-                  </Button>
-                </CardFooter>
-              </Card>
+             
             </div>
           </TabsContent>
 
@@ -870,36 +783,6 @@ export default function StructuresAccompagnement() {
               </p>
             </div>
             <Button className="bg-[#063a1e] hover:bg-[#063a1e]/90 whitespace-nowrap">Prendre rendez-vous</Button>
-          </div>
-        </div>
-
-        {/* Upcoming Events */}
-        <div className="mt-12">
-          <h2 className="text-xl font-bold text-[#063a1e] mb-6">Événements à venir</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map((item) => (
-              <Card key={item} className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Calendar className="h-4 w-4 text-[#063a1e]" />
-                    <span className="text-sm font-medium text-[#063a1e]">15 Juin 2025</span>
-                  </div>
-                  <CardTitle>Atelier sur le financement des PME</CardTitle>
-                  <CardDescription>Organisé par la Chambre de Commerce du Gabon</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Un atelier pratique pour aider les entrepreneurs à comprendre les différentes options de financement
-                    disponibles pour leur entreprise.
-                  </p>
-                </CardContent>
-                <CardFooter>
-                  <Button variant="outline" className="w-full border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10">
-                    S'inscrire
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
           </div>
         </div>
       </div>
