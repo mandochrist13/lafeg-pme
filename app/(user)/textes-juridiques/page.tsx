@@ -46,71 +46,15 @@ export default function TextesJuridiques() {
       </div>
 
       {/* Main Content */}
-      <div className="container py-8">
+      <div className="container w-full py-8 ">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar */}
-          <div className="w-full md:w-64 space-y-6">
+          <div className="hidden lg:block lg:w-64 md:hidden">
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-[#063a1e]">Filtres</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium">Catégories</h3>
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="cat1"
-                        className="rounded text-[#063a1e]"
-                      />
-                      <label htmlFor="cat1" className="text-sm">
-                        Création d'entreprise
-                      </label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="cat2"
-                        className="rounded text-[#063a1e]"
-                      />
-                      <label htmlFor="cat2" className="text-sm">
-                        Fiscalité
-                      </label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="cat3"
-                        className="rounded text-[#063a1e]"
-                      />
-                      <label htmlFor="cat3" className="text-sm">
-                        Droit du travail
-                      </label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="cat4"
-                        className="rounded text-[#063a1e]"
-                      />
-                      <label htmlFor="cat4" className="text-sm">
-                        Commerce
-                      </label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="cat5"
-                        className="rounded text-[#063a1e]"
-                      />
-                      <label htmlFor="cat5" className="text-sm">
-                        Propriété intellectuelle
-                      </label>
-                    </div>
-                  </div>
-                </div>
-
                 <div className="space-y-2">
                   <h3 className="text-sm font-medium">Type de texte</h3>
                   <div className="space-y-1">
@@ -167,7 +111,7 @@ export default function TextesJuridiques() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <h3 className="text-sm font-medium">Date de publication</h3>
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
@@ -215,7 +159,7 @@ export default function TextesJuridiques() {
                       </label>
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 <Button className="w-full bg-[#063a1e] hover:bg-[#063a1e]/90">
                   Appliquer les filtres
@@ -225,8 +169,8 @@ export default function TextesJuridiques() {
           </div>
 
           {/* Main Content */}
-          <div className="flex-1">
-            <div className="bg-white p-6 rounded-lg border mb-6">
+          <div className="flex-1 w-full">
+            <div className="bg-white p-6 rounded-lg border ">
               <h1 className="text-2xl font-bold mb-6 text-[#063a1e]">
                 Textes Juridiques pour les PME Gabonaises
               </h1>
@@ -241,7 +185,7 @@ export default function TextesJuridiques() {
                   />
                 </div>
                 <Select>
-                  <SelectTrigger className="w-full md:w-[180px]">
+                  <SelectTrigger className="w-full md:w-[180px] gap-2 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10">
                     <SelectValue placeholder="Trier par" />
                   </SelectTrigger>
                   <SelectContent>
@@ -251,32 +195,36 @@ export default function TextesJuridiques() {
                     <SelectItem value="za">Z-A</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button
-                  variant="outline"
-                  className="gap-2 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
-                >
-                  <Filter className="h-4 w-4" />
-                  <span className="hidden md:inline">Filtres avancés</span>
-                </Button>
               </div>
 
               <Tabs defaultValue="pmes">
-                <TabsList className="grid grid-cols-2 md:grid-cols-3 mb-8 w-full">
-                  <TabsTrigger value="internationaux">
+                <TabsList className="bg-gray-200 w-auto h-full flex flex-col md:flex-row justify-around items-center ">
+                  <TabsTrigger
+                    value="pmes"
+                    className="w-full md:w-auto text-center px-4 py-2"
+                  >
+                    Textes pour les PME
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="internationaux"
+                    className="w-full md:w-auto text-center px-4 py-2"
+                  >
                     Textes régionaux et internationaux
                   </TabsTrigger>
-                  <TabsTrigger value="pmes">Textes pour les PME</TabsTrigger>
-                  <TabsTrigger value="administrations">
+                  <TabsTrigger
+                    value="administrations"
+                    className="w-full md:w-auto text-center px-4 py-2"
+                  >
                     Textes des administrations
                   </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="pmes">
-                  <p className="text-sm text-muted-foreground mb-6">
+                  <p className="text-sm text-muted-foreground mb-6 ">
                     Affichage de 1-10 sur 48 résultats
                   </p>
 
-                  <div className="space-y-4">
+                  <div className="space-y-4 ">
                     {/* Exemples de textes pour PME */}
                     <Card className="hover:shadow-sm transition-shadow">
                       <CardContent className="p-4">
@@ -383,7 +331,7 @@ export default function TextesJuridiques() {
                 </TabsContent>
 
                 <TabsContent value="internationaux">
-                  <p className="text-sm text-muted-foreground mb-6">
+                  <p className="text-sm text-muted-foreground mb-6 ">
                     Affichage de 1-5 sur 12 résultats
                   </p>
                   <div className="space-y-4">
@@ -494,7 +442,7 @@ export default function TextesJuridiques() {
                 </TabsContent>
 
                 <TabsContent value="administrations">
-                  <p className="text-sm text-muted-foreground mb-6">
+                  <p className="text-sm text-muted-foreground mb-6 ">
                     Affichage de 1-8 sur 8 résultats
                   </p>
                   <div className="space-y-4">
