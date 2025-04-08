@@ -34,7 +34,7 @@ const textesJuridiques = [
     type: "Loi",
     categorie: "Fiscalité",
     datePublication: "15/03/2024",
-    statut: "Publié",
+  
   },
   {
     id: 2,
@@ -42,7 +42,7 @@ const textesJuridiques = [
     type: "Décret",
     categorie: "Fiscalité",
     datePublication: "10/05/2025",
-    statut: "Publié",
+  
   },
   {
     id: 3,
@@ -50,7 +50,7 @@ const textesJuridiques = [
     type: "Arrêté",
     categorie: "Fiscalité",
     datePublication: "22/04/2025",
-    statut: "Publié",
+
   },
   {
     id: 4,
@@ -58,7 +58,7 @@ const textesJuridiques = [
     type: "Acte uniforme",
     categorie: "Création d'entreprise",
     datePublication: "30/01/2024",
-    statut: "Publié",
+  
   },
   {
     id: 5,
@@ -66,7 +66,7 @@ const textesJuridiques = [
     type: "Loi",
     categorie: "Innovation",
     datePublication: "05/02/2024",
-    statut: "Publié",
+   
   },
   {
     id: 6,
@@ -74,7 +74,7 @@ const textesJuridiques = [
     type: "Décret",
     categorie: "Procédures administratives",
     datePublication: "18/03/2024",
-    statut: "Publié",
+   
   },
   {
     id: 7,
@@ -82,7 +82,7 @@ const textesJuridiques = [
     type: "Loi",
     categorie: "Droit du travail",
     datePublication: "12/04/2024",
-    statut: "Brouillon",
+ 
   },
   {
     id: 8,
@@ -90,7 +90,7 @@ const textesJuridiques = [
     type: "Arrêté",
     categorie: "Comptabilité",
     datePublication: "25/04/2024",
-    statut: "Publié",
+
   },
   {
     id: 9,
@@ -98,7 +98,7 @@ const textesJuridiques = [
     type: "Décret",
     categorie: "Marchés publics",
     datePublication: "03/05/2025",
-    statut: "Brouillon",
+  
   },
   {
     id: 10,
@@ -106,7 +106,7 @@ const textesJuridiques = [
     type: "Loi",
     categorie: "Numérique",
     datePublication: "08/05/2025",
-    statut: "Publié",
+  
   },
 ]
 
@@ -179,7 +179,7 @@ export default function TextesJuridiquesAdmin() {
                   ))}
                 </SelectContent>
               </Select>
-              <Select value={selectedStatut} onValueChange={setSelectedStatut}>
+              {/* <Select value={selectedStatut} onValueChange={setSelectedStatut}>
                 <SelectTrigger className="w-full sm:w-[180px]">
                   <SelectValue placeholder="Statut" />
                 </SelectTrigger>
@@ -191,7 +191,7 @@ export default function TextesJuridiquesAdmin() {
                     </SelectItem>
                   ))}
                 </SelectContent>
-              </Select>
+              </Select> */}
             </div>
           </div>
 
@@ -244,7 +244,7 @@ export default function TextesJuridiquesAdmin() {
                   <TableHead>Type</TableHead>
                   <TableHead>Catégorie</TableHead>
                   <TableHead>Date de publication</TableHead>
-                  <TableHead>Statut</TableHead>
+                
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -255,14 +255,7 @@ export default function TextesJuridiquesAdmin() {
                     <TableCell>{texte.type}</TableCell>
                     <TableCell>{texte.categorie}</TableCell>
                     <TableCell>{texte.datePublication}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={texte.statut === "Publié" ? "default" : "outline"}
-                        className={texte.statut === "Publié" ? "bg-green-500" : ""}
-                      >
-                        {texte.statut}
-                      </Badge>
-                    </TableCell>
+                  
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
