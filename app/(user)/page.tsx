@@ -205,14 +205,11 @@ export default function Home() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <a href="/textes-juridiques/#administrations">
-                  <Button
-                   
-                    className="w-full gap-1 text-white hover:text-[#063a1e]/90 hover:bg-[#063a1e]/20"
-                  >
+              <Link href="/textes-juridiques#administrations">
+                  <Button className="w-full gap-1 text-white hover:text-[#063a1e]/90 hover:bg-[#063a1e]/20">
                     Consulter <ArrowRight className="h-4 w-4" />
                   </Button>
-                </a>
+                </Link>
               </CardFooter>
             </Card>
 
@@ -244,13 +241,11 @@ export default function Home() {
                 </ul>
               </CardContent>
               <CardFooter>
-              <a href="/textes-juridiques/#pmes">
-                  <Button
-                    className="w-full gap-1 text-white hover:text-[#063a1e]/90 hover:bg-[#063a1e]/20"
-                  >
+              <Link href="/textes-juridiques#pme">
+                  <Button className="w-full gap-1 text-white hover:text-[#063a1e]/90 hover:bg-[#063a1e]/20">
                     Consulter <ArrowRight className="h-4 w-4" />
                   </Button>
-                </a>
+                </Link>
               </CardFooter>
             </Card>
 
@@ -280,13 +275,11 @@ export default function Home() {
                 </ul>
               </CardContent>
               <CardFooter>
-              <a href="/textes-juridiques/#internationaux">
-                  <Button
-                    className="w-full gap-1 text-white hover:text-[#063a1e]/90 hover:bg-[#063a1e]/20"
-                  >
+                <Link href="/textes-juridiques#internationaux">
+                  <Button className="w-full gap-1 text-white hover:text-[#063a1e]/90 hover:bg-[#063a1e]/20">
                     Consulter <ArrowRight className="h-4 w-4" />
                   </Button>
-                </a>
+                </Link>
               </CardFooter>
             </Card>
           </div>
