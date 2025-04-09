@@ -122,6 +122,9 @@ importers:
       next-themes:
         specifier: ^0.4.4
         version: 0.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      pnpm:
+        specifier: ^10.7.1
+        version: 10.7.1
       react:
         specifier: ^19
         version: 19.1.0
@@ -171,6 +174,9 @@ importers:
       postcss:
         specifier: ^8
         version: 8.5.3
+      prettier:
+        specifier: 3.0.0-alpha.6
+        version: 3.0.0-alpha.6
       tailwindcss:
         specifier: ^3.4.17
         version: 3.4.17
@@ -1492,6 +1498,11 @@ packages:
     resolution: {integrity: sha512-TfySrs/5nm8fQJDcBDuUng3VOUKsd7S+zqvbOTiGXHfxX4wK31ard+hoNuvkicM/2YFzlpDgABOevKSsB4G/FA==}
     engines: {node: '>= 6'}
 
+  pnpm@10.7.1:
+    resolution: {integrity: sha512-LZLIa3ko3IKE9TSU+0IB+YPaZfD7Tw1Auq+lz2KPox2uPllo8SRm8X336XMQ4w80OmSLrqG5s1BoXa+v/99YCA==}
+    engines: {node: '>=18.12'}
+    hasBin: true
+
   postcss-import@15.1.0:
     resolution: {integrity: sha512-hpr+J05B2FVYUAXHeK1YyI267J/dDDhMU6B6civm8hSY1jYJnBXxzKDKDswzJmtLHryrjhnDjqqp/49t8FALew==}
     engines: {node: '>=14.0.0'}
@@ -1536,6 +1547,11 @@ packages:
   postcss@8.5.3:
     resolution: {integrity: sha512-dle9A3yYxlBSrt8Fu+IpjGT8SY8hN0mlaA6GY8t0P5PjIOZemULz/E2Bnm/2dcUOena75OTNkHI76uZBNUUq3A==}
     engines: {node: ^10 || ^12 || >=14}
+
+  prettier@3.0.0-alpha.6:
+    resolution: {integrity: sha512-AdbQSZ6Oo+iy9Ekzmsgno05P1uX2vqPkjOMJqRfP8hTe+m6iDw4Nt7bPFpWZ/HYCU+3f0P5U0o2ghxQwwkLH7A==}
+    engines: {node: '>=14'}
+    hasBin: true
 
   prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
@@ -3106,6 +3122,8 @@ snapshots:
 
   pirates@4.0.7: {}
 
+  pnpm@10.7.1: {}
+
   postcss-import@15.1.0(postcss@8.5.3):
     dependencies:
       postcss: 8.5.3
@@ -3148,6 +3166,8 @@ snapshots:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
+
+  prettier@3.0.0-alpha.6: {}
 
   prop-types@15.8.1:
     dependencies:
