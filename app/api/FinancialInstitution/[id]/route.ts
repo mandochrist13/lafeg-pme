@@ -6,7 +6,7 @@ const prisma = new PrismaClient;
 
 /**
  * @swagger
- * /api/institutions/{id}:
+ * /api/FinancialInstitution/{id}:
  *   get:
  *     summary: Afficher une institution financière par ID
  *     description: Cette route récupère une institution financière spécifique en utilisant son ID.
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
   /**
  * @swagger
- * /api/institutions/{id}:
+ * /api/FinancialInstitution/{id}:
  *   put:
  *     summary: Modifier une institution financière par ID
  *     description: Cette route permet de modifier les informations d'une institution financière en utilisant son ID.
@@ -184,7 +184,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
 /**
  * @swagger
- * /api/institutions/{id}:
+ * /api/FinancialInstitution/{id}:
  *   delete:
  *     summary: Supprimer une institution financière par ID
  *     description: Cette route permet de supprimer une institution financière en utilisant son ID.

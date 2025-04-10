@@ -6,7 +6,7 @@ const prisma = new PrismaClient;
 
 /**
  * @swagger
- * /api/institutions:
+ * /api/FinancialInstitution:
  *   get:
  *     summary: Récupérer toutes les institutions financières
  *     description: Cette route récupère toutes les institutions financières de la base de données.
@@ -18,7 +18,7 @@ const prisma = new PrismaClient;
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Institution'
+ *                 $ref: '#/components/schemas/FinancialInstitution'
  *       500:
  *         description: Erreur interne du serveur
  */
@@ -38,7 +38,7 @@ export async function GET(request: Request) {
 
 /**
  * @swagger
- * /api/institutions:
+ * /api/FinancialInstitution:
  *   post:
  *     summary: Ajouter une nouvelle institution financière
  *     description: Cette route permet d'ajouter une nouvelle institution financière dans la base de données.
@@ -81,7 +81,7 @@ export async function GET(request: Request) {
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Institution'
+ *               $ref: '#/components/schemas/FinancialInstitution'
  *       400:
  *         description: Champs manquants dans la requête
  *       500:
