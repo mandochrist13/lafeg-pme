@@ -1,17 +1,9 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@/generated/prisma';
+import { handleCors } from '@/lib/cors';
 
 
-/**
- * @swagger
- * /sea:
- *   get:
- *     summary: Recuperer la liste des sea
- *     tags: [sea]
- *     responses:
- *       200:
- *         description: Succès
- */
+
 
 // Lecture (GET)
 // (GET) http://localhost:3000/api/sea

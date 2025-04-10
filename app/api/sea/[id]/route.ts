@@ -1,27 +1,8 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@/generated/prisma";
+import { handleCors } from '@/lib/cors';
 
-/**
- * @swagger
- * /sea:
- *   get:
- *     summary: Récupérer les informations d'une Structure d’Accompagnement par ID
- *     tags: [Structure d’Accompagnement]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: ID de la Structure d’Accompagnement à récupérer
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Données de la Structure d’Accompagnement récupérées avec succès
- *       404:
- *         description: Structure d’Accompagnement non trouvée
- *       500:
- *         description: Erreur serveur
- */
+
 
 // Lecture par id (GET)
 // (GET) http://localhost:3000/api/sea/id
@@ -44,29 +25,27 @@ export async function GET(request: Request,
 
     // Si l'élément n'est pas trouvé, retournez une erreur 404
     if (!sea) {
-      return NextResponse.json({ error: 'SEA introuvable' }, { status: 404 })
+      const response = NextResponse.json({ error: 'SEA introuvable' }, { status: 404 });
+      response.headers.set("Access-Control-Allow-Origin", "*");
+      return response;
     }
     // Si l'élément est trouvé, retournez-le avec un code de statut 200
-    return NextResponse.json(sea, { status: 200 })
+    const response = NextResponse.json(sea, { status: 200 });
+    response.headers.set("Access-Control-Allow-Origin", "*");
+    return response;
 
   } catch (error) {
 
     // En cas d'erreur serveur, retournez un message d'erreur 500
-    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
+    const response = NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
+    response.headers.set("Access-Control-Allow-Origin", "*");
+    return response;
   }
+  
 }
 
 
-/**
- * @swagger
- * /sea:
- *   patch:
- *     summary: Modifier partiellement les informations d un sea
- *     tags: [sea]
- *     responses:
- *       200:
- *         description: Succès
- */
+
 // Modification partielle (PATCH)
 // (PATCH) http://localhost:3000/api/sea/[id]
 
@@ -108,16 +87,7 @@ export async function PATCH(
 }
 
 
-/**
- * @swagger
- * /sea:
- *   delete:
- *     summary: Supprimer un sea
- *     tags: [sea]
- *     responses:
- *       200:
- *         description: Succès
- */
+
 // Suppression (DELETE)
 // (DELETE) http://localhost:3000/api/sea/id
 
@@ -155,16 +125,7 @@ export async function DELETE(
 
 
 
-/**
- * @swagger
- * /sea:
- *   put:
- *     summary: Modifier toutes les informations d un sea
- *     tags: [sea]
- *     responses:
- *       200:
- *         description: Succès
- */
+
 // Suppression (PUT)
 // (PUT) http://localhost:3000/api/sea/id
 export async function PUT(

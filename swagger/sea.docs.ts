@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /sea/{id}:
+ * /api/sea/{id}:
  *   get:
  *     summary: Récupérer les informations d'une Structure d’Accompagnement par ID
  *     tags: [Structure d’Accompagnement]
@@ -23,7 +23,7 @@
 
 /**
  * @swagger
- * /sea:
+ * /api/sea/{id}:
  *   patch:
  *     summary: Modifier partiellement les informations d'une Structure d’Accompagnement
  *     tags: [Structure d’Accompagnement]
@@ -52,7 +52,7 @@
 
 /**
  * @swagger
- * /sea:
+ * /api/sea/{id}:
  *   delete:
  *     summary: Supprimer une Structure d’Accompagnement
  *     tags: [Structure d’Accompagnement]
@@ -74,7 +74,7 @@
 
 /**
  * @swagger
- * /sea:
+ * /api/sea/{id}:
  *   put:
  *     summary: Modifier entièrement une Structure d’Accompagnement
  *     tags: [Structure d’Accompagnement]
@@ -133,7 +133,7 @@
 
 /**
  * @swagger
- * /sea:
+ * /api/sea:
  *   post:
  *     summary: Créer une nouvelle Structure d’Accompagnement
  *     tags: [Structure d’Accompagnement]
@@ -197,7 +197,7 @@
 
 /**
  * @swagger
- * /sea:
+ * /api/sea:
  *   get:
  *     summary: Récupérer la liste de toutes les Structures d’Accompagnement
  *     tags: [Structure d’Accompagnement]
