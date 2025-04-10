@@ -1,40 +1,90 @@
+import { PrismaClient } from "@/generated/prisma";
 import { NextRequest, NextResponse } from 'next/server';
-import { institutionsFinanciere } from '../data/data';
 
+const prisma = new PrismaClient;
+
+
+
+// Afficher les institutions financières par ID
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+    const id = params.id;
+  
+    // Vérifie que l'ID est bien un ObjectId MongoDB
+    if (!/^[a-fA-F0-9]{24}$/.test(id)) {
+      return NextResponse.json({ error: 'ID invalide (format MongoDB attendu).' }, { status: 400 });
+    }
+  
+    try {
+      // Affiche l'institution financière par son ID
+      const institution = await prisma.institutionFinanciere.findUnique({
+        where: { id_institutionFinanciere: id },
+      });
+      
+      // Vérifie si l'institution existe
+      if (!institution) {
+        return NextResponse.json({ error: 'Institution non trouvée.' }, { status: 404 });
+      }
+  
+      return NextResponse.json(institution, { status: 200 });
+    } catch (error) {
+      console.error('Erreur GET /api/FinancialInstitution/[id]:', error);
+      return NextResponse.json({ error: 'Erreur interne du serveur.' }, { status: 500 });
+    }
+  }
 
 
 
 // Fonction qui s'exécute quand une requête PUT est envoyée à /api/institutions/[id]
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) { 
   try {
-     // On extrait l'ID depuis les paramètres de l'URL, et on le convertit en nombre
-    const institutionId = parseInt(params.id); 
-
-    // Si l'ID fourni n'est pas un nombre (NaN), on retourne une erreur 400
-    if (isNaN(institutionId)) {
-      return NextResponse.json({ error: 'ID invalide.' }, { status: 400 });
-    }
-
+    // On extrait l'ID depuis les paramètres de l'URL
+    const institutionId = params.id;
+    
     // On récupère le corps de la requête (les données que le client veut mettre à jour)
     const body = await request.json(); 
 
-    // On cherche l'index de l'institution qui a cet ID
-    const index = institutionsFinanciere.findIndex(inst => inst.id === institutionId);
+    const {
+        nom,
+        categorie,
+        type_institution,
+        partenaire_feg,
+        description,
+        logo,
+        adresse,
+        contact,
+        mail,
+        site_web,
+        rs_1,
+        rs_2,
+        service
+    } = body;
 
-     // Si aucune institution avec cet ID n'existe, on retourne une erreur 404
-    if (index === -1) {
-      return NextResponse.json({ error: 'Institution non trouvée.' }, { status: 404 });
-    }
+    // Vérifie si l'ID est vide ou invalide (optionnel mais conseillé)
+    if (!institutionId || typeof institutionId !== 'string') {
+        return NextResponse.json({ error: 'ID invalide.' }, { status: 400 });
+      }
 
-    // Fusionne les anciens champs avec les nouveaux, et met à jour la date de modification
-    institutionsFinanciere[index] = {
-      ...institutionsFinanciere[index], // On garde tous les anciens champs
-      ...body, // On remplace avec les champs mis à jour
-      updateAt: new Date().toISOString(), // On met à jour la date de modification
-    };
+    const FinancialInstitutions = await prisma.institutionFinanciere.update({
+      where: { id_institutionFinanciere : institutionId },
+      data: {
+        nom,
+        categorie,
+        type_institution,
+        partenaire_feg,
+        description,
+        logo,
+        adresse,
+        contact,
+        mail,
+        site_web,
+        rs_1,
+        rs_2,
+        service
+      }
+    });
 
     // Retourne l'objet mis à jour avec un code 200 (succès)
-    return NextResponse.json(institutionsFinanciere[index], { status: 200 });
+    return NextResponse.json({ message: "Institution financiere modifié avec succès", FinancialInstitutions }, { status: 200 });
   } catch (error) {
     // En cas d'erreur inattendue (ex: problème JSON, crash), on log l'erreur et renvoie un code 500
     console.error('Erreur PUT /api/institutions/[id]:', error);
@@ -43,34 +93,24 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 
+
 // Supprimer une institution financière
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE( request: NextRequest, { params }: { params: { id: string } }) {
+    const id = params.id;
+  
+    if (!/^[a-fA-F0-9]{24}$/.test(id)) {
+      return NextResponse.json({ error: 'ID Mongo invalide (format).' }, { status: 400 });
+    }
+  
     try {
-      // On extrait l'ID depuis les paramètres de l'URL, et on le convertit en nombre
-      const institutionId = parseInt(params.id); 
+      const deleted = await prisma.institutionFinanciere.delete({
+        where: { id_institutionFinanciere: id },
+      });
   
-      // Si l'ID fourni n'est pas un nombre (NaN), on retourne une erreur 400
-      if (isNaN(institutionId)) {
-        return NextResponse.json({ error: 'ID invalide.' }, { status: 400 });
-      }
-  
-      // On cherche l'index de l'institution à supprimer
-      const index = institutionsFinanciere.findIndex(inst => inst.id === institutionId);
-  
-      // Si aucune institution avec cet ID n'existe, on retourne une erreur 404
-      if (index === -1) {
-        return NextResponse.json({ error: 'Institution non trouvée.' }, { status: 404 });
-      }
-  
-      // On supprime l'institution de la liste
-      institutionsFinanciere.splice(index, 1);
-  
-      // Retourne un message de succès après la suppression
-      return NextResponse.json({ message: 'Institution supprimée avec succès.' }, { status: 200 });
+      return NextResponse.json({ message: 'Institution supprimée' }, { status: 200 });
     } catch (error) {
-      // En cas d'erreur inattendue (ex: problème JSON, crash), on log l'erreur et renvoie un code 500
-      console.error('Erreur DELETE /api/institutions/[id]:', error);
-      return NextResponse.json({ error: 'Erreur Interne du Serveur' }, { status: 500 });
+      console.error('Erreur DELETE:', error);
+      return NextResponse.json({ error: 'Erreur serveur ou ID non trouvé' }, { status: 500 });
     }
   }
   

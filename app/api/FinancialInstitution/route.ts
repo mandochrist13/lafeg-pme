@@ -1,11 +1,14 @@
+import { PrismaClient } from "@/generated/prisma";
 import { NextResponse } from 'next/server';
-import { institutionsFinanciere, InstitutionFinanciere } from './data/data'; // Assurez-vous que le chemin est correct
 
-// lire les données 
+const prisma = new PrismaClient;
+
+
+// Afficher toutes les institutions financières 
 export async function GET(request: Request) {
   try {
-    // Utiliser directement les données fictives importées
-    return NextResponse.json(institutionsFinanciere, { status: 200 });
+    const FinancialInstitutions = await prisma.institutionFinanciere.findMany();
+    return NextResponse.json(FinancialInstitutions, { status: 200 });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Erreur Interne du Serveur' }, { status: 500 });
@@ -25,7 +28,7 @@ export async function POST(request: Request) {
         partenaire_feg,
         description,
         logo,
-        addresse,
+        adresse,
         contact,
         mail,
         site_web,
@@ -40,30 +43,29 @@ export async function POST(request: Request) {
       }
   
       // création d'un nouvel objet InstitutionFinanciere
-      const newInstitution: InstitutionFinanciere = {
-        id: institutionsFinanciere.length + 1,
-        nom,
-        categorie,
-        type_institution,
-        partenaire_feg,
-        description,
-        logo,
-        addresse,
-        contact,
-        mail,
-        site_web,
-        rs_1,
-        rs_2,
-        service,
-        createdAt: new Date().toISOString(),
-        updateAt: new Date().toISOString(),
-      };
-  
-      institutionsFinanciere.push(newInstitution); // Ajout en mémoire (non persistant)
-  
-      return NextResponse.json(newInstitution, { status: 201 });
+      const newInstitution = await prisma.institutionFinanciere.create({
+        data: {
+          nom,
+          categorie,
+          type_institution,
+          partenaire_feg,
+          description,
+          logo,
+          adresse,
+          contact,
+          mail,
+          site_web,
+          rs_1,
+          rs_2,
+          service,
+        },
+    });
+
+    return NextResponse.json({message : "Institution créer avec succès" , newInstitution}, { status: 201 });
+
     } catch (error) {
       console.error(error);
+      // Retourne une reponse erreur avec le statut 500 en cas d'échec
       return NextResponse.json({ error: 'Erreur Interne du Serveur' }, { status: 500 });
     }
   }
