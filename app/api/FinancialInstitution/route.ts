@@ -1,17 +1,92 @@
+import { PrismaClient } from "@/generated/prisma";
 import { NextResponse } from 'next/server';
-import { institutionsFinanciere, InstitutionFinanciere } from './data/data'; // Assurez-vous que le chemin est correct
 
-// lire les données 
+const prisma = new PrismaClient;
+
+
+/**
+ * @swagger
+ * /api/FinancialInstitution:
+ *   get:
+ *     summary: Récupérer toutes les institutions financières
+ *     description: Cette route récupère toutes les institutions financières de la base de données.
+ *     responses:
+ *       200:
+ *         description: Liste des institutions financières récupérées avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/FinancialInstitution'
+ *       500:
+ *         description: Erreur interne du serveur
+ */
+
+// Afficher toutes les institutions financières 
 export async function GET(request: Request) {
   try {
-    // Utiliser directement les données fictives importées
-    return NextResponse.json(institutionsFinanciere, { status: 200 });
+    const FinancialInstitutions = await prisma.institutionFinanciere.findMany();
+    return NextResponse.json(FinancialInstitutions, { status: 200 });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Erreur Interne du Serveur' }, { status: 500 });
   }
 }
 
+
+
+/**
+ * @swagger
+ * /api/FinancialInstitution:
+ *   post:
+ *     summary: Ajouter une nouvelle institution financière
+ *     description: Cette route permet d'ajouter une nouvelle institution financière dans la base de données.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nom:
+ *                 type: string
+ *               categorie:
+ *                 type: string
+ *               type_institution:
+ *                 type: string
+ *               partenaire_feg:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               logo:
+ *                 type: string
+ *               adresse:
+ *                 type: string
+ *               contact:
+ *                 type: string
+ *               mail:
+ *                 type: string
+ *               site_web:
+ *                 type: string
+ *               rs_1:
+ *                 type: string
+ *               rs_2:
+ *                 type: string
+ *               service:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Institution financière créée avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/FinancialInstitution'
+ *       400:
+ *         description: Champs manquants dans la requête
+ *       500:
+ *         description: Erreur interne du serveur
+ */
 
 // ajouter une nouvelle institution
 export async function POST(request: Request) {
@@ -25,7 +100,7 @@ export async function POST(request: Request) {
         partenaire_feg,
         description,
         logo,
-        addresse,
+        adresse,
         contact,
         mail,
         site_web,
@@ -40,30 +115,29 @@ export async function POST(request: Request) {
       }
   
       // création d'un nouvel objet InstitutionFinanciere
-      const newInstitution: InstitutionFinanciere = {
-        id: institutionsFinanciere.length + 1,
-        nom,
-        categorie,
-        type_institution,
-        partenaire_feg,
-        description,
-        logo,
-        addresse,
-        contact,
-        mail,
-        site_web,
-        rs_1,
-        rs_2,
-        service,
-        createdAt: new Date().toISOString(),
-        updateAt: new Date().toISOString(),
-      };
-  
-      institutionsFinanciere.push(newInstitution); // Ajout en mémoire (non persistant)
-  
-      return NextResponse.json(newInstitution, { status: 201 });
+      const newInstitution = await prisma.institutionFinanciere.create({
+        data: {
+          nom,
+          categorie,
+          type_institution,
+          partenaire_feg,
+          description,
+          logo,
+          adresse,
+          contact,
+          mail,
+          site_web,
+          rs_1,
+          rs_2,
+          service,
+        },
+    });
+
+    return NextResponse.json({message : "Institution créer avec succès" , newInstitution}, { status: 201 });
+
     } catch (error) {
       console.error(error);
+      // Retourne une reponse erreur avec le statut 500 en cas d'échec
       return NextResponse.json({ error: 'Erreur Interne du Serveur' }, { status: 500 });
     }
   }

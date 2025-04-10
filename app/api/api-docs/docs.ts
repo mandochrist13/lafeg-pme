@@ -6,7 +6,7 @@ import express from 'express';
 
 const handler = (req: NextApiRequest, res: NextApiResponse) => {
   const app = express();
-  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.use('api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   app(req, res); // Adapt Express à Next
 };
 
