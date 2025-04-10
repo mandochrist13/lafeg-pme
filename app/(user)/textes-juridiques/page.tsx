@@ -2,9 +2,9 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { ChevronRight, Search, FileText, Download } from "lucide-react"
+import { ChevronRight, Search, FileText, Download, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -20,6 +20,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 // Données de textes juridiques pour la démonstration
 const textesJuridiques = [
@@ -80,11 +81,20 @@ const textesJuridiques = [
   },
 ]
 
+// Mapping des noms d'onglets pour l'affichage
+const tabNames = {
+  pmes: "Textes pour les PME",
+  internationaux: "Textes régionaux et internationaux",
+  administrations: "Textes des administrations",
+}
+
 export default function TextesJuridiques() {
   const [searchTerm, setSearchTerm] = useState("")
   const [activeTab, setActiveTab] = useState("pmes")
   const [sortOption, setSortOption] = useState("recent")
   const [selectedTypes, setSelectedTypes] = useState<string[]>([])
+  const [suggestedTab, setSuggestedTab] = useState<string | null>(null)
+  const [suggestedResults, setSuggestedResults] = useState<typeof textesJuridiques>([])
 
   // Fonction pour gérer la recherche
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,6 +104,8 @@ export default function TextesJuridiques() {
   // Fonction pour gérer le changement d'onglet
   const handleTabChange = (value: string) => {
     setActiveTab(value)
+    // Réinitialiser les suggestions lors du changement d'onglet
+    setSuggestedTab(null)
   }
 
   // Fonction pour gérer le tri
@@ -160,6 +172,63 @@ export default function TextesJuridiques() {
         return 0
     }
   })
+
+  // Trouver des résultats dans d'autres onglets lorsqu'aucun résultat n'est trouvé
+  useEffect(() => {
+    if (searchTerm && filteredTextes.length === 0) {
+      // Chercher dans les autres onglets
+      const otherTabsResults: Record<string, typeof textesJuridiques> = {}
+
+      Object.keys(tabNames).forEach((tab) => {
+        if (tab !== activeTab) {
+          const results = textesJuridiques.filter((texte) => {
+            if (texte.categorie !== tab) return false
+
+            // Appliquer les mêmes filtres de recherche
+            if (
+              searchTerm &&
+              !texte.titre.toLowerCase().includes(searchTerm.toLowerCase()) &&
+              !texte.description.toLowerCase().includes(searchTerm.toLowerCase()) &&
+              !texte.tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+            ) {
+              return false
+            }
+
+            // Appliquer les filtres de type
+            if (selectedTypes.length > 0 && !selectedTypes.includes(texte.type)) {
+              return false
+            }
+
+            return true
+          })
+
+          otherTabsResults[tab] = results
+        }
+      })
+
+      // Trouver l'onglet avec le plus de résultats
+      let bestTab = null
+      let maxResults = 0
+
+      Object.entries(otherTabsResults).forEach(([tab, results]) => {
+        if (results.length > maxResults) {
+          maxResults = results.length
+          bestTab = tab
+        }
+      })
+
+      if (bestTab && maxResults > 0) {
+        setSuggestedTab(bestTab)
+        setSuggestedResults(otherTabsResults[bestTab])
+      } else {
+        setSuggestedTab(null)
+        setSuggestedResults([])
+      }
+    } else {
+      setSuggestedTab(null)
+      setSuggestedResults([])
+    }
+  }, [searchTerm, activeTab, selectedTypes, filteredTextes.length])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -354,8 +423,44 @@ export default function TextesJuridiques() {
                         ))}
                       </div>
                     ) : (
-                      <div className="text-center py-8">
-                        <p className="text-muted-foreground">Aucun résultat trouvé pour votre recherche.</p>
+                      <div className="space-y-4">
+                        <div className="text-center py-4">
+                          <p className="text-muted-foreground">
+                            Aucun résultat trouvé pour votre recherche dans cette section.
+                          </p>
+                        </div>
+
+                        {suggestedTab && suggestedResults.length > 0 && (
+                          <Alert className="bg-[#f0f9f1] border-[#063a1e]/20">
+                            <AlertTitle className="text-[#063a1e] flex items-center gap-2">
+                              <ArrowRight className="h-4 w-4" />
+                              Résultats trouvés dans une autre section
+                            </AlertTitle>
+                            <AlertDescription className="mt-2">
+                              <p className="mb-3">
+                                Nous avons trouvé {suggestedResults.length} résultat(s) pour "{searchTerm}" dans la
+                                section "{tabNames[suggestedTab as keyof typeof tabNames]}".
+                              </p>
+                              <Button
+                                onClick={() => setActiveTab(suggestedTab)}
+                                className="bg-[#063a1e] hover:bg-[#063a1e]/90"
+                              >
+                                Voir les résultats
+                              </Button>
+                            </AlertDescription>
+                          </Alert>
+                        )}
+
+                        {(!suggestedTab || suggestedResults.length === 0) && (
+                          <div className="text-center py-4">
+                            <p className="text-muted-foreground">
+                              Aucun résultat trouvé dans les autres sections non plus.
+                            </p>
+                            <p className="text-muted-foreground mt-2">
+                              Essayez de modifier vos termes de recherche ou vos filtres.
+                            </p>
+                          </div>
+                        )}
                       </div>
                     )}
                   </TabsContent>
