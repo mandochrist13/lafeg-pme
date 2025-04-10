@@ -58,9 +58,9 @@ export default function InstitutionsFinancieres() {
     if (activeTab !== "fonds" && filteredFond.length > 0) {
       results.push({ tab: "fonds", count: filteredFond.length, label: "Fonds d'investissement" })
     }
-    // if (activeTab !== "publiques" && filteredFond.length > 0) {
-    //   results.push({ tab: "publiques", count: filteredFond.length, label: "Institutions publiques" })
-    // }
+    if (activeTab !== "publiques" && filteredInstP.length > 0) {
+     results.push({ tab: "publiques", count: filteredInstP.length, label: "Institutions publiques" })
+    }
 
     return results
   }
