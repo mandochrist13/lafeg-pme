@@ -1,6 +1,18 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@/generated/prisma';
 
+
+/**
+ * @swagger
+ * /sea:
+ *   get:
+ *     summary: Exemple de route test
+ *     tags: [Test]
+ *     responses:
+ *       200:
+ *         description: Succès
+ */
+
 // Lecture (GET)
 // (GET) http://localhost:3000/api/sea
 
