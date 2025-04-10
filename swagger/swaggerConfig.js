@@ -16,8 +16,10 @@ const options = {
       },
     ],
   },
-  apis: ['app/api/**/*.ts', 'app/api/**/*.js'],
-
+  apis: [
+    'app/api/**/*.ts',      // Toutes tes routes API Next.js
+    './swagger/**/*.ts',    // Ton fichier de documentation centralisée
+  ],
 };
 
 const swaggerSpec = swaggerJSDoc(options);

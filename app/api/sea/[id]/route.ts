@@ -1,6 +1,27 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@/generated/prisma";
 
+/**
+ * @swagger
+ * /sea:
+ *   get:
+ *     summary: Récupérer les informations d'une Structure d’Accompagnement par ID
+ *     tags: [Structure d’Accompagnement]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID de la Structure d’Accompagnement à récupérer
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Données de la Structure d’Accompagnement récupérées avec succès
+ *       404:
+ *         description: Structure d’Accompagnement non trouvée
+ *       500:
+ *         description: Erreur serveur
+ */
 
 // Lecture par id (GET)
 // (GET) http://localhost:3000/api/sea/id
@@ -35,6 +56,17 @@ export async function GET(request: Request,
   }
 }
 
+
+/**
+ * @swagger
+ * /sea:
+ *   patch:
+ *     summary: Modifier partiellement les informations d un sea
+ *     tags: [sea]
+ *     responses:
+ *       200:
+ *         description: Succès
+ */
 // Modification partielle (PATCH)
 // (PATCH) http://localhost:3000/api/sea/[id]
 
@@ -75,6 +107,17 @@ export async function PATCH(
   }
 }
 
+
+/**
+ * @swagger
+ * /sea:
+ *   delete:
+ *     summary: Supprimer un sea
+ *     tags: [sea]
+ *     responses:
+ *       200:
+ *         description: Succès
+ */
 // Suppression (DELETE)
 // (DELETE) http://localhost:3000/api/sea/id
 
@@ -109,6 +152,21 @@ export async function DELETE(
   }
 }
 
+
+
+
+/**
+ * @swagger
+ * /sea:
+ *   put:
+ *     summary: Modifier toutes les informations d un sea
+ *     tags: [sea]
+ *     responses:
+ *       200:
+ *         description: Succès
+ */
+// Suppression (PUT)
+// (PUT) http://localhost:3000/api/sea/id
 export async function PUT(
   request: Request,
   { params }: { params: { id: string } }

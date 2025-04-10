@@ -6,8 +6,8 @@ import { PrismaClient } from '@/generated/prisma';
  * @swagger
  * /sea:
  *   get:
- *     summary: Exemple de route test
- *     tags: [Test]
+ *     summary: Recuperer la liste des sea
+ *     tags: [sea]
  *     responses:
  *       200:
  *         description: Succès
@@ -27,6 +27,8 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Failed to fetch sea' }, { status: 500 });
   }
 }
+
+
 
 // Création (POST)
 // (POST) http://localhost:3000/api/sea
