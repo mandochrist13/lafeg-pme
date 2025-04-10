@@ -1,4 +1,7 @@
+"use client"
+
 import Link from "next/link";
+import { useState } from "react";
 import Image from "next/image";
 import {
   ChevronRight,
@@ -7,11 +10,7 @@ import {
   MapPin,
   Phone,
   Mail,
-  Globe,
-  Calendar,
-  Users,
-  BookOpen,
-  Briefcase,
+  ArrowRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,6 +30,46 @@ import cabinet from "@/components/data/sea/cabinet";
 import publique from "@/components/data/sea/publique";
 
 export default function StructuresAccompagnement() {
+
+  const [search, setSearch] = useState("");
+  const [activeTab, setActiveTab] = useState("incubateurs")
+  
+
+  const filteredIncubateurs = incubateur.filter((item) => item.title.toLowerCase().includes(search.toLowerCase()))
+
+  const filteredFormation = formation.filter((item) => item.title.toLowerCase().includes(search.toLowerCase()))
+
+  const filteredCabinet = cabinet.filter((item) => item.title.toLowerCase().includes(search.toLowerCase()))
+
+  const filteredPublic = publique.filter((item) => item.title.toLowerCase().includes(search.toLowerCase()))
+
+
+  const getOtherSectionResults = () => {
+    const results = []
+
+    if (activeTab !== "incubateurs" && filteredIncubateurs.length > 0) {
+      results.push({ tab: "incubateurs", count: filteredIncubateurs.length, label: "Incubateurs" })
+    }
+
+    if (activeTab !== "formation" && filteredFormation.length > 0) {
+      results.push({ tab: "formation", count: filteredFormation.length, label: "Centre de formation" })
+    }
+
+    if (activeTab !== "conseil" && filteredCabinet.length > 0) {
+      results.push({ tab: "conseil", count: filteredCabinet.length, label: "Cabinet conseil" })
+    }
+
+    if (activeTab !== "publiques" && filteredPublic.length > 0) {
+      results.push({ tab: "publiques", count: filteredPublic.length, label: "Structure publique" })
+    }
+
+
+    return results
+  }
+
+  const otherSectionResults = search ? getOtherSectionResults() : []
+
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Breadcrumb */}
@@ -60,7 +99,9 @@ export default function StructuresAccompagnement() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <Input
-                type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+                type="text"
                 placeholder="Rechercher une structure d'accompagnement..."
                 className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/60 h-12"
               />
@@ -71,7 +112,7 @@ export default function StructuresAccompagnement() {
 
       {/* Main Content */}
       <div className="container py-12">
-        <Tabs defaultValue="incubateurs" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-12 ">
             <TabsTrigger value="incubateurs">Incubateurs</TabsTrigger>
             <TabsTrigger value="formation">Centres de formation</TabsTrigger>
@@ -82,7 +123,7 @@ export default function StructuresAccompagnement() {
           {/* Incubateurs */}
           <TabsContent value="incubateurs" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {incubateur.map((item) => (
+              {filteredIncubateurs.map((item) => (
                 <Card
                   key={item.id}
                   className="hover:shadow-md transition-shadow"
@@ -162,145 +203,16 @@ export default function StructuresAccompagnement() {
                   </CardFooter>
                 </Card>
               ))}
-              {/* Incubateur 3 
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-[#063a1e]/10 rounded-md flex items-center justify-center">
-                        <Image
-                          src="/placeholder.svg?height=40&width=40"
-                          alt="Logo incubateur"
-                          width={40}
-                          height={40}
-                          className="rounded"
-                        />
-                      </div>
-                      <div>
-                        <CardTitle>Ogooué Labs</CardTitle>
-                        <CardDescription>Hub d'innovation</CardDescription>
-                      </div>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <p className="text-sm text-muted-foreground">
-                      Ogooué Labs est un hub d'innovation qui accompagne les startups et PME innovantes dans les
-                      domaines du numérique, de l'agritech et des énergies renouvelables.
-                    </p>
-                    <div className="space-y-2">
-                      <div className="flex items-start gap-2">
-                        <MapPin className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">Quartier Nzeng-Ayong, Libreville, Gabon</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Phone className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">+241 XX XX XX XX</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Mail className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">contact@ogoouélabs.ga</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Globe className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">www.ogoouélabs.ga</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      Innovation
-                    </Badge>
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      Coworking
-                    </Badge>
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      Tech
-                    </Badge>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
-                  >
-                    Visiter le site <ExternalLink className="h-3 w-3" />
-                  </Button>
-                </CardFooter>
-              </Card>*/}
             </div>
+            {filteredIncubateurs.length === 0 && (
+          <p className="text-red-700 text-center font-bold italic">Aucun résultat trouvé dans la section Incubateurs.</p>
+        )}
           </TabsContent>
 
           {/* Centres de formation */}
           <TabsContent value="formation" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Centre 1 
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-[#063a1e]/10 rounded-md flex items-center justify-center">
-                        <BookOpen className="h-6 w-6 text-[#063a1e]" />
-                      </div>
-                      <div>
-                        <CardTitle>Centre de Développement des PME (CDPME)</CardTitle>
-                        <CardDescription>Centre de formation et d'accompagnement</CardDescription>
-                      </div>
-                    </div>
-                    <Badge>Partenaire FEG</Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <p className="text-sm text-muted-foreground">
-                      Le CDPME propose des formations spécialisées pour les entrepreneurs et dirigeants de PME
-                      gabonaises, couvrant la gestion, le marketing, la finance et le développement commercial.
-                    </p>
-                    <div className="space-y-2">
-                      <div className="flex items-start gap-2">
-                        <MapPin className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">Boulevard du Bord de Mer, Libreville, Gabon</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Phone className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">+241 XX XX XX XX</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Mail className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">contact@cdpme.ga</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Globe className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">www.cdpme.ga</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      Formation
-                    </Badge>
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      Coaching
-                    </Badge>
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      Certification
-                    </Badge>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
-                  >
-                    Visiter le site <ExternalLink className="h-3 w-3" />
-                  </Button>
-                </CardFooter>
-              </Card>
-              */}
-              {formation.map((item) => (
+              {filteredFormation.map((item) => (
                 <Card
                   key={item.id}
                   className="hover:shadow-md transition-shadow"
@@ -388,75 +300,15 @@ export default function StructuresAccompagnement() {
                 </Card>
               ))}
             </div>
+            {filteredFormation.length === 0 && (
+          <p className="text-red-700 text-center font-bold italic">Aucun résultat trouvé dans la section Centre de formation.</p>
+        )}
           </TabsContent>
 
           {/* Cabinets conseil */}
           <TabsContent value="conseil" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Cabinet 1 
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-[#063a1e]/10 rounded-md flex items-center justify-center">
-                        <Briefcase className="h-6 w-6 text-[#063a1e]" />
-                      </div>
-                      <div>
-                        <CardTitle>Gabon Consulting Group</CardTitle>
-                        <CardDescription>Cabinet de conseil en management</CardDescription>
-                      </div>
-                    </div>
-                    <Badge>Partenaire FEG</Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <p className="text-sm text-muted-foreground">
-                      Gabon Consulting Group accompagne les PME dans leur développement stratégique, leur organisation
-                      et leur gestion financière, avec une expertise sectorielle dans l'agro-industrie et les services.
-                    </p>
-                    <div className="space-y-2">
-                      <div className="flex items-start gap-2">
-                        <MapPin className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">Boulevard du Bord de Mer, Libreville, Gabon</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Phone className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">+241 XX XX XX XX</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Mail className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">contact@gcg.ga</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Globe className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">www.gcg.ga</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      Stratégie
-                    </Badge>
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      Finance
-                    </Badge>
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      Organisation
-                    </Badge>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
-                  >
-                    Visiter le site <ExternalLink className="h-3 w-3" />
-                  </Button>
-                </CardFooter>
-              </Card>*/}
-              {cabinet.map((item) => (
+              {filteredCabinet.map((item) => (
                 <Card
                   key={item.id}
                   className="hover:shadow-md transition-shadow"
@@ -528,77 +380,18 @@ export default function StructuresAccompagnement() {
                   </CardFooter>
                 </Card>
               ))}
+
             </div>
+            {filteredCabinet.length === 0 && (
+          <p className="text-red-700 text-center font-bold italic">Aucun résultat trouvé dans la section Cabinet conseil.</p>
+        )}
           </TabsContent>
 
           {/* Structures publiques */}
           <TabsContent value="publiques" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Structure 1 
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-[#063a1e]/10 rounded-md flex items-center justify-center">
-                        <Users className="h-6 w-6 text-[#063a1e]" />
-                      </div>
-                      <div>
-                        <CardTitle>Agence Nationale de Promotion des PME (ANPME)</CardTitle>
-                        <CardDescription>Agence gouvernementale</CardDescription>
-                      </div>
-                    </div>
-                    <Badge>Partenaire FEG</Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <p className="text-sm text-muted-foreground">
-                      L'ANPME est l'agence gouvernementale chargée de promouvoir et d'accompagner le développement des
-                      PME au Gabon, à travers divers programmes de soutien et d'assistance technique.
-                    </p>
-                    <div className="space-y-2">
-                      <div className="flex items-start gap-2">
-                        <MapPin className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">Boulevard Triomphal, Libreville, Gabon</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Phone className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">+241 XX XX XX XX</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Mail className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">contact@anpme.gouv.ga</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Globe className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                        <span className="text-sm">www.anpme.gouv.ga</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      Accompagnement
-                    </Badge>
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      Financement
-                    </Badge>
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      Formation
-                    </Badge>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
-                  >
-                    Visiter le site <ExternalLink className="h-3 w-3" />
-                  </Button>
-                </CardFooter>
-              </Card>*/}
 
-              {publique.map((item) => (
+              {filteredPublic.map((item) => (
                 <Card
                   key={item.id}
                   className="hover:shadow-md transition-shadow"
@@ -671,7 +464,29 @@ export default function StructuresAccompagnement() {
                 </Card>
               ))}
             </div>
+            {filteredPublic.length === 0 && (
+          <p className="text-red-700 text-center font-bold italic">Aucun résultat trouvé dans la section Structures Publiques.</p>
+        )}
           </TabsContent>
+          {/* Notification pour les résultats dans d'autres sections */}
+    {search && otherSectionResults.length > 0 && (
+            <div className="my-6 p-4 bg-[#063a1e]/5 rounded-lg border border-[#063a1e]/10">
+              <p className="text-[#063a1e] font-medium mb-2">Résultats trouvés dans d'autres sections :</p>
+              <div className="flex flex-wrap gap-2">
+                {otherSectionResults.map((result) => (
+                  <Button
+                    key={result.tab}
+                    variant="outline"
+                    size="sm"
+                    className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
+                    onClick={() => setActiveTab(result.tab)}
+                  >
+                    {result.label} ({result.count}) <ArrowRight className="h-3 w-3" />
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
         </Tabs>
 
         {/* CTA Section */}
