@@ -49,123 +49,75 @@ export default function TextesJuridiques() {
       <div className="container w-full py-8 ">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar */}
-          <div className="hidden lg:block lg:w-64 md:hidden">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-[#063a1e]">Filtres</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium">Type de texte</h3>
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="type1"
-                        className="rounded text-[#063a1e]"
-                      />
-                      <label htmlFor="type1" className="text-sm">
-                        Loi
-                      </label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="type2"
-                        className="rounded text-[#063a1e]"
-                      />
-                      <label htmlFor="type2" className="text-sm">
-                        Décret
-                      </label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="type3"
-                        className="rounded text-[#063a1e]"
-                      />
-                      <label htmlFor="type3" className="text-sm">
-                        Arrêté
-                      </label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="type4"
-                        className="rounded text-[#063a1e]"
-                      />
-                      <label htmlFor="type4" className="text-sm">
-                        Code
-                      </label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="type5"
-                        className="rounded text-[#063a1e]"
-                      />
-                      <label htmlFor="type5" className="text-sm">
-                        Acte uniforme OHADA
-                      </label>
-                    </div>
-                  </div>
-                </div>
-
-                {/* <div className="space-y-2">
-                  <h3 className="text-sm font-medium">Date de publication</h3>
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="date"
-                        id="date1"
-                        className="rounded text-[#063a1e]"
-                      />
-                      <label htmlFor="date1" className="text-sm">
-                        Tous
-                      </label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="date"
-                        id="date2"
-                        className="rounded text-[#063a1e]"
-                      />
-                      <label htmlFor="date2" className="text-sm">
-                        Derniers 3 mois
-                      </label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="date"
-                        id="date3"
-                        className="rounded text-[#063a1e]"
-                      />
-                      <label htmlFor="date3" className="text-sm">
-                        Dernière année
-                      </label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="date"
-                        id="date4"
-                        className="rounded text-[#063a1e]"
-                      />
-                      <label htmlFor="date4" className="text-sm">
-                        Dernières 5 années
-                      </label>
+          <div className="sticky top-0 p-4">
+            <div className=" hidden lg:block lg:w-64 md:hidden">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-[#063a1e]">Filtres</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium">Type de texte</h3>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="type1"
+                          className="rounded text-[#063a1e]"
+                        />
+                        <label htmlFor="type1" className="text-sm">
+                          Loi
+                        </label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="type2"
+                          className="rounded text-[#063a1e]"
+                        />
+                        <label htmlFor="type2" className="text-sm">
+                          Décret
+                        </label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="type3"
+                          className="rounded text-[#063a1e]"
+                        />
+                        <label htmlFor="type3" className="text-sm">
+                          Arrêté
+                        </label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="type4"
+                          className="rounded text-[#063a1e]"
+                        />
+                        <label htmlFor="type4" className="text-sm">
+                          Code
+                        </label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="type5"
+                          className="rounded text-[#063a1e]"
+                        />
+                        <label htmlFor="type5" className="text-sm">
+                          Acte uniforme OHADA
+                        </label>
+                      </div>
                     </div>
                   </div>
-                </div> */}
 
-                <Button className="w-full bg-[#063a1e] hover:bg-[#063a1e]/90">
-                  Appliquer les filtres
-                </Button>
-              </CardContent>
-            </Card>
+                  <Button className="w-full bg-[#063a1e] hover:bg-[#063a1e]/90">
+                    Appliquer les filtres
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </div>
 
           {/* Main Content */}
