@@ -12,12 +12,18 @@ const options = {
     },
     servers: [
       {
+<<<<<<< HEAD
+        url: 'http://localhost:3000',
+=======
         url: 'http://localhost:3000/',
+>>>>>>> ca687bc6cae8675ba519c94827d425bac366f6ea
       },
     ],
   },
-  apis: ['app/api/**/*.ts', 'app/api/**/*.js'],
-
+  apis: [
+    'app/api/**/*.ts',      // Toutes tes routes API Next.js
+    './swagger/**/*.ts',    // Ton fichier de documentation centralisée
+  ],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
