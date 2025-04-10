@@ -4,6 +4,25 @@ import { NextResponse } from 'next/server';
 const prisma = new PrismaClient;
 
 
+/**
+ * @swagger
+ * /api/institutions:
+ *   get:
+ *     summary: Récupérer toutes les institutions financières
+ *     description: Cette route récupère toutes les institutions financières de la base de données.
+ *     responses:
+ *       200:
+ *         description: Liste des institutions financières récupérées avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Institution'
+ *       500:
+ *         description: Erreur interne du serveur
+ */
+
 // Afficher toutes les institutions financières 
 export async function GET(request: Request) {
   try {
@@ -15,6 +34,59 @@ export async function GET(request: Request) {
   }
 }
 
+
+
+/**
+ * @swagger
+ * /api/institutions:
+ *   post:
+ *     summary: Ajouter une nouvelle institution financière
+ *     description: Cette route permet d'ajouter une nouvelle institution financière dans la base de données.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nom:
+ *                 type: string
+ *               categorie:
+ *                 type: string
+ *               type_institution:
+ *                 type: string
+ *               partenaire_feg:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               logo:
+ *                 type: string
+ *               adresse:
+ *                 type: string
+ *               contact:
+ *                 type: string
+ *               mail:
+ *                 type: string
+ *               site_web:
+ *                 type: string
+ *               rs_1:
+ *                 type: string
+ *               rs_2:
+ *                 type: string
+ *               service:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Institution financière créée avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Institution'
+ *       400:
+ *         description: Champs manquants dans la requête
+ *       500:
+ *         description: Erreur interne du serveur
+ */
 
 // ajouter une nouvelle institution
 export async function POST(request: Request) {

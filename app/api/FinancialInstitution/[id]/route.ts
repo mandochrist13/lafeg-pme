@@ -4,6 +4,34 @@ import { NextRequest, NextResponse } from 'next/server';
 const prisma = new PrismaClient;
 
 
+/**
+ * @swagger
+ * /api/institutions/{id}:
+ *   get:
+ *     summary: Afficher une institution financière par ID
+ *     description: Cette route récupère une institution financière spécifique en utilisant son ID.
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: L'ID de l'institution financière à récupérer
+ *         required: true
+ *         schema:
+ *           type: string
+ *           pattern: '^[a-fA-F0-9]{24}$' # Format MongoDB
+ *     responses:
+ *       200:
+ *         description: Institution financière récupérée avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Institution'
+ *       400:
+ *         description: ID invalide (format MongoDB attendu)
+ *       404:
+ *         description: Institution non trouvée
+ *       500:
+ *         description: Erreur interne du serveur
+ */
 
 // Afficher les institutions financières par ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
@@ -33,6 +61,67 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 
 
+  /**
+ * @swagger
+ * /api/institutions/{id}:
+ *   put:
+ *     summary: Modifier une institution financière par ID
+ *     description: Cette route permet de modifier les informations d'une institution financière en utilisant son ID.
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: L'ID de l'institution financière à modifier
+ *         required: true
+ *         schema:
+ *           type: string
+ *           pattern: '^[a-fA-F0-9]{24}$' # Format MongoDB
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nom:
+ *                 type: string
+ *               categorie:
+ *                 type: string
+ *               type_institution:
+ *                 type: string
+ *               partenaire_feg:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               logo:
+ *                 type: string
+ *               adresse:
+ *                 type: string
+ *               contact:
+ *                 type: string
+ *               mail:
+ *                 type: string
+ *               site_web:
+ *                 type: string
+ *               rs_1:
+ *                 type: string
+ *               rs_2:
+ *                 type: string
+ *               service:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Institution modifiée avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Institution'
+ *       400:
+ *         description: ID invalide ou champs manquants
+ *       404:
+ *         description: Institution non trouvée
+ *       500:
+ *         description: Erreur interne du serveur
+ */
 
 // Fonction qui s'exécute quand une requête PUT est envoyée à /api/institutions/[id]
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) { 
@@ -93,6 +182,30 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 
+/**
+ * @swagger
+ * /api/institutions/{id}:
+ *   delete:
+ *     summary: Supprimer une institution financière par ID
+ *     description: Cette route permet de supprimer une institution financière en utilisant son ID.
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: L'ID de l'institution financière à supprimer
+ *         required: true
+ *         schema:
+ *           type: string
+ *           pattern: '^[a-fA-F0-9]{24}$' # Format MongoDB
+ *     responses:
+ *       200:
+ *         description: Institution supprimée avec succès
+ *       400:
+ *         description: ID invalide (format MongoDB attendu)
+ *       404:
+ *         description: Institution non trouvée
+ *       500:
+ *         description: Erreur serveur ou ID non trouvé
+ */
 
 // Supprimer une institution financière
 export async function DELETE( request: NextRequest, { params }: { params: { id: string } }) {
