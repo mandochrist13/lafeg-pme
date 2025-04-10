@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { institutionsFinanciere } from '../data/data';
 
 
+
+
 // Fonction qui s'exécute quand une requête PUT est envoyée à /api/institutions/[id]
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) { 
   try {
