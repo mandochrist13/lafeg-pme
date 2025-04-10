@@ -37,14 +37,16 @@ export default function APropos() {
                   <span className="text-[#dcdaa4]">plateforme</span>
                 </h1>
                 <p className="text-white sm:text-lg text-muted-foreground mb-6 sm:mb-8">
-                  Découvrez notre mission et comment nous aidons les PME
-                  gabonaises à naviguer dans l'environnement juridique et
-                  numérique.
+                  Accédez facilement aux textes juridiques, lois et règlements
+                  concernant les PME gabonaises.
                 </p>
                 <div className="flex flex-wrap justify-center md:justify-start gap-3 sm:gap-4">
                   <Link href="https://www.lafeg.ga/contact">
-                    <Button className="bg-white rounded-full text-sm sm:text-base px-4 sm:px-6 h-9 sm:h-10  text-[#063a1e] hover:border-2 hover:text-white">
-                      Contactez-nous
+                    <Button
+                      // size="lg"
+                      className="bg-white text-[#063a1e] hover:text-[#fff] border-white duration-500 ease-in-out hover:bg-[#063a1e] hover:border-2 font-medium"
+                    >
+                      Nous contactez
                     </Button>
                   </Link>
                 </div>
@@ -53,15 +55,15 @@ export default function APropos() {
               <div className="relative max-w-xs mx-auto w-full">
                 <div className="relative overflow-hidden rounded-lg shadow-lg border-8 border-[#dcdaa4]">
                   <Image
-                    src="/images/hero-img.jpg"
+                    src="/images/judicia.jpg"
                     alt="logo"
-                    width={500}
-                    height={500}
+                    width={600}
+                    height={600}
                     className="w-full h-full rounded-sm hover:scale-105 transition-transform duration-500"
                   />
                 </div>
                 <div className="absolute -bottom-4 -right-4 bg-[#dcdaa4] text-[#063a1e] font-bold px-3 py-1 sm:px-4 sm:py-2 rounded-lg shadow-md transform rotate-6 text-xs sm:text-sm">
-                  Depuis 2025
+                  Créer en 2025
                 </div>
               </div>
             </div>
@@ -75,14 +77,11 @@ export default function APropos() {
           {/* Mission Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 mb-12 sm:mb-16 md:mb-20 items-center">
             <div className="order-2 md:order-1">
-              <div className="inline-flex items-center gap-2 bg-[#063a1e] px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-white font-medium text-xs sm:text-sm mb-4 sm:mb-6">
-                Notre mission
-              </div>
               <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-[#063a1e]">
                 Faciliter l'accès à l'information juridique
               </h2>
               <div className="space-y-3 sm:space-y-4">
-                <p className="text-base sm:text-lg text-muted-foreground">
+                <p className="text-base sm:text-lg text-gray-700">
                   Le Répertoire des Textes Juridiques pour les PME Gabonaises
                   est une initiative de la
                   <span className="font-semibold text-[#063a1e]">
@@ -92,16 +91,15 @@ export default function APropos() {
                   visant à faciliter l'accès à l'information juridique pour les
                   petites et moyennes entreprises.
                 </p>
-                <div className="p-4 sm:p-5 bg-white rounded-xl shadow-md border border-gray-100">
-                  <p className="text-sm sm:text-base text-muted-foreground">
-                    Notre plateforme a été conçue pour répondre aux besoins
-                    spécifiques des entrepreneurs gabonais qui font face à des
-                    défis constants pour rester informés des évolutions
-                    législatives et réglementaires qui impactent leurs
-                    activités.
-                  </p>
-                </div>
-                <p className="text-sm sm:text-base text-muted-foreground">
+
+                <p className="text-sm sm:text-base text-gray-700">
+                  Notre plateforme a été conçue pour répondre aux besoins
+                  spécifiques des entrepreneurs gabonais qui font face à des
+                  défis constants pour rester informés des évolutions
+                  législatives et réglementaires qui impactent leurs activités.
+                </p>
+
+                <p className="text-sm sm:text-base text-gray-700">
                   Nous nous engageons à fournir un accès simplifié, centralisé
                   et à jour aux textes juridiques, ainsi qu'à des ressources
                   pratiques pour aider les PME à se conformer aux exigences
@@ -116,22 +114,22 @@ export default function APropos() {
                   alt="PME Gabonaises"
                   width={500}
                   height={500}
-                  className="w-full scale-75 h-auto object-cover hover:scale-95 transition-transform duration-500"
+                  className="w-full scale-90 h-auto object-cover hover:scale-95 transition-transform duration-500"
                 />
               </div>
             </div>
           </div>
 
           {/* Guide Numérique Section */}
-          <div className="bg-[#063a1e]/10 w-full p-6 sm:p-8 md:p-10 rounded-xl sm:rounded-2xl shadow-md mb-12 sm:mb-16 md:mb-20">
+          <div className="bg-[#063a1e] w-full p-6 sm:p-8 md:p-10 rounded-xl sm:rounded-2xl shadow-md mb-12 sm:mb-16 md:mb-20">
             <div className="text-center mb-6 sm:mb-8 md:mb-10">
-              <div className="inline-flex items-center gap-2 bg-[#dcdaa4]/30 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-[#063a1e] font-medium text-xs sm:text-sm mb-3 sm:mb-4">
+              <div className="inline-flex items-center gap-2 bg-[#dcdaa4] px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-[#063a1e] font-medium text-xs sm:text-sm mb-3 sm:mb-4">
                 Ressource Essentielle
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 text-[#063a1e]">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 text-[#dcdaa4]">
                 Guide Numérique des PME
               </h2>
-              <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
+              <p className="text-white sm:text-lg text-muted-foreground max-w-2xl mx-auto">
                 Un outil complet pour accompagner les entreprises gabonaises
                 dans leur développement
               </p>
@@ -139,14 +137,14 @@ export default function APropos() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
               <div className="bg-white p-5 sm:p-6 md:p-8 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-[#063a1e]/10 rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95]  rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6">
                   <BookOpen className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-[#063a1e]" />
                 </div>
                 <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-[#063a1e]">
                   Qu'est-ce que le Guide Numérique des PME ?
                 </h3>
                 <div className="space-y-3 sm:space-y-4">
-                  <p className="text-sm sm:text-base text-muted-foreground">
+                  <p className="text-sm sm:text-base text-gray-700">
                     Le "Guide Numérique des PME" est une ressource complète
                     développée par la Fédération des Entreprises du Gabon pour
                     aider les petites et moyennes entreprises à naviguer dans
@@ -156,59 +154,36 @@ export default function APropos() {
                     <p className="text-xs sm:text-sm text-[#063a1e]/80 italic">
                       "Ce guide réunit en un seul endroit toutes les
                       informations essentielles dont les entrepreneurs ont
-                      besoin : textes juridiques, contacts institutionnels,
-                      procédures administratives et conseils pratiques."
+                      besoin : textes juridiques, contacts institutionnels et
+                      des procédures administratives."
                     </p>
                   </div>
                 </div>
               </div>
 
               <div className="bg-white p-5 sm:p-6 md:p-8 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-[#dcdaa4]/30 rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95]  rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6">
                   <FileText className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-[#063a1e]" />
                 </div>
                 <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-[#063a1e]">
                   Ce que vous y trouverez
                 </h3>
-                <p className="mb-4 sm:mb-6 text-sm sm:text-base text-muted-foreground">
+                <p className="mb-4 sm:mb-6 text-sm sm:text-base text-gray-700">
                   Notre Guide Numérique des PME offre de nombreuses ressources
                   pour soutenir votre entreprise :
                 </p>
-                <ul className="space-y-2 sm:space-y-3 text-sm sm:text-base text-muted-foreground">
+                <ul className="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-700">
                   <li className="flex items-start">
                     <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-[#063a1e] mr-2 sm:mr-3 flex-shrink-0 mt-0.5" />
-                    <span>
-                      Un répertoire complet des textes juridiques pertinents
-                    </span>
+                    <span>Nouveaux textes juridiques</span>
                   </li>
                   <li className="flex items-start">
                     <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-[#063a1e] mr-2 sm:mr-3 flex-shrink-0 mt-0.5" />
-                    <span>
-                      Des fiches pratiques sur les démarches administratives
-                    </span>
+                    <span>Structures d'Encadrement et d'Accompagnement</span>
                   </li>
                   <li className="flex items-start">
                     <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-[#063a1e] mr-2 sm:mr-3 flex-shrink-0 mt-0.5" />
-                    <span>
-                      Un annuaire des institutions et organismes de soutien
-                    </span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-[#063a1e] mr-2 sm:mr-3 flex-shrink-0 mt-0.5" />
-                    <span>Des modèles de documents et formulaires</span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-[#063a1e] mr-2 sm:mr-3 flex-shrink-0 mt-0.5" />
-                    <span>
-                      Des guides sectoriels adaptés à différents types
-                      d'activités
-                    </span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-[#063a1e] mr-2 sm:mr-3 flex-shrink-0 mt-0.5" />
-                    <span>
-                      Des informations sur les opportunités de financement
-                    </span>
+                    <span>Institutions Financières</span>
                   </li>
                 </ul>
               </div>
@@ -219,7 +194,7 @@ export default function APropos() {
           <div className="bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] p-6 sm:p-8 rounded-xl shadow-md overflow-hidden">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8">
               <div>
-                <div className="inline-flex items-center gap-2 bg-white/20 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-[#063a1e] font-medium text-xs sm:text-sm mb-3 sm:mb-4">
+                <div className="inline-flex items-center gap-2 bg-[#063a1e] px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-[#fff] font-medium text-xs sm:text-sm mb-3 sm:mb-4">
                   <Mail className="h-3 w-3 sm:h-4 sm:w-4" />
                   Restez informé
                 </div>
@@ -236,9 +211,11 @@ export default function APropos() {
               </div>
               <div className="w-full md:w-auto">
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <Button className="bg-[#063a1e] hover:bg-[#063a1e]/90 whitespace-nowrap h-9 sm:h-10 text-sm sm:text-base">
-                    S'inscrivez vous maintenant
-                  </Button>
+                  <a href="/#subscription">
+                    <Button className="bg-[#063a1e] hover:bg-[#063a1e]/90 whitespace-nowrap h-9 sm:h-10 text-sm sm:text-base">
+                      Inscrivez vous maintenant
+                    </Button>
+                  </a>
                 </div>
               </div>
             </div>
