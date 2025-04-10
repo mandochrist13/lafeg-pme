@@ -91,15 +91,14 @@ export default function APropos() {
                   visant à faciliter l'accès à l'information juridique pour les
                   petites et moyennes entreprises.
                 </p>
-                <div className="p-4 sm:p-5 bg-white rounded-xl shadow-md border border-gray-100">
-                  <p className="text-sm sm:text-base text-gray-700">
-                    Notre plateforme a été conçue pour répondre aux besoins
-                    spécifiques des entrepreneurs gabonais qui font face à des
-                    défis constants pour rester informés des évolutions
-                    législatives et réglementaires qui impactent leurs
-                    activités.
-                  </p>
-                </div>
+
+                <p className="text-sm sm:text-base text-gray-700">
+                  Notre plateforme a été conçue pour répondre aux besoins
+                  spécifiques des entrepreneurs gabonais qui font face à des
+                  défis constants pour rester informés des évolutions
+                  législatives et réglementaires qui impactent leurs activités.
+                </p>
+
                 <p className="text-sm sm:text-base text-gray-700">
                   Nous nous engageons à fournir un accès simplifié, centralisé
                   et à jour aux textes juridiques, ainsi qu'à des ressources
@@ -124,7 +123,7 @@ export default function APropos() {
           {/* Guide Numérique Section */}
           <div className="bg-[#063a1e] w-full p-6 sm:p-8 md:p-10 rounded-xl sm:rounded-2xl shadow-md mb-12 sm:mb-16 md:mb-20">
             <div className="text-center mb-6 sm:mb-8 md:mb-10">
-              <div className="inline-flex items-center gap-2 bg-[#dcdaa4]/30 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-[#063a1e] font-medium text-xs sm:text-sm mb-3 sm:mb-4">
+              <div className="inline-flex items-center gap-2 bg-[#dcdaa4] px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-[#063a1e] font-medium text-xs sm:text-sm mb-3 sm:mb-4">
                 Ressource Essentielle
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 text-[#dcdaa4]">
@@ -138,7 +137,7 @@ export default function APropos() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
               <div className="bg-white p-5 sm:p-6 md:p-8 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-[#063a1e]/10 rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95]  rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6">
                   <BookOpen className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-[#063a1e]" />
                 </div>
                 <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-[#063a1e]">
@@ -163,7 +162,7 @@ export default function APropos() {
               </div>
 
               <div className="bg-white p-5 sm:p-6 md:p-8 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-[#dcdaa4]/30 rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95]  rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6">
                   <FileText className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-[#063a1e]" />
                 </div>
                 <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-[#063a1e]">
@@ -195,7 +194,7 @@ export default function APropos() {
           <div className="bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] p-6 sm:p-8 rounded-xl shadow-md overflow-hidden">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8">
               <div>
-                <div className="inline-flex items-center gap-2 bg-white/20 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-[#063a1e] font-medium text-xs sm:text-sm mb-3 sm:mb-4">
+                <div className="inline-flex items-center gap-2 bg-[#063a1e] px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-[#fff] font-medium text-xs sm:text-sm mb-3 sm:mb-4">
                   <Mail className="h-3 w-3 sm:h-4 sm:w-4" />
                   Restez informé
                 </div>
