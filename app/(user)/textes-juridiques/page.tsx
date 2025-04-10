@@ -49,7 +49,6 @@ export default function TextesJuridiques() {
       <div className="container w-full py-8 ">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar */}
-          <div className="sticky top-0 p-4">
             <div className=" hidden lg:block lg:w-64 md:hidden">
               <Card>
                 <CardHeader className="pb-3">
@@ -118,7 +117,6 @@ export default function TextesJuridiques() {
                 </CardContent>
               </Card>
             </div>
-          </div>
 
           {/* Main Content */}
           <div className="flex-1 w-full">
@@ -150,7 +148,7 @@ export default function TextesJuridiques() {
               </div>
 
               <Tabs defaultValue="pmes">
-                <TabsList className="bg-gray-200 w-auto h-full flex flex-col md:flex-row justify-around items-center ">
+                <TabsList className="bg-gray-200 w-auto h-full flex flex-col md:flex-row justify-evenly items-center ">
                   <TabsTrigger
                     value="pmes"
                     className="w-full md:w-auto text-center px-4 py-2"
