@@ -14,13 +14,13 @@ export const config = {
 // const UPLOAD_DIR = join(process.cwd(), 'public', 'uploads', 'textes-juridiques');
 
 // Fonction utilitaire pour assurer que le répertoire d'upload existe
-async function ensureUploadDir() {
-  try {
-    await mkdir(UPLOAD_DIR, { recursive: true });
-  } catch (error) {
-    console.error('Erreur lors de la création du répertoire d\'upload:', error);
-  }
-}
+// async function ensureUploadDir() {
+//   try {
+//     await mkdir(UPLOAD_DIR, { recursive: true });
+//   } catch (error) {
+//     console.error('Erreur lors de la création du répertoire d\'upload:', error);
+//   }
+// }
 
 // GET - Récupérer tous les textes juridiques
 export async function GET(request: NextRequest) {
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
+    
     // Création d'un nom de fichier unique
     const timestamp = Date.now();
     const fileExtension = file.name.split('.').pop();
