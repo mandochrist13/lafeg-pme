@@ -460,6 +460,7 @@ export default function TextesJuridiques() {
                           </Alert>
                         )}
 
+
                         {(!suggestedTab || suggestedResults.length === 0) && (
                           <div className="text-center py-4">
                             <p className="text-muted-foreground">
