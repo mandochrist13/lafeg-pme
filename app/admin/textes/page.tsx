@@ -121,14 +121,12 @@ export default function TextesJuridiquesAdmin() {
     const matchSearch = texte.titre.toLowerCase().includes(searchTerm.toLowerCase())
     const matchType = selectedType === "" || texte.type === selectedType
     const matchCategorie = selectedCategorie === "" || texte.categorie === selectedCategorie
-    const matchStatut = selectedStatut === "" || texte.statut === selectedStatut
-    return matchSearch && matchType && matchCategorie && matchStatut
+    return matchSearch && matchType && matchCategorie
   })
 
   // Extraire les types, catégories et statuts uniques pour les filtres
   const types = [...new Set(textesJuridiques.map((texte) => texte.type))]
   const categories = [...new Set(textesJuridiques.map((texte) => texte.categorie))]
-  const statuts = [...new Set(textesJuridiques.map((texte) => texte.statut))]
 
   return (
     <div className="space-y-6">
@@ -179,19 +177,6 @@ export default function TextesJuridiquesAdmin() {
                   ))}
                 </SelectContent>
               </Select>
-              {/* <Select value={selectedStatut} onValueChange={setSelectedStatut}>
-                <SelectTrigger className="w-full sm:w-[180px]">
-                  <SelectValue placeholder="Statut" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tous les statuts</SelectItem>
-                  {statuts.map((statut) => (
-                    <SelectItem key={statut} value={statut}>
-                      {statut}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select> */}
             </div>
           </div>
 

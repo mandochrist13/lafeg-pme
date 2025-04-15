@@ -1,31 +1,36 @@
 "use client"
 
-import { useState } from "react"
+import { useState, FormEvent, ChangeEvent } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { Eye, EyeOff, Lock, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export default function AdminLogin() {
   const router = useRouter()
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
+  const [username, setUsername] = useState<string>("")
+  const [password, setPassword] = useState<string>("")
+  const [showPassword, setShowPassword] = useState<boolean>(false)
+  const [error, setError] = useState<string>("")
+  const [loading, setLoading] = useState<boolean>(false)
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError("")
     setLoading(true)
 
-    // Simulation d'authentification - dans un cas réel, cela serait une API
     setTimeout(() => {
       if (username === "admin" && password === "admin123") {
-        // Simuler un stockage de session
         sessionStorage.setItem("adminAuthenticated", "true")
         router.push("/admin/dashboard")
       } else {
@@ -35,16 +40,32 @@ export default function AdminLogin() {
     }, 1000)
   }
 
+  const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setUsername(e.target.value)
+  }
+
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value)
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-md p-4">
         <Card className="border-[#dcdaa4]/30">
           <CardHeader className="space-y-1 text-center">
             <div className="flex justify-center mb-4">
-              <Image src="/images/logo-feg.png" alt="Logo FEG" width={80} height={80} className="h-16 w-auto" />
+              <Image
+                src="/images/logo-feg.png"
+                alt="Logo FEG"
+                width={80}
+                height={80}
+                className="h-16 w-auto"
+              />
             </div>
             <CardTitle className="text-2xl font-bold text-[#063a1e]">Administration</CardTitle>
-            <CardDescription>Connectez-vous pour accéder au tableau de bord administratif</CardDescription>
+            <CardDescription>
+              Connectez-vous pour accéder au tableau de bord administratif
+            </CardDescription>
           </CardHeader>
           <CardContent>
             {error && (
@@ -61,7 +82,7 @@ export default function AdminLogin() {
                     placeholder="Nom d'utilisateur"
                     className="pl-9"
                     value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    onChange={handleUsernameChange}
                     required
                   />
                 </div>
@@ -75,7 +96,7 @@ export default function AdminLogin() {
                     placeholder="Mot de passe"
                     className="pl-9 pr-9"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={handlePasswordChange}
                     required
                   />
                   <button
@@ -87,7 +108,11 @@ export default function AdminLogin() {
                   </button>
                 </div>
               </div>
-              <Button type="submit" className="w-full bg-[#063a1e] hover:bg-[#063a1e]/90" disabled={loading}>
+              <Button
+                type="submit"
+                className="w-full bg-[#063a1e] hover:bg-[#063a1e]/90"
+                disabled={loading}
+              >
                 {loading ? "Connexion en cours..." : "Se connecter"}
               </Button>
             </form>
@@ -100,4 +125,3 @@ export default function AdminLogin() {
     </div>
   )
 }
-
