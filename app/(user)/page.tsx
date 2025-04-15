@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import Captcha from "@/components/Captcha";
+
+import Form from "@/components/section/form";
+
 import { ArrowRight, FileText, BookOpen, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,9 +17,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import AddressAutocomplete from "@/components/AddressAutocomplete";
+
 
 export default function Home() {
+
+
+
   return (
     <div className="">
       {/* Scrolling News Ticker */}
@@ -69,22 +74,26 @@ export default function Home() {
                 concernant les PME gabonaises.
               </p>
               <div className="flex flex-col sm:flex-row sm:justify-center md:justify-normal gap-4">
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  className="bg-[#063a1e] relative hover:bg-white"
-                >
-                  <span className="absolute inset-0 w-full h-full bg-[#dcdaa4] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0"></span>
-                  <span className="relative mr-3 z-10 transition-colors duration-500 ease-in-out group-hover:text-[#063a1e]">
-                    <p>Consulter les textes</p>
-                  </span>
-                </Button>
-                <Button
-                  size="lg"
-                  className=" hover:text-[#063a1e] duration-300 ease-in-out hover:bg-white  border-none font-medium"
-                >
-                  En savoir plus
-                </Button>
+                <Link href="/textes-juridiques">
+                  <Button
+                    variant="secondary"
+                    size="lg"
+                    className="bg-[#063a1e] relative hover:bg-white"
+                  >
+                    <span className="absolute inset-0 w-full h-full bg-[#dcdaa4] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0"></span>
+                    <span className="relative mr-3 z-10 transition-colors duration-500 ease-in-out group-hover:text-[#063a1e]">
+                      <p>Consulter les textes</p>
+                    </span>
+                  </Button>
+                </Link>
+                <Link href="/a-propos">
+                  <Button
+                    size="lg"
+                    className=" hover:text-[#063a1e] duration-300 ease-in-out hover:bg-white  border-none font-medium"
+                  >
+                    En savoir plus
+                  </Button>
+                </Link>
               </div>
             </div>
             <div className="hidden md:block group [transform:perspective(1500px)_rotateY(15deg)] rounded-xl shadow-[rgba(0,0,0,0.25)_0px_25px_50px_-12px] transition-transform duration-1000 ease-in-out hover:[transform:perspective(3000px)_rotateY(5deg)] ">
@@ -205,7 +214,7 @@ export default function Home() {
                 </ul>
               </CardContent>
               <CardFooter>
-              <Link href="/textes-juridiques#administrations">
+                <Link href="/textes-juridiques#administrations">
                   <Button className="w-full gap-1 text-white hover:text-[#063a1e]/90 hover:bg-[#063a1e]/20">
                     Consulter <ArrowRight className="h-4 w-4" />
                   </Button>
@@ -241,7 +250,7 @@ export default function Home() {
                 </ul>
               </CardContent>
               <CardFooter>
-              <Link href="/textes-juridiques#pme">
+                <Link href="/textes-juridiques#pme">
                   <Button className="w-full gap-1 text-white hover:text-[#063a1e]/90 hover:bg-[#063a1e]/20">
                     Consulter <ArrowRight className="h-4 w-4" />
                   </Button>
@@ -483,142 +492,14 @@ export default function Home() {
                     </li>
                   </ul>
                 </div>
-                <div className="p-8">
-                  <h3 className="text-xl font-semibold mb-6 text-[#063a1e]">
-                    Formulaire d'abonnement
-                  </h3>
-                  <form className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="lastname"
-                          className="text-sm font-medium"
-                        >
-                          Nom
-                        </label>
-                        <Input id="lastname" placeholder="Votre nom" />
-                      </div>
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="firstname"
-                          className="text-sm font-medium"
-                        >
-                          Prénom
-                        </label>
-                        <Input id="firstname" placeholder="Votre prénom" />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="email" className="text-sm font-medium">
-                        Email
-                      </label>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="votre.email@entreprise.com"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="company" className="text-sm font-medium">
-                        Entreprise
-                      </label>
-                      <Input
-                        id="company"
-                        placeholder="Nom de votre entreprise"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="contact" className="text-sm font-medium">
-                        Contact
-                      </label>
-                      <Input
-                        id="contact"
-                        type="phone"
-                        placeholder="(+241) 74 00 00 00"
-                      />
-                    </div>
-                    <div className="space-y-2 ">
-                      <label htmlFor="company" className="text-sm font-medium">
-                        Adresse Entreprise
-                      </label>
-                      <AddressAutocomplete />
-                    </div>
-                    <Captcha />
-
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">
-                        Centres d'intérêt
-                      </label>
-                      <div className="grid md:grid-cols-2 gap-2">
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            id="interest1"
-                            className="rounded text-[#dcdaa4]"
-                          />
-                          <label htmlFor="interest1" className="text-sm">
-                            Textes législatifs et règlementaires des
-                            administrations publiques
-                          </label>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            id="interest2"
-                            className="rounded text-[#dcdaa4]"
-                          />
-                          <label htmlFor="interest2" className="text-sm">
-                            Textes législatifs et règlementaires pour les PME
-                          </label>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            id="interest3"
-                            className="rounded text-[#dcdaa4]"
-                          />
-                          <label htmlFor="interest3" className="text-sm">
-                            textes juridiques régionaux et internationaux
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2 mt-4">
-                      <input
-                        type="checkbox"
-                        id="consent"
-                        className="rounded text-[#dcdaa4] mt-1"
-                      />
-                      <label
-                        htmlFor="consent"
-                        className="text-xs text-muted-foreground"
-                      >
-                        J'accepte de recevoir des informations par email et je
-                        comprends que je peux me désabonner à tout moment.
-                        Consultez notre{" "}
-                        <Link
-                          href="#"
-                          className="underline hover:text-[#bdbd95]"
-                        >
-                          politique de confidentialité
-                        </Link>
-                        .
-                      </label>
-                    </div>
-                    <div className="flex justify-center">
-                      <Button
-                        type="submit"
-                        variant="secondary"
-                        size="lg"
-                        className=" bg-[#063a1e] relative hover:bg-white"
-                      >
-                        <span className="absolute inset-0 w-full h-full bg-[#dcdaa4] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0"></span>
-                        <span className="relative mr-3 z-10 transition-colors duration-500 ease-in-out group-hover:text-[#063a1e]">
-                          <p>S'abonner à la newsletter</p>
-                        </span>
-                      </Button>
-                    </div>
-                  </form>
+                <div className=" p-8">
+                  <div className=" ">
+                    <h3 className="text-xl font-semibold text-[#063a1e] mb-6">
+                      Formulaire d'abonnement
+                    </h3>
+                  </div>
+                  <Form
+                        />
                 </div>
               </div>
             </div>
