@@ -13,6 +13,8 @@ import { useState, useEffect } from "react"
 // Assurez-vous que le type de textesJuridiques est bien défini
 import textesJuridiques from "@/components/data/text/text"
 
+import NewText from "@/components/section/new_text"
+
 // Définir un type pour les textes juridiques
 interface TextJuridiques {
   id: number;
@@ -346,48 +348,7 @@ export default function Home() {
       </section>
 
       {/* Recent Updates */}
-      <section className="py-12 bg-[#EAEEEB]">
-        <div className="container">
-          <h2 className="text-2xl font-bold mb-8">Mises à jour récentes</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[1, 2, 3, 4].map((item) => (
-              <Card key={item} className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <Badge className="bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] text-[#063a1e] font-medium">
-                      Nouveau
-                    </Badge>
-                    <span className="text-sm text-muted-foreground">15 Mai 2025</span>
-                  </div>
-                  <CardTitle className="mt-2">Modification du régime fiscal des PME</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Nouvelles dispositions concernant les avantages fiscaux accordés aux PME gabonaises dans les
-                    secteurs prioritaires.
-                  </p>
-                </CardContent>
-                <CardFooter>
-                  <Button variant="ghost" className="w-full gap-1">
-                    Lire le texte complet <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-          <div className="mt-8 text-center">
-            <Link href="/textes-juridiques">
-              <Button
-                size="lg"
-                className="hover:text-[#063a1e] duration-300 ease-in-out hover:bg-white border hover:border-[#063a1e] font-medium"
-              >
-                Voir plus de mise à jour
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
+      <NewText />
       {/* Resources Section */}
       <section className="hidden py-12">
         <div className="container">
