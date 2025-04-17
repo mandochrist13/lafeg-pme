@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import textesJuridiques from "@/components/data/text/text"; // Importer le tableau
+import textesJuridiques from "@/components/data/text/text"; 
 
 export default function NewText() {
   return (
@@ -25,7 +25,7 @@ export default function NewText() {
                 <CardTitle className="mt-2">{text.titre}</CardTitle> {/* Utilisez le titre de l'objet */}
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">{text.description}</p> {/* Utilisez le contenu de l'objet */}
+                <p className="text-muted-foreground">{text.description}</p> {/* Utilisez la description de l'objet */}
               </CardContent>
               <CardFooter>
                 <Button variant="ghost" className="w-full gap-1">

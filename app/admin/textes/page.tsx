@@ -1,11 +1,20 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Search, Plus, Edit, Trash2, Eye, Download, MoreHorizontal } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
+import { useState } from "react";
+import {
+  Search,
+  Plus,
+  Edit,
+  Trash2,
+  Eye,
+  Download,
+  MoreHorizontal,
+  X,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,9 +22,22 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Pagination,
   PaginationContent,
@@ -24,17 +46,27 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"
+} from "@/components/ui/pagination";
+import { Textarea } from "@/components/ui/textarea";
+
+interface TexteJuridique {
+  id: number;
+  titre: string;
+  type: string;
+  categorie: string;
+  datePublication: string;
+  lien: string;
+}
 
 // Données fictives pour les textes juridiques
-const textesJuridiques = [
+const initialTextesJuridiques: TexteJuridique[] = [
   {
     id: 1,
     titre: "Loi n°023/2023 portant mesures d'allègement fiscal pour les PME",
     type: "Loi",
     categorie: "Fiscalité",
     datePublication: "15/03/2024",
-  
+    lien: "https://example.com/loi-023-2023.pdf",
   },
   {
     id: 2,
@@ -42,23 +74,25 @@ const textesJuridiques = [
     type: "Décret",
     categorie: "Fiscalité",
     datePublication: "10/05/2025",
-  
+    lien: "https://example.com/loi-023-2023.pdf",
   },
   {
     id: 3,
-    titre: "Arrêté n°0045/MPME fixant les modalités d'application du régime simplifié d'imposition",
+    titre:
+      "Arrêté n°0045/MPME fixant les modalités d'application du régime simplifié d'imposition",
     type: "Arrêté",
     categorie: "Fiscalité",
     datePublication: "22/04/2025",
-
+    lien: "https://example.com/loi-023-2023.pdf",
   },
   {
     id: 4,
-    titre: "Acte uniforme OHADA relatif au droit des sociétés commerciales et du GIE",
+    titre:
+      "Acte uniforme OHADA relatif au droit des sociétés commerciales et du GIE",
     type: "Acte uniforme",
     categorie: "Création d'entreprise",
     datePublication: "30/01/2024",
-  
+    lien: "https://example.com/loi-023-2023.pdf",
   },
   {
     id: 5,
@@ -66,7 +100,7 @@ const textesJuridiques = [
     type: "Loi",
     categorie: "Innovation",
     datePublication: "05/02/2024",
-   
+    lien: "https://example.com/loi-023-2023.pdf",
   },
   {
     id: 6,
@@ -74,7 +108,7 @@ const textesJuridiques = [
     type: "Décret",
     categorie: "Procédures administratives",
     datePublication: "18/03/2024",
-   
+    lien: "https://example.com/loi-023-2023.pdf",
   },
   {
     id: 7,
@@ -82,15 +116,16 @@ const textesJuridiques = [
     type: "Loi",
     categorie: "Droit du travail",
     datePublication: "12/04/2024",
- 
+    lien: "https://example.com/loi-023-2023.pdf",
   },
   {
     id: 8,
-    titre: "Arrêté n°0078/MFP relatif aux obligations comptables simplifiées des TPE/PME",
+    titre:
+      "Arrêté n°0078/MFP relatif aux obligations comptables simplifiées des TPE/PME",
     type: "Arrêté",
     categorie: "Comptabilité",
     datePublication: "25/04/2024",
-
+    lien: "https://example.com/loi-023-2023.pdf",
   },
   {
     id: 9,
@@ -98,7 +133,7 @@ const textesJuridiques = [
     type: "Décret",
     categorie: "Marchés publics",
     datePublication: "03/05/2025",
-  
+    lien: "https://example.com/loi-023-2023.pdf",
   },
   {
     id: 10,
@@ -106,33 +141,217 @@ const textesJuridiques = [
     type: "Loi",
     categorie: "Numérique",
     datePublication: "08/05/2025",
-  
+    lien: "https://example.com/loi-023-2023.pdf",
   },
-]
+];
 
 export default function TextesJuridiquesAdmin() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedType, setSelectedType] = useState("")
-  const [selectedCategorie, setSelectedCategorie] = useState("")
-  const [selectedStatut, setSelectedStatut] = useState("")
+  const [textesJuridiques, setTextesJuridiques] = useState<TexteJuridique[]>(
+    initialTextesJuridiques
+  );
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedType, setSelectedType] = useState("all");
+  const [selectedCategorie, setSelectedCategorie] = useState("all");
+  const [showAddForm, setShowAddForm] = useState(false);
+
+  const [newTexte, setNewTexte] = useState<Omit<TexteJuridique, "id">>({
+    titre: "",
+    type: "",
+    categorie: "",
+    datePublication: "",
+    lien: "",
+  });
 
   // Filtrer les textes juridiques
   const filteredTextes = textesJuridiques.filter((texte) => {
-    const matchSearch = texte.titre.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchType = selectedType === "" || texte.type === selectedType
-    const matchCategorie = selectedCategorie === "" || texte.categorie === selectedCategorie
-    return matchSearch && matchType && matchCategorie
-  })
+    const matchSearch = texte.titre
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchType = selectedType === "all" || texte.type === selectedType;
+    const matchCategorie =
+      selectedCategorie === "all" || texte.categorie === selectedCategorie;
+    return matchSearch && matchType && matchCategorie;
+  });
 
-  // Extraire les types, catégories et statuts uniques pour les filtres
-  const types = [...new Set(textesJuridiques.map((texte) => texte.type))]
-  const categories = [...new Set(textesJuridiques.map((texte) => texte.categorie))]
+  // Extraire les types, catégories uniques pour les filtres
+  const types = [...new Set(textesJuridiques.map((texte) => texte.type))];
+  const categories = [
+    ...new Set(textesJuridiques.map((texte) => texte.categorie)),
+  ];
+
+  const handleAddTexte = () => {
+    if (
+      !newTexte.titre ||
+      !newTexte.type ||
+      !newTexte.lien ||
+      !newTexte.datePublication ||
+      !newTexte.categorie
+    ) {
+      alert("Veuillez remplir tous les champs obligatoires");
+      return;
+    }
+
+    const newId = Math.max(...textesJuridiques.map((t) => t.id)) + 1;
+    const texteToAdd: TexteJuridique = {
+      id: newId,
+      ...newTexte,
+    };
+
+    setTextesJuridiques([texteToAdd, ...textesJuridiques]);
+    setShowAddForm(false);
+    setNewTexte({
+      titre: "",
+      type: "",
+      categorie: "",
+      datePublication: "",
+      lien: "",
+    });
+  };
+
+  const handleDeleteTexte = (id: number) => {
+    if (confirm("Êtes-vous sûr de vouloir supprimer ce texte juridique ?")) {
+      setTextesJuridiques(textesJuridiques.filter((texte) => texte.id !== id));
+    }
+  };
+
+  // ... (le reste de votre code JSX reste inchangé)
 
   return (
     <div className="space-y-6">
+      {/* Modal d'ajout */}
+      {showAddForm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b p-4">
+              <h2 className="text-xl font-bold">
+                Ajouter un nouveau texte juridique
+              </h2>
+              <button
+                onClick={() => setShowAddForm(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Titre*</label>
+                <Input
+                  value={newTexte.titre}
+                  onChange={(e) =>
+                    setNewTexte({ ...newTexte, titre: e.target.value })
+                  }
+                  placeholder="Titre du texte juridique"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Type*
+                  </label>
+                  <Select
+                    value={newTexte.type}
+                    onValueChange={(value) =>
+                      setNewTexte({ ...newTexte, type: value })
+                    }
+                    required
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner un type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {types.map((type) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Catégorie*
+                  </label>
+                  <Select
+                    value={newTexte.categorie}
+                    onValueChange={(value) =>
+                      setNewTexte({ ...newTexte, categorie: value })
+                    }
+                    required
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner une catégorie" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat} value={cat}>
+                          {cat}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Lien du document*
+                </label>
+                <Input
+                  type="url"
+                  value={newTexte.lien}
+                  onChange={(e) =>
+                    setNewTexte({ ...newTexte, lien: e.target.value })
+                  }
+                  placeholder="https://example.com/document.pdf"
+                  required
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Veuillez entrer l'URL complète du document (PDF, DOCX, etc.)
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Date de publication*
+                </label>
+                <Input
+                  type="date"
+                  value={newTexte.datePublication}
+                  onChange={(e) =>
+                    setNewTexte({
+                      ...newTexte,
+                      datePublication: e.target.value,
+                    })
+                  }
+                  required
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 p-4 border-t">
+              <Button variant="outline" onClick={() => setShowAddForm(false)}>
+                Annuler
+              </Button>
+              <Button
+                className="bg-[#063a1e] hover:bg-[#063a1e]/90"
+                onClick={handleAddTexte}
+              >
+                Enregistrer
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Contenu principal */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold tracking-tight">Textes juridiques</h1>
-        <Button className="bg-[#063a1e] hover:bg-[#063a1e]/90">
+        <Button
+          className="bg-[#063a1e] hover:bg-[#063a1e]/90"
+          onClick={() => setShowAddForm(true)}
+        >
           <Plus className="mr-2 h-4 w-4" /> Ajouter un texte
         </Button>
       </div>
@@ -164,7 +383,10 @@ export default function TextesJuridiquesAdmin() {
                   ))}
                 </SelectContent>
               </Select>
-              <Select value={selectedCategorie} onValueChange={setSelectedCategorie}>
+              <Select
+                value={selectedCategorie}
+                onValueChange={setSelectedCategorie}
+              >
                 <SelectTrigger className="w-full sm:w-[180px]">
                   <SelectValue placeholder="Catégorie" />
                 </SelectTrigger>
@@ -181,39 +403,42 @@ export default function TextesJuridiquesAdmin() {
           </div>
 
           <div className="flex flex-wrap gap-2 mb-6">
-            {selectedType && (
-              <Badge variant="outline" className="bg-[#063a1e]/10 border-[#063a1e]/30 gap-1">
+            {selectedType !== "all" && (
+              <Badge
+                variant="outline"
+                className="bg-[#063a1e]/10 border-[#063a1e]/30 gap-1"
+              >
                 <span>Type: {selectedType}</span>
-                <button className="text-xs" onClick={() => setSelectedType("")}>
+                <button
+                  className="text-xs"
+                  onClick={() => setSelectedType("all")}
+                >
                   ✕
                 </button>
               </Badge>
             )}
-            {selectedCategorie && (
-              <Badge variant="outline" className="bg-[#063a1e]/10 border-[#063a1e]/30 gap-1">
+            {selectedCategorie !== "all" && (
+              <Badge
+                variant="outline"
+                className="bg-[#063a1e]/10 border-[#063a1e]/30 gap-1"
+              >
                 <span>Catégorie: {selectedCategorie}</span>
-                <button className="text-xs" onClick={() => setSelectedCategorie("")}>
+                <button
+                  className="text-xs"
+                  onClick={() => setSelectedCategorie("all")}
+                >
                   ✕
                 </button>
               </Badge>
             )}
-            {selectedStatut && (
-              <Badge variant="outline" className="bg-[#063a1e]/10 border-[#063a1e]/30 gap-1">
-                <span>Statut: {selectedStatut}</span>
-                <button className="text-xs" onClick={() => setSelectedStatut("")}>
-                  ✕
-                </button>
-              </Badge>
-            )}
-            {(selectedType || selectedCategorie || selectedStatut) && (
+            {(selectedType !== "all" || selectedCategorie !== "all") && (
               <Button
                 variant="ghost"
                 size="sm"
                 className="h-7 text-xs"
                 onClick={() => {
-                  setSelectedType("")
-                  setSelectedCategorie("")
-                  setSelectedStatut("")
+                  setSelectedType("all");
+                  setSelectedCategorie("all");
                 }}
               >
                 Effacer tous les filtres
@@ -229,7 +454,6 @@ export default function TextesJuridiquesAdmin() {
                   <TableHead>Type</TableHead>
                   <TableHead>Catégorie</TableHead>
                   <TableHead>Date de publication</TableHead>
-                
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -238,9 +462,17 @@ export default function TextesJuridiquesAdmin() {
                   <TableRow key={texte.id}>
                     <TableCell className="font-medium">{texte.titre}</TableCell>
                     <TableCell>{texte.type}</TableCell>
-                    <TableCell>{texte.categorie}</TableCell>
+                    <TableCell>
+                      <a
+                        href={texte.lien}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        Télécharger
+                      </a>
+                    </TableCell>
                     <TableCell>{texte.datePublication}</TableCell>
-                  
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -262,7 +494,10 @@ export default function TextesJuridiquesAdmin() {
                             <Download className="mr-2 h-4 w-4" /> Télécharger
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-red-600">
+                          <DropdownMenuItem
+                            className="text-red-600"
+                            onClick={() => handleDeleteTexte(texte.id)}
+                          >
                             <Trash2 className="mr-2 h-4 w-4" /> Supprimer
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -276,7 +511,8 @@ export default function TextesJuridiquesAdmin() {
 
           <div className="mt-4 flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              Affichage de {filteredTextes.length} sur {textesJuridiques.length} textes juridiques
+              Affichage de {filteredTextes.length} sur {textesJuridiques.length}{" "}
+              textes juridiques
             </p>
             <Pagination>
               <PaginationContent>
@@ -303,6 +539,5 @@ export default function TextesJuridiquesAdmin() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-
