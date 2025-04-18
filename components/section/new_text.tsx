@@ -13,7 +13,7 @@ export default function NewText() {
       <div className="container">
         <h2 className="text-2xl font-bold mb-8">Mises à jour récentes</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {textesJuridiques.slice(0, 4).map((text) => ( // Afficher les 4 premiers objets
+          {textesJuridiques.slice(-4).map((text) => ( // Afficher les 4 premiers objets
             <Card key={text.id} className="hover:shadow-md transition-shadow"> {/* Assurez-vous que 'id' est une propriété unique */}
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
