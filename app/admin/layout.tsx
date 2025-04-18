@@ -59,9 +59,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const navigation: NavItem[] = [
     { name: "Tableau de bord", href: "/admin/dashboard", icon: BarChart3 },
     { name: "Textes juridiques", href: "/admin/textes", icon: FileText },
-    { name: "Actualités", href: "/admin/actualites", icon: Newspaper },
+    { name: "Institution", href: "/admin/institutions", icon: Newspaper },
+    { name: "SEA", href: "/admin/structures", icon: Newspaper },
     { name: "Contenu du site", href: "/admin/contenu", icon: FileEdit },
-    { name: "Paramètres", href: "/admin/parametres", icon: Settings },
   ];
 
   return (

@@ -45,6 +45,7 @@ export default function AddressAutocomplete() {
   return (
     <div className="relative w-full max-w-lg mx-auto">
       <input
+
         type="text"
         placeholder="Nzeng Ayong, Libreville, Estuaire, Gabon"
         value={query}

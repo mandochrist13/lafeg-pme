@@ -189,7 +189,6 @@ export default function APropos() {
               </div>
             </div>
           </div>
-
           {/* Newsletter Section */}
           <div className="bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] p-6 sm:p-8 rounded-xl shadow-md overflow-hidden">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8">
