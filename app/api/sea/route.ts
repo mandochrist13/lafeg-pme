@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@/generated/prisma';
+
 import { handleCors } from '@/lib/cors';
+import prisma from '@/lib/prisma';
 
 
 
@@ -8,7 +9,6 @@ import { handleCors } from '@/lib/cors';
 // Lecture (GET)
 // (GET) http://localhost:3000/api/sea
 
-const prisma = new PrismaClient
 
 export async function GET(request: Request) {
   try {
