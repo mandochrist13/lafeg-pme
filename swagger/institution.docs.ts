@@ -2,35 +2,42 @@
  * @swagger
  * components:
  *   schemas:
- *     SEA:
+ *     InstitutionFinanciere:
  *       type: object
  *       required:
- *         - id_sea
+ *         - id_institutionFinanciere
  *         - nom
- *         - type_sea
  *         - categorie
+ *         - type_institution
  *       properties:
- *         id_sea:
+ *         id_institutionFinanciere:
  *           type: string
- *           description: Identifiant unique de la structure
+ *           description: Identifiant unique de l'institution
  *         nom:
  *           type: string
- *           description: Nom de la structure
+ *           description: Nom de l'institution
+ *         categorie:
+ *           type: string
+ *           description: Catégorie de l'institution
+ *         type_institution:
+ *           type: string
+ *           description: Type d'institution
+ *         partenaire_feg:
+ *           type: boolean
+ *           nullable: true
+ *           description: Indique si c'est un partenaire FEG
  *         description:
  *           type: string
  *           nullable: true
- *           description: Description détaillée de la structure
- *         type_sea:
+ *           description: Description détaillée
+ *         logo:
  *           type: string
- *           description: Type de structure (ex. incubateur, accélérateur)
- *         categorie:
+ *           nullable: true
+ *           description: URL du logo
+ *         logo_nom:
  *           type: string
- *           description: Catégorie de la structure
- *         services:
- *           type: array
- *           items:
- *             type: string
- *           description: Liste des services proposés
+ *           nullable: true
+ *           description: Nom du fichier logo dans Supabase Storage
  *         adresse:
  *           type: string
  *           nullable: true
@@ -55,18 +62,10 @@
  *           type: string
  *           nullable: true
  *           description: Lien réseau social 2
- *         logo:
+ *         service:
  *           type: string
  *           nullable: true
- *           description: URL du logo
- *         logo_nom:
- *           type: string
- *           nullable: true
- *           description: Nom du fichier logo dans Supabase Storage
- *         partenaire_feg:
- *           type: boolean
- *           nullable: true
- *           description: Indique si c'est un partenaire FEG
+ *           description: Services proposés
  *         createdAt:
  *           type: string
  *           format: date-time
@@ -77,25 +76,25 @@
  *           description: Date de dernière mise à jour
  * 
  * @swagger
- * /api/sea:
+ * /api/FinancialInstitution:
  *   get:
- *     summary: Récupérer la liste des structures d'accompagnement
- *     tags: [Structures d'Accompagnement]
+ *     summary: Récupérer la liste des institutions financières
+ *     tags: [Institutions Financières]
  *     responses:
  *       200:
- *         description: Liste des structures récupérée avec succès
+ *         description: Liste des institutions récupérée avec succès
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/SEA'
+ *                 $ref: '#/components/schemas/InstitutionFinanciere'
  *       500:
  *         description: Erreur serveur
  * 
  *   post:
- *     summary: Créer une nouvelle structure d'accompagnement
- *     tags: [Structures d'Accompagnement]
+ *     summary: Créer une nouvelle institution financière
+ *     tags: [Institutions Financières]
  *     requestBody:
  *       required: true
  *       content:
@@ -104,21 +103,23 @@
  *             type: object
  *             required:
  *               - nom
- *               - type_sea
  *               - categorie
+ *               - type_institution
  *             properties:
  *               nom:
  *                 type: string
- *               description:
- *                 type: string
- *               type_sea:
- *                 type: string
  *               categorie:
  *                 type: string
- *               services:
+ *               type_institution:
  *                 type: string
- *                 format: json
- *                 description: JSON array de services
+ *               partenaire_feg:
+ *                 type: boolean
+ *               description:
+ *                 type: string
+ *               logo:
+ *                 type: string
+ *                 format: binary
+ *                 description: Image au format JPEG ou PNG
  *               adresse:
  *                 type: string
  *               contact:
@@ -131,58 +132,54 @@
  *                 type: string
  *               rs_2:
  *                 type: string
- *               logo:
+ *               service:
  *                 type: string
- *                 format: binary
- *                 description: Image au format JPEG ou PNG
- *               partenaire_feg:
- *                 type: boolean
  *     responses:
  *       201:
- *         description: Structure créée avec succès
+ *         description: Institution créée avec succès
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/SEA'
+ *               $ref: '#/components/schemas/InstitutionFinanciere'
  *       400:
  *         description: Données invalides
  *       500:
  *         description: Erreur serveur
  * 
  * @swagger
- * /api/sea/{id}:
+ * /api/FinancialInstitution/{id}:
  *   get:
- *     summary: Récupérer une structure d'accompagnement par ID
- *     tags: [Structures d'Accompagnement]
+ *     summary: Récupérer une institution financière par ID
+ *     tags: [Institutions Financières]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: ID de la structure
+ *         description: ID de l'institution
  *     responses:
  *       200:
- *         description: Structure trouvée
+ *         description: Institution trouvée
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/SEA'
+ *               $ref: '#/components/schemas/InstitutionFinanciere'
  *       404:
- *         description: Structure non trouvée
+ *         description: Institution non trouvée
  *       500:
  *         description: Erreur serveur
  * 
  *   put:
- *     summary: Mettre à jour une structure d'accompagnement
- *     tags: [Structures d'Accompagnement]
+ *     summary: Mettre à jour une institution financière
+ *     tags: [Institutions Financières]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: ID de la structure
+ *         description: ID de l'institution
  *     requestBody:
  *       required: true
  *       content:
@@ -192,16 +189,18 @@
  *             properties:
  *               nom:
  *                 type: string
- *               description:
- *                 type: string
- *               type_sea:
- *                 type: string
  *               categorie:
  *                 type: string
- *               services:
+ *               type_institution:
  *                 type: string
- *                 format: json
- *                 description: JSON array de services
+ *               partenaire_feg:
+ *                 type: boolean
+ *               description:
+ *                 type: string
+ *               logo:
+ *                 type: string
+ *                 format: binary
+ *                 description: Image au format JPEG ou PNG
  *               adresse:
  *                 type: string
  *               contact:
@@ -214,41 +213,37 @@
  *                 type: string
  *               rs_2:
  *                 type: string
- *               logo:
+ *               service:
  *                 type: string
- *                 format: binary
- *                 description: Image au format JPEG ou PNG
- *               partenaire_feg:
- *                 type: boolean
  *     responses:
  *       200:
- *         description: Structure mise à jour avec succès
+ *         description: Institution mise à jour avec succès
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/SEA'
+ *               $ref: '#/components/schemas/InstitutionFinanciere'
  *       400:
  *         description: Données invalides
  *       404:
- *         description: Structure non trouvée
+ *         description: Institution non trouvée
  *       500:
  *         description: Erreur serveur
  * 
  *   delete:
- *     summary: Supprimer une structure d'accompagnement
- *     tags: [Structures d'Accompagnement]
+ *     summary: Supprimer une institution financière
+ *     tags: [Institutions Financières]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: ID de la structure
+ *         description: ID de l'institution
  *     responses:
  *       200:
- *         description: Structure supprimée avec succès
+ *         description: Institution supprimée avec succès
  *       404:
- *         description: Structure non trouvée
+ *         description: Institution non trouvée
  *       500:
  *         description: Erreur serveur
  */
