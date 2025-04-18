@@ -24,7 +24,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState, useEffect } from "react";
-import { fetchFinancialInstitutions, FinancialInstitution } from "@/app/services/api";
+import { fetchFinancialInstitutions, FinancialInstitution } from "@/app/services/institution/api";
 
 export default function InstitutionsFinancieres() {
 
