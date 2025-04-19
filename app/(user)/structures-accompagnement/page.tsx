@@ -27,12 +27,12 @@ import { useState, useEffect } from "react";
 
 export default function InstitutionsFinancieres() {
   const [search, setSearch] = useState("");
-  const [activeTab, setActiveTab] = useState("banques");
+  const [activeTab, setActiveTab] = useState("incubateurs");
   const [institutions, setInstitutions] = useState({
-    banques: [],
-    microfinance: [],
-    fonds: [],
-    publiques: []
+    incubateurs: [],
+    centresFormation: [],
+    cabinetsConseil: [],
+    structuresPubliques: []
   });
   const [loading, setLoading] = useState(true);
 
@@ -54,18 +54,18 @@ export default function InstitutionsFinancieres() {
     const chargerDonnees = async () => {
       try {
         setLoading(true);
-        const [banques, microfinance, fonds, publiques] = await Promise.all([
-          fetchInstitutions("banque"),
-          fetchInstitutions("microfinance"),
-          fetchInstitutions("fonds"),
+        const [incubateurs, centresFormation, cabinetsConseil, structuresPubliques] = await Promise.all([
+          fetchInstitutions("incubateur"),
+          fetchInstitutions("formation"),
+          fetchInstitutions("conseil"),
           fetchInstitutions("publique")
         ]);
         
         setInstitutions({
-          banques,
-          microfinance,
-          fonds,
-          publiques
+          incubateurs,
+          centresFormation,
+          cabinetsConseil,
+          structuresPubliques
         });
       } catch (error) {
         console.error("Erreur lors du chargement des données:", error);
@@ -83,27 +83,27 @@ export default function InstitutionsFinancieres() {
     );
   };
 
-  const banquesFiltrees = filtrerInstitutions(institutions.banques);
-  const microfinanceFiltree = filtrerInstitutions(institutions.microfinance);
-  const fondsFiltres = filtrerInstitutions(institutions.fonds);
-  const institutionsPubliquesFiltrees = filtrerInstitutions(institutions.publiques);
+  const incubateursFiltres = filtrerInstitutions(institutions.incubateurs);
+  const centresFormationFiltres = filtrerInstitutions(institutions.centresFormation);
+  const cabinetsConseilFiltres = filtrerInstitutions(institutions.cabinetsConseil);
+  const structuresPubliquesFiltrees = filtrerInstitutions(institutions.structuresPubliques);
 
   const obtenirResultatsAutresSections = () => {
     const resultats = [];
 
-    if (activeTab !== "banques" && banquesFiltrees.length > 0) {
-      resultats.push({ tab: "banques", count: banquesFiltrees.length, label: "Banques" });
+    if (activeTab !== "incubateurs" && incubateursFiltres.length > 0) {
+      resultats.push({ tab: "incubateurs", count: incubateursFiltres.length, label: "Incubateurs" });
     }
 
-    if (activeTab !== "microfinance" && microfinanceFiltree.length > 0) {
-      resultats.push({ tab: "microfinance", count: microfinanceFiltree.length, label: "Microfinance" });
+    if (activeTab !== "centresFormation" && centresFormationFiltres.length > 0) {
+      resultats.push({ tab: "centresFormation", count: centresFormationFiltres.length, label: "Centres de formation" });
     }
 
-    if (activeTab !== "fonds" && fondsFiltres.length > 0) {
-      resultats.push({ tab: "fonds", count: fondsFiltres.length, label: "Fonds d'investissement" });
+    if (activeTab !== "cabinetsConseil" && cabinetsConseilFiltres.length > 0) {
+      resultats.push({ tab: "cabinetsConseil", count: cabinetsConseilFiltres.length, label: "Cabinets conseil" });
     }
-    if (activeTab !== "publiques" && institutionsPubliquesFiltrees.length > 0) {
-      resultats.push({ tab: "publiques", count: institutionsPubliquesFiltrees.length, label: "Institutions publiques" });
+    if (activeTab !== "structuresPubliques" && structuresPubliquesFiltrees.length > 0) {
+      resultats.push({ tab: "structuresPubliques", count: structuresPubliquesFiltrees.length, label: "Structures publiques" });
     }
 
     return resultats;
@@ -231,7 +231,7 @@ export default function InstitutionsFinancieres() {
               Accueil
             </Link>
             <ChevronRight className="h-4 w-4" />
-            <span>Institutions Financières</span>
+            <span>Structures d'Accompagnement</span>
           </div>
         </div>
       </div>
@@ -241,11 +241,11 @@ export default function InstitutionsFinancieres() {
         <div className="container">
           <div className="max-w-3xl">
             <h1 className="text-3xl font-bold mb-4">
-              Institutions Financières pour les PME Gabonaises
+              Structures d'Accompagnement pour les PME Gabonaises
             </h1>
             <p className="text-white/90 text-lg mb-6">
-              Découvrez les banques, établissements de microfinance et fonds
-              d'investissement qui peuvent financer votre entreprise au Gabon.
+              Découvrez les incubateurs, centres de formation, cabinets conseil et structures publiques
+              qui peuvent accompagner votre entreprise au Gabon.
             </p>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -253,7 +253,7 @@ export default function InstitutionsFinancieres() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 type="text"
-                placeholder="Rechercher une institution financière..."
+                placeholder="Rechercher une structure d'accompagnement..."
                 className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/60 h-12"
               />
             </div>
@@ -265,49 +265,49 @@ export default function InstitutionsFinancieres() {
       <div className="container py-12">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-8">
-            <TabsTrigger value="banques">Banques</TabsTrigger>
-            <TabsTrigger value="microfinance">Microfinance</TabsTrigger>
-            <TabsTrigger value="fonds">Fonds d'investissement</TabsTrigger>
-            <TabsTrigger value="publiques">Institutions publiques</TabsTrigger>
+            <TabsTrigger value="incubateurs">Incubateurs</TabsTrigger>
+            <TabsTrigger value="centresFormation">Centres de formation</TabsTrigger>
+            <TabsTrigger value="cabinetsConseil">Cabinets conseil</TabsTrigger>
+            <TabsTrigger value="structuresPubliques">Structures publiques</TabsTrigger>
           </TabsList>
 
-          {/* Banques */}
-          <TabsContent value="banques" className="space-y-6">
+          {/* Incubateurs */}
+          <TabsContent value="incubateurs" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {banquesFiltrees.map(renderCarteInstitution)}
+              {incubateursFiltres.map(renderCarteInstitution)}
             </div>
-            {banquesFiltrees.length === 0 && (
-              <p className="text-red-700 text-center font-bold italic">Aucun résultat trouvé dans la section Banques.</p>
+            {incubateursFiltres.length === 0 && (
+              <p className="text-red-700 text-center font-bold italic">Aucun résultat trouvé dans la section Incubateurs.</p>
             )}
           </TabsContent>
 
-          {/* Microfinance */}
-          <TabsContent value="microfinance" className="space-y-6">
+          {/* Centres de formation */}
+          <TabsContent value="centresFormation" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {microfinanceFiltree.map(renderCarteInstitution)}
+              {centresFormationFiltres.map(renderCarteInstitution)}
             </div>
-            {microfinanceFiltree.length === 0 && (
-              <p className="text-red-700 text-center font-bold italic">Aucun résultat trouvé dans la section Microfinance.</p>
+            {centresFormationFiltres.length === 0 && (
+              <p className="text-red-700 text-center font-bold italic">Aucun résultat trouvé dans la section Centres de formation.</p>
             )}
           </TabsContent>
 
-          {/* Fonds d'investissement */}
-          <TabsContent value="fonds" className="space-y-6">
+          {/* Cabinets conseil */}
+          <TabsContent value="cabinetsConseil" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {fondsFiltres.map(renderCarteInstitution)}
+              {cabinetsConseilFiltres.map(renderCarteInstitution)}
             </div>
-            {fondsFiltres.length === 0 && (
-              <p className="text-red-700 text-center font-bold italic">Aucun résultat trouvé dans la section Fonds d'Investissement.</p>
+            {cabinetsConseilFiltres.length === 0 && (
+              <p className="text-red-700 text-center font-bold italic">Aucun résultat trouvé dans la section Cabinets conseil.</p>
             )}
           </TabsContent>
 
-          {/* Institutions publiques */}
-          <TabsContent value="publiques" className="space-y-6">
+          {/* Structures publiques */}
+          <TabsContent value="structuresPubliques" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {institutionsPubliquesFiltrees.map(renderCarteInstitution)}
+              {structuresPubliquesFiltrees.map(renderCarteInstitution)}
             </div>
-            {institutionsPubliquesFiltrees.length === 0 && (
-              <p className="text-red-700 text-center font-bold italic">Aucun résultat trouvé dans la section Institutions Publiques.</p>
+            {structuresPubliquesFiltrees.length === 0 && (
+              <p className="text-red-700 text-center font-bold italic">Aucun résultat trouvé dans la section Structures publiques.</p>
             )}
           </TabsContent>
 
@@ -337,10 +337,10 @@ export default function InstitutionsFinancieres() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
               <h3 className="text-xl font-bold text-[#063a1e] mb-2">
-                Trouvez rapidement le bon contact pour vos besoins en financement.
+                Trouvez rapidement le bon contact pour vos besoins en accompagnement.
               </h3>
               <p className="text-muted-foreground">
-                Abonnez-vous à notre newsletter pour connaître les institutions utiles aux PME,
+                Abonnez-vous à notre newsletter pour connaître les structures utiles aux PME,
                 avec leurs coordonnées et une description de leurs services.
                 Accédez facilement à toutes ces informations depuis notre site.
               </p>

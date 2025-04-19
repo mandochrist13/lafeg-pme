@@ -1,27 +1,9 @@
-"use client";
-import { useState } from "react";
-import {
-  Plus,
-  Search,
-  Filter,
-  MoreHorizontal,
-  Pencil,
-  Trash2,
-  Eye,
-  CheckCircle2,
-  XCircle,
-  MapPin,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+"use client"
+import { useState } from "react"
+import { Plus, Search, Filter, MoreHorizontal, Pencil, Trash2, Eye, CheckCircle2, XCircle, MapPin } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,23 +11,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/dropdown-menu"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Badge } from "@/components/ui/badge"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
   Dialog,
   DialogContent,
@@ -54,7 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog"
 import {
   Pagination,
   PaginationContent,
@@ -63,32 +32,32 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination";
+} from "@/components/ui/pagination"
 
 // Interface pour les structures d'accompagnement
 interface Structure {
-  id: number;
-  nom: string;
-  type: string;
-  adresse: string;
-  telephone: string;
-  email: string;
-  site_web: string;
-  description: string;
-  services: string;
-  date_ajout: string;
+  id: number
+  nom: string
+  type: string
+  adresse: string
+  telephone: string
+  email: string
+  site_web: string
+  description: string
+  services: string
+  date_ajout: string
 }
 
 // Interface pour la nouvelle structure
 interface NewStructure {
-  nom: string;
-  type: string;
-  adresse: string;
-  telephone: string;
-  email: string;
-  site_web: string;
-  description: string;
-  services: string;
+  nom: string
+  type: string
+  adresse: string
+  telephone: string
+  email: string
+  site_web: string
+  description: string
+  services: string
 }
 
 // Données fictives pour les structures d'accompagnement
@@ -158,18 +127,16 @@ const structuresData: Structure[] = [
     services: "Formation professionnelle, Certification, Ateliers pratiques",
     date_ajout: "2023-02-18",
   },
-];
+]
 
 export default function StructuresPage() {
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [typeFilter, setTypeFilter] = useState<string>("");
-  const [statutFilter, setStatutFilter] = useState<string>("");
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState<boolean>(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
-  const [selectedStructure, setSelectedStructure] = useState<Structure | null>(
-    null
-  );
+  const [searchTerm, setSearchTerm] = useState<string>("")
+  const [typeFilter, setTypeFilter] = useState<string>("")
+  const [statutFilter, setStatutFilter] = useState<string>("")
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState<boolean>(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
+  const [selectedStructure, setSelectedStructure] = useState<Structure | null>(null)
   const [newStructure, setNewStructure] = useState<NewStructure>({
     nom: "",
     type: "",
@@ -179,38 +146,34 @@ export default function StructuresPage() {
     site_web: "",
     description: "",
     services: "",
-  });
+  })
 
   // Filtrer les structures en fonction des critères de recherche
   const filteredStructures = structuresData.filter((structure) => {
     const matchesSearch =
       structure.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      structure.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = typeFilter === "" || structure.type === typeFilter;
-  });
+      structure.description.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesType = typeFilter === "" || structure.type === typeFilter
+  })
 
   // Gérer l'édition d'une structure
   const handleEdit = (structure: Structure) => {
-    setSelectedStructure(structure);
-    setIsEditDialogOpen(true);
-  };
+    setSelectedStructure(structure)
+    setIsEditDialogOpen(true)
+  }
 
   // Gérer la suppression d'une structure
   const handleDelete = (structure: Structure) => {
-    setSelectedStructure(structure);
-    setIsDeleteDialogOpen(true);
-  };
+    setSelectedStructure(structure)
+    setIsDeleteDialogOpen(true)
+  }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            Structures d'accompagnement
-          </h1>
-          <p className="text-muted-foreground">
-            Gérez les structures d'accompagnement présentes sur la plateforme
-          </p>
+          <h1 className="text-2xl font-bold tracking-tight">Structures d'accompagnement</h1>
+          <p className="text-muted-foreground">Gérez les structures d'accompagnement présentes sur la plateforme</p>
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
@@ -222,8 +185,7 @@ export default function StructuresPage() {
             <DialogHeader>
               <DialogTitle>Ajouter une structure d'accompagnement</DialogTitle>
               <DialogDescription>
-                Remplissez le formulaire ci-dessous pour ajouter une nouvelle
-                structure d'accompagnement.
+                Remplissez le formulaire ci-dessous pour ajouter une nouvelle structure d'accompagnement.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -235,9 +197,7 @@ export default function StructuresPage() {
                   <Input
                     id="nom"
                     value={newStructure.nom}
-                    onChange={(e) =>
-                      setNewStructure({ ...newStructure, nom: e.target.value })
-                    }
+                    onChange={(e) => setNewStructure({ ...newStructure, nom: e.target.value })}
                     placeholder="Ex: Gabon Incubateur"
                   />
                 </div>
@@ -247,24 +207,16 @@ export default function StructuresPage() {
                   </label>
                   <Select
                     value={newStructure.type}
-                    onValueChange={(value) =>
-                      setNewStructure({ ...newStructure, type: value })
-                    }
+                    onValueChange={(value) => setNewStructure({ ...newStructure, type: value })}
                   >
                     <SelectTrigger id="type">
                       <SelectValue placeholder="Sélectionner un type" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Incubateur">Incubateur</SelectItem>
-                      <SelectItem value="Centre de formation">
-                        Centre de formation
-                      </SelectItem>
-                      <SelectItem value="Cabinet conseil">
-                        Cabinet conseil
-                      </SelectItem>
-                      <SelectItem value="Structure publique">
-                        Structure publique
-                      </SelectItem>
+                      <SelectItem value="Centre de formation">Centre de formation</SelectItem>
+                      <SelectItem value="Cabinet conseil">Cabinet conseil</SelectItem>
+                      <SelectItem value="Structure publique">Structure publique</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -278,12 +230,7 @@ export default function StructuresPage() {
                   <Input
                     id="telephone"
                     value={newStructure.telephone}
-                    onChange={(e) =>
-                      setNewStructure({
-                        ...newStructure,
-                        telephone: e.target.value,
-                      })
-                    }
+                    onChange={(e) => setNewStructure({ ...newStructure, telephone: e.target.value })}
                     placeholder="Ex: +241 77 12 34 56"
                   />
                 </div>
@@ -295,12 +242,7 @@ export default function StructuresPage() {
                     id="email"
                     type="email"
                     value={newStructure.email}
-                    onChange={(e) =>
-                      setNewStructure({
-                        ...newStructure,
-                        email: e.target.value,
-                      })
-                    }
+                    onChange={(e) => setNewStructure({ ...newStructure, email: e.target.value })}
                     placeholder="Ex: contact@structure.ga"
                   />
                 </div>
@@ -313,12 +255,7 @@ export default function StructuresPage() {
                 <Input
                   id="adresse"
                   value={newStructure.adresse}
-                  onChange={(e) =>
-                    setNewStructure({
-                      ...newStructure,
-                      adresse: e.target.value,
-                    })
-                  }
+                  onChange={(e) => setNewStructure({ ...newStructure, adresse: e.target.value })}
                   placeholder="Ex: Quartier Glass, Libreville"
                 />
               </div>
@@ -330,12 +267,7 @@ export default function StructuresPage() {
                 <Input
                   id="site_web"
                   value={newStructure.site_web}
-                  onChange={(e) =>
-                    setNewStructure({
-                      ...newStructure,
-                      site_web: e.target.value,
-                    })
-                  }
+                  onChange={(e) => setNewStructure({ ...newStructure, site_web: e.target.value })}
                   placeholder="Ex: https://www.structure.ga"
                 />
               </div>
@@ -348,12 +280,7 @@ export default function StructuresPage() {
                   id="description"
                   className="w-full min-h-[100px] p-2 border rounded-md"
                   value={newStructure.description}
-                  onChange={(e) =>
-                    setNewStructure({
-                      ...newStructure,
-                      description: e.target.value,
-                    })
-                  }
+                  onChange={(e) => setNewStructure({ ...newStructure, description: e.target.value })}
                   placeholder="Description de la structure d'accompagnement..."
                 />
               </div>
@@ -366,27 +293,17 @@ export default function StructuresPage() {
                   id="services"
                   className="w-full min-h-[80px] p-2 border rounded-md"
                   value={newStructure.services}
-                  onChange={(e) =>
-                    setNewStructure({
-                      ...newStructure,
-                      services: e.target.value,
-                    })
-                  }
+                  onChange={(e) => setNewStructure({ ...newStructure, services: e.target.value })}
                   placeholder="Liste des services offerts par la structure..."
                 />
               </div>
+
             </div>
             <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setIsAddDialogOpen(false)}
-              >
+              <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
                 Annuler
               </Button>
-              <Button
-                className="bg-[#063a1e] hover:bg-[#063a1e]/90"
-                onClick={() => setIsAddDialogOpen(false)}
-              >
+              <Button className="bg-[#063a1e] hover:bg-[#063a1e]/90" onClick={() => setIsAddDialogOpen(false)}>
                 Ajouter la structure
               </Button>
             </DialogFooter>
@@ -414,14 +331,48 @@ export default function StructuresPage() {
               </div>
             </div>
 
+            <div className="space-y-2">
+              <label htmlFor="type-filter" className="text-sm font-medium">
+                Type de structure
+              </label>
+              {/* <Select value={typeFilter} onValueChange={setTypeFilter}>
+                <SelectTrigger id="type-filter">
+                  <SelectValue placeholder="Tous les types" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Tous les types</SelectItem>
+                  <SelectItem value="Incubateur">Incubateur</SelectItem>
+                  <SelectItem value="Centre de formation">Centre de formation</SelectItem>
+                  <SelectItem value="Cabinet conseil">Cabinet conseil</SelectItem>
+                  <SelectItem value="Structure publique">Structure publique</SelectItem>
+                </SelectContent>
+              </Select> */}
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="statut-filter" className="text-sm font-medium">
+                Statut
+              </label>
+              {/* <Select value={statutFilter} onValueChange={setStatutFilter}>
+                <SelectTrigger id="statut-filter">
+                  <SelectValue placeholder="Tous les statuts" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Tous les statuts</SelectItem>
+                  <SelectItem value="Actif">Actif</SelectItem>
+                  <SelectItem value="Inactif">Inactif</SelectItem>
+                </SelectContent>
+              </Select> */}
+            </div>
+
             <div className="flex items-end">
               <Button
                 variant="outline"
                 className="w-full"
                 onClick={() => {
-                  setSearchTerm("");
-                  setTypeFilter("");
-                  setStatutFilter("");
+                  setSearchTerm("")
+                  setTypeFilter("")
+                  setStatutFilter("")
                 }}
               >
                 <Filter className="mr-2 h-4 w-4" /> Réinitialiser les filtres
@@ -435,9 +386,7 @@ export default function StructuresPage() {
       <Card>
         <CardHeader>
           <CardTitle>Liste des structures d'accompagnement</CardTitle>
-          <CardDescription>
-            {filteredStructures.length} structure(s) trouvée(s)
-          </CardDescription>
+          <CardDescription>{filteredStructures.length} structure(s) trouvée(s)</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -446,7 +395,7 @@ export default function StructuresPage() {
                 <TableHead className="w-[300px]">Nom</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Localisation</TableHead>
-
+             
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -461,7 +410,7 @@ export default function StructuresPage() {
                       <span>{structure.adresse}</span>
                     </div>
                   </TableCell>
-
+               
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -473,12 +422,7 @@ export default function StructuresPage() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem
-                          onClick={() =>
-                            window.open(
-                              `/structures-accompagnement/${structure.id}`,
-                              "_blank"
-                            )
-                          }
+                          onClick={() => window.open(`/structures-accompagnement/${structure.id}`, "_blank")}
                         >
                           <Eye className="mr-2 h-4 w-4" /> Voir
                         </DropdownMenuItem>
@@ -486,10 +430,7 @@ export default function StructuresPage() {
                           <Pencil className="mr-2 h-4 w-4" /> Modifier
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={() => handleDelete(structure)}
-                          className="text-red-600"
-                        >
+                        <DropdownMenuItem onClick={() => handleDelete(structure)} className="text-red-600">
                           <Trash2 className="mr-2 h-4 w-4" /> Supprimer
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -502,8 +443,7 @@ export default function StructuresPage() {
         </CardContent>
         <CardFooter className="flex items-center justify-between">
           <div className="text-sm text-muted-foreground">
-            Affichage de {filteredStructures.length} sur {structuresData.length}{" "}
-            structures
+            Affichage de {filteredStructures.length} sur {structuresData.length} structures
           </div>
           <Pagination>
             <PaginationContent>
@@ -538,9 +478,7 @@ export default function StructuresPage() {
           <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
               <DialogTitle>Modifier une structure d'accompagnement</DialogTitle>
-              <DialogDescription>
-                Modifiez les informations de la structure d'accompagnement.
-              </DialogDescription>
+              <DialogDescription>Modifiez les informations de la structure d'accompagnement.</DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-2 gap-4">
@@ -560,15 +498,9 @@ export default function StructuresPage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Incubateur">Incubateur</SelectItem>
-                      <SelectItem value="Centre de formation">
-                        Centre de formation
-                      </SelectItem>
-                      <SelectItem value="Cabinet conseil">
-                        Cabinet conseil
-                      </SelectItem>
-                      <SelectItem value="Structure publique">
-                        Structure publique
-                      </SelectItem>
+                      <SelectItem value="Centre de formation">Centre de formation</SelectItem>
+                      <SelectItem value="Cabinet conseil">Cabinet conseil</SelectItem>
+                      <SelectItem value="Structure publique">Structure publique</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -577,26 +509,16 @@ export default function StructuresPage() {
               {/* Autres champs similaires à ceux du formulaire d'ajout */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label
-                    htmlFor="edit-telephone"
-                    className="text-sm font-medium"
-                  >
+                  <label htmlFor="edit-telephone" className="text-sm font-medium">
                     Téléphone
                   </label>
-                  <Input
-                    id="edit-telephone"
-                    defaultValue={selectedStructure.telephone}
-                  />
+                  <Input id="edit-telephone" defaultValue={selectedStructure.telephone} />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="edit-email" className="text-sm font-medium">
                     Email
                   </label>
-                  <Input
-                    id="edit-email"
-                    type="email"
-                    defaultValue={selectedStructure.email}
-                  />
+                  <Input id="edit-email" type="email" defaultValue={selectedStructure.email} />
                 </div>
               </div>
 
@@ -604,27 +526,18 @@ export default function StructuresPage() {
                 <label htmlFor="edit-adresse" className="text-sm font-medium">
                   Adresse
                 </label>
-                <Input
-                  id="edit-adresse"
-                  defaultValue={selectedStructure.adresse}
-                />
+                <Input id="edit-adresse" defaultValue={selectedStructure.adresse} />
               </div>
 
               <div className="space-y-2">
                 <label htmlFor="edit-site_web" className="text-sm font-medium">
                   Site web
                 </label>
-                <Input
-                  id="edit-site_web"
-                  defaultValue={selectedStructure.site_web}
-                />
+                <Input id="edit-site_web" defaultValue={selectedStructure.site_web} />
               </div>
 
               <div className="space-y-2">
-                <label
-                  htmlFor="edit-description"
-                  className="text-sm font-medium"
-                >
+                <label htmlFor="edit-description" className="text-sm font-medium">
                   Description
                 </label>
                 <textarea
@@ -646,16 +559,10 @@ export default function StructuresPage() {
               </div>
             </div>
             <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setIsEditDialogOpen(false)}
-              >
+              <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
                 Annuler
               </Button>
-              <Button
-                className="bg-[#063a1e] hover:bg-[#063a1e]/90"
-                onClick={() => setIsEditDialogOpen(false)}
-              >
+              <Button className="bg-[#063a1e] hover:bg-[#063a1e]/90" onClick={() => setIsEditDialogOpen(false)}>
                 Enregistrer les modifications
               </Button>
             </DialogFooter>
@@ -670,21 +577,15 @@ export default function StructuresPage() {
             <DialogHeader>
               <DialogTitle>Confirmer la suppression</DialogTitle>
               <DialogDescription>
-                Êtes-vous sûr de vouloir supprimer la structure "
-                {selectedStructure.nom}" ? Cette action est irréversible.
+                Êtes-vous sûr de vouloir supprimer la structure "{selectedStructure.nom}" ? Cette action est
+                irréversible.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="mt-4">
-              <Button
-                variant="outline"
-                onClick={() => setIsDeleteDialogOpen(false)}
-              >
+              <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
                 Annuler
               </Button>
-              <Button
-                variant="destructive"
-                onClick={() => setIsDeleteDialogOpen(false)}
-              >
+              <Button variant="destructive" onClick={() => setIsDeleteDialogOpen(false)}>
                 Supprimer
               </Button>
             </DialogFooter>
@@ -692,5 +593,5 @@ export default function StructuresPage() {
         </Dialog>
       )}
     </div>
-  );
+  )
 }
