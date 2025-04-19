@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Search,
   Plus,
@@ -48,173 +48,211 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
 
 interface TexteJuridique {
   id: number;
   titre: string;
-  type: string;
+  type_texte: string;
   categorie: string;
-  datePublication: string;
-  lien: string;
+  date_parution: string;
+  fichier_url: string;
+  description?: string;
+  version?: string;
 }
 
-// Données fictives pour les textes juridiques
-const initialTextesJuridiques: TexteJuridique[] = [
-  {
-    id: 1,
-    titre: "Loi n°023/2023 portant mesures d'allègement fiscal pour les PME",
-    type: "Loi",
-    categorie: "Fiscalité",
-    datePublication: "15/03/2024",
-    lien: "https://example.com/loi-023-2023.pdf",
-  },
-  {
-    id: 2,
-    titre: "Décret n°2025-123 relatif à la fiscalité des PME",
-    type: "Décret",
-    categorie: "Fiscalité",
-    datePublication: "10/05/2025",
-    lien: "https://example.com/loi-023-2023.pdf",
-  },
-  {
-    id: 3,
-    titre:
-      "Arrêté n°0045/MPME fixant les modalités d'application du régime simplifié d'imposition",
-    type: "Arrêté",
-    categorie: "Fiscalité",
-    datePublication: "22/04/2025",
-    lien: "https://example.com/loi-023-2023.pdf",
-  },
-  {
-    id: 4,
-    titre:
-      "Acte uniforme OHADA relatif au droit des sociétés commerciales et du GIE",
-    type: "Acte uniforme",
-    categorie: "Création d'entreprise",
-    datePublication: "30/01/2024",
-    lien: "https://example.com/loi-023-2023.pdf",
-  },
-  {
-    id: 5,
-    titre: "Loi n°042/2024 sur la promotion des startups et de l'innovation",
-    type: "Loi",
-    categorie: "Innovation",
-    datePublication: "05/02/2024",
-    lien: "https://example.com/loi-023-2023.pdf",
-  },
-  {
-    id: 6,
-    titre: "Décret n°2024-089 relatif aux procédures simplifiées pour les PME",
-    type: "Décret",
-    categorie: "Procédures administratives",
-    datePublication: "18/03/2024",
-    lien: "https://example.com/loi-023-2023.pdf",
-  },
-  {
-    id: 7,
-    titre: "Loi n°031/2024 portant code du travail (révision)",
-    type: "Loi",
-    categorie: "Droit du travail",
-    datePublication: "12/04/2024",
-    lien: "https://example.com/loi-023-2023.pdf",
-  },
-  {
-    id: 8,
-    titre:
-      "Arrêté n°0078/MFP relatif aux obligations comptables simplifiées des TPE/PME",
-    type: "Arrêté",
-    categorie: "Comptabilité",
-    datePublication: "25/04/2024",
-    lien: "https://example.com/loi-023-2023.pdf",
-  },
-  {
-    id: 9,
-    titre: "Décret n°2025-056 relatif aux marchés publics réservés aux PME",
-    type: "Décret",
-    categorie: "Marchés publics",
-    datePublication: "03/05/2025",
-    lien: "https://example.com/loi-023-2023.pdf",
-  },
-  {
-    id: 10,
-    titre: "Loi n°015/2025 sur la protection des données personnelles",
-    type: "Loi",
-    categorie: "Numérique",
-    datePublication: "08/05/2025",
-    lien: "https://example.com/loi-023-2023.pdf",
-  },
-];
+interface PaginationData {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
 
 export default function TextesJuridiquesAdmin() {
-  const [textesJuridiques, setTextesJuridiques] = useState<TexteJuridique[]>(
-    initialTextesJuridiques
-  );
+  const [textesJuridiques, setTextesJuridiques] = useState<TexteJuridique[]>([]);
+  const [pagination, setPagination] = useState<PaginationData>({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 1,
+  });
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("all");
   const [selectedCategorie, setSelectedCategorie] = useState("all");
   const [showAddForm, setShowAddForm] = useState(false);
+  const [viewingTexte, setViewingTexte] = useState<TexteJuridique | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
-  const [newTexte, setNewTexte] = useState<Omit<TexteJuridique, "id">>({
+  const [newTexte, setNewTexte] = useState<Omit<TexteJuridique, "id"> & { fichier?: File }>({
     titre: "",
-    type: "",
+    type_texte: "",
     categorie: "",
-    datePublication: "",
-    lien: "",
+    date_parution: "",
+    fichier_url: "",
   });
 
-  // Filtrer les textes juridiques
-  const filteredTextes = textesJuridiques.filter((texte) => {
-    const matchSearch = texte.titre
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchType = selectedType === "all" || texte.type === selectedType;
-    const matchCategorie =
-      selectedCategorie === "all" || texte.categorie === selectedCategorie;
-    return matchSearch && matchType && matchCategorie;
-  });
+  // Fonction pour récupérer les textes juridiques
+  const fetchTextesJuridiques = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const params = new URLSearchParams();
+      params.append("page", pagination.page.toString());
+      params.append("limit", pagination.limit.toString());
+      
+      if (selectedType !== "all") params.append("type_texte", selectedType);
+      if (selectedCategorie !== "all") params.append("categorie", selectedCategorie);
+      if (searchTerm) params.append("search", searchTerm);
 
-  // Extraire les types, catégories uniques pour les filtres
-  const types = [...new Set(textesJuridiques.map((texte) => texte.type))];
-  const categories = [
-    ...new Set(textesJuridiques.map((texte) => texte.categorie)),
-  ];
+      const response = await fetch(`/api/texte-juridique?${params.toString()}`);
+      
+      if (!response.ok) {
+        throw new Error("Erreur lors de la récupération des textes juridiques");
+      }
 
-  const handleAddTexte = () => {
+      const data = await response.json();
+      setTextesJuridiques(data.data);
+      setPagination(prev => ({
+        ...prev,
+        total: data.pagination.total,
+        totalPages: data.pagination.totalPages,
+      }));
+    } catch (err) {
+      console.error("Erreur:", err);
+      setError(err instanceof Error ? err.message : "Une erreur est survenue");
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les textes juridiques",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTextesJuridiques();
+  }, [pagination.page, selectedType, selectedCategorie]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchTerm !== "") {
+        fetchTextesJuridiques();
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  const types = [...new Set(textesJuridiques.map((texte) => texte.type_texte))];
+  const categories = [...new Set(textesJuridiques.map((texte) => texte.categorie))];
+
+  const handleAddTexte = async () => {
     if (
       !newTexte.titre ||
-      !newTexte.type ||
-      !newTexte.lien ||
-      !newTexte.datePublication ||
-      !newTexte.categorie
+      !newTexte.type_texte ||
+      !newTexte.categorie ||
+      !newTexte.date_parution ||
+      !newTexte.fichier
     ) {
-      alert("Veuillez remplir tous les champs obligatoires");
+      toast({
+        title: "Erreur",
+        description: "Veuillez remplir tous les champs obligatoires",
+        variant: "destructive",
+      });
       return;
     }
 
-    const newId = Math.max(...textesJuridiques.map((t) => t.id)) + 1;
-    const texteToAdd: TexteJuridique = {
-      id: newId,
-      ...newTexte,
-    };
+    try {
+      setIsLoading(true);
+      const formData = new FormData();
+      formData.append("titre", newTexte.titre);
+      formData.append("type_texte", newTexte.type_texte);
+      formData.append("categorie", newTexte.categorie);
+      formData.append("date_parution", newTexte.date_parution);
+      formData.append("fichier", newTexte.fichier);
+      if (newTexte.description) formData.append("description", newTexte.description);
+      if (newTexte.version) formData.append("version", newTexte.version);
 
-    setTextesJuridiques([texteToAdd, ...textesJuridiques]);
-    setShowAddForm(false);
-    setNewTexte({
-      titre: "",
-      type: "",
-      categorie: "",
-      datePublication: "",
-      lien: "",
-    });
-  };
+      const response = await fetch("/api/texte-juridique", {
+        method: "POST",
+        body: formData,
+      });
 
-  const handleDeleteTexte = (id: number) => {
-    if (confirm("Êtes-vous sûr de vouloir supprimer ce texte juridique ?")) {
-      setTextesJuridiques(textesJuridiques.filter((texte) => texte.id !== id));
+      if (!response.ok) {
+        throw new Error("Erreur lors de l'ajout du texte juridique");
+      }
+
+      const addedTexte = await response.json();
+      
+      toast({
+        title: "Succès",
+        description: "Le texte juridique a été ajouté avec succès",
+      });
+
+      setShowAddForm(false);
+      setNewTexte({
+        titre: "",
+        type_texte: "",
+        categorie: "",
+        date_parution: "",
+        fichier_url: "",
+      });
+      
+      fetchTextesJuridiques();
+    } catch (err) {
+      console.error("Erreur:", err);
+      toast({
+        title: "Erreur",
+        description: err instanceof Error ? err.message : "Une erreur est survenue",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // ... (le reste de votre code JSX reste inchangé)
+  const handleDeleteTexte = async (id: number) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer ce texte juridique ?")) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await fetch(`/api/texte-juridique/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de la suppression du texte juridique");
+      }
+
+      toast({
+        title: "Succès",
+        description: "Le texte juridique a été supprimé avec succès",
+      });
+
+      fetchTextesJuridiques();
+    } catch (err) {
+      console.error("Erreur:", err);
+      toast({
+        title: "Erreur",
+        description: err instanceof Error ? err.message : "Une erreur est survenue",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      setPagination(prev => ({ ...prev, page: newPage }));
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -252,9 +290,9 @@ export default function TextesJuridiquesAdmin() {
                     Type*
                   </label>
                   <Select
-                    value={newTexte.type}
+                    value={newTexte.type_texte}
                     onValueChange={(value) =>
-                      setNewTexte({ ...newTexte, type: value })
+                      setNewTexte({ ...newTexte, type_texte: value })
                     }
                     required
                   >
@@ -297,19 +335,21 @@ export default function TextesJuridiquesAdmin() {
 
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Lien du document*
+                  Fichier PDF*
                 </label>
                 <Input
-                  type="url"
-                  value={newTexte.lien}
+                  type="file"
+                  accept=".pdf"
                   onChange={(e) =>
-                    setNewTexte({ ...newTexte, lien: e.target.value })
+                    setNewTexte({
+                      ...newTexte,
+                      fichier: e.target.files?.[0],
+                    })
                   }
-                  placeholder="https://example.com/document.pdf"
                   required
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  Veuillez entrer l'URL complète du document (PDF, DOCX, etc.)
+                  Veuillez sélectionner un fichier PDF
                 </p>
               </div>
 
@@ -319,14 +359,40 @@ export default function TextesJuridiquesAdmin() {
                 </label>
                 <Input
                   type="date"
-                  value={newTexte.datePublication}
+                  value={newTexte.date_parution}
                   onChange={(e) =>
                     setNewTexte({
                       ...newTexte,
-                      datePublication: e.target.value,
+                      date_parution: e.target.value,
                     })
                   }
                   required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Description
+                </label>
+                <Textarea
+                  value={newTexte.description || ""}
+                  onChange={(e) =>
+                    setNewTexte({ ...newTexte, description: e.target.value })
+                  }
+                  placeholder="Description du texte juridique"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Version
+                </label>
+                <Input
+                  value={newTexte.version || ""}
+                  onChange={(e) =>
+                    setNewTexte({ ...newTexte, version: e.target.value })
+                  }
+                  placeholder="Version du texte"
                 />
               </div>
             </div>
@@ -337,8 +403,70 @@ export default function TextesJuridiquesAdmin() {
               <Button
                 className="bg-[#063a1e] hover:bg-[#063a1e]/90"
                 onClick={handleAddTexte}
+                disabled={isLoading}
               >
-                Enregistrer
+                {isLoading ? "Enregistrement..." : "Enregistrer"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de visualisation */}
+      {viewingTexte && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b p-4">
+              <h2 className="text-xl font-bold">{viewingTexte.titre}</h2>
+              <button
+                onClick={() => setViewingTexte(null)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground">Type</h3>
+                  <p>{viewingTexte.type_texte}</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground">Catégorie</h3>
+                  <p>{viewingTexte.categorie}</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground">Date de publication</h3>
+                  <p>{new Date(viewingTexte.date_parution).toLocaleDateString('fr-FR')}</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground">Version</h3>
+                  <p>{viewingTexte.version || "Non spécifiée"}</p>
+                </div>
+              </div>
+
+              {viewingTexte.description && (
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground">Description</h3>
+                  <p className="whitespace-pre-line">{viewingTexte.description}</p>
+                </div>
+              )}
+
+              <div className="pt-4">
+                <a
+                  href={viewingTexte.fichier_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 bg-[#063a1e] text-white hover:bg-[#063a1e]/90 h-10 px-4 py-2"
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Télécharger le document
+                </a>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 p-4 border-t">
+              <Button variant="outline" onClick={() => setViewingTexte(null)}>
+                Fermer
               </Button>
             </div>
           </div>
@@ -358,6 +486,12 @@ export default function TextesJuridiquesAdmin() {
 
       <Card>
         <CardContent className="p-6">
+          {error && (
+            <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+              {error}
+            </div>
+          )}
+
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <div className="relative flex-1">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -446,96 +580,141 @@ export default function TextesJuridiquesAdmin() {
             )}
           </div>
 
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[400px]">Titre</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Catégorie</TableHead>
-                  <TableHead>Date de publication</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredTextes.map((texte) => (
-                  <TableRow key={texte.id}>
-                    <TableCell className="font-medium">{texte.titre}</TableCell>
-                    <TableCell>{texte.type}</TableCell>
-                    <TableCell>
-                      <a
-                        href={texte.lien}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
-                      >
-                        Télécharger
-                      </a>
-                    </TableCell>
-                    <TableCell>{texte.datePublication}</TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem>
-                            <Eye className="mr-2 h-4 w-4" /> Voir
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Edit className="mr-2 h-4 w-4" /> Modifier
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Download className="mr-2 h-4 w-4" /> Télécharger
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            className="text-red-600"
-                            onClick={() => handleDeleteTexte(texte.id)}
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" /> Supprimer
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+          {isLoading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#063a1e]"></div>
+            </div>
+          ) : (
+            <>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[400px]">Titre</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Catégorie</TableHead>
+                      <TableHead>Date de publication</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {textesJuridiques.map((texte) => (
+                      <TableRow key={texte.id}>
+                        <TableCell className="font-medium">{texte.titre}</TableCell>
+                        <TableCell>{texte.type_texte}</TableCell>
+                        <TableCell>{texte.categorie}</TableCell>
+                        <TableCell>
+                          {new Date(texte.date_parution).toLocaleDateString('fr-FR')}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon">
+                                <MoreHorizontal className="h-4 w-4" />
+                                <span className="sr-only">Menu</span>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem onClick={() => setViewingTexte(texte)}>
+                                <Eye className="mr-2 h-4 w-4" /> Voir
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <Edit className="mr-2 h-4 w-4" /> Modifier
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <a 
+                                  href={texte.fichier_url} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="flex items-center"
+                                >
+                                  <Download className="mr-2 h-4 w-4" /> Télécharger
+                                </a>
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                className="text-red-600"
+                                onClick={() => handleDeleteTexte(texte.id)}
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" /> Supprimer
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
 
-          <div className="mt-4 flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              Affichage de {filteredTextes.length} sur {textesJuridiques.length}{" "}
-              textes juridiques
-            </p>
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious href="#" />
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#" isActive>
-                    1
-                  </PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#">2</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationNext href="#" />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
+              <div className="mt-4 flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">
+                  Affichage de {textesJuridiques.length} sur {pagination.total} textes juridiques
+                </p>
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        href="#" 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(pagination.page - 1);
+                        }}
+                        className={pagination.page <= 1 ? "opacity-50 cursor-not-allowed" : ""}
+                      />
+                    </PaginationItem>
+                    
+                    {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                      let pageNum;
+                      if (pagination.totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (pagination.page <= 3) {
+                        pageNum = i + 1;
+                      } else if (pagination.page >= pagination.totalPages - 2) {
+                        pageNum = pagination.totalPages - 4 + i;
+                      } else {
+                        pageNum = pagination.page - 2 + i;
+                      }
+                      
+                      return (
+                        <PaginationItem key={pageNum}>
+                          <PaginationLink 
+                            href="#"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handlePageChange(pageNum);
+                            }}
+                            isActive={pageNum === pagination.page}
+                          >
+                            {pageNum}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    })}
+
+                    {pagination.totalPages > 5 && (
+                      <PaginationItem>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    )}
+
+                    <PaginationItem>
+                      <PaginationNext 
+                        href="#" 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(pagination.page + 1);
+                        }}
+                        className={pagination.page >= pagination.totalPages ? "opacity-50 cursor-not-allowed" : ""}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
     </div>
