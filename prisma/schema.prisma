@@ -1,3 +1,9 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -8,61 +14,86 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model institution_financiere {
-  id               String   @id @default(auto()) @map("_id") @db.ObjectId
-  categorie        String
-  contact          String
-  createdAt        DateTime @db.Date
-  description      String
-  logo             String
-  mail             String
-  nom              String
-  partenaire_feg   Boolean
-  rs_1             String
-  rs_2             String
-  service          String
-  site_web         String
-  type_institution String
-  updatedAt        DateTime @db.Date
+model TexteJuridique {
+  id_texteJuridique String   @id @default(auto()) @map("_id") @db.ObjectId
+  titre             String
+  type_texte        String
+  fichier_url       String // URL ou chemin vers le fichier PDF stocké
+  fichier_nom       String // Nom original du fichier
+  taille_fichier    Int? // Taille du fichier en octets
+  mime_type         String   @default("application/pdf")
+  categorie         String
+  description       String?
+  date_parution     DateTime // Mots-clés pour faciliter la recherche
+  version           String? // Pour gérer les versions des documents
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Métadonnées d'extraction potentielles
+
+  @@map("texte_juridique")
 }
 
-model sea {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  adresse        String
-  categorie      String
-  contact        String
-  createdAt      DateTime @db.Date
-  description    String
-  logo           String
-  mail           String
+model InstitutionFinanciere {
+  id_institutionFinanciere String   @id @default(auto()) @map("_id") @db.ObjectId
+  nom                      String
+  categorie                String
+  type_institution         String
+  partenaire_feg           Boolean?
+  description              String?
+  logo                     String?
+  adresse                  String?
+  contact                  String?
+  mail                     String?
+  site_web                 String?
+  rs_1                     String? // réseau social 1
+  rs_2                     String? // réseau social 2
+  service                  String?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  @@map("institution_financiere")
+}
+
+model SEA {
+  id_sea         String   @id @default(auto()) @map("_id") @db.ObjectId
   nom            String
-  partenaire_feg Boolean
-  rs_1           String
-  rs_2           String?
-  services       String[]
-  site_web       String
+  description    String?
   type_sea       String
-  updatedAt      DateTime @db.Date
-}
-
-model texte_juridique {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
   categorie      String
-  createdAt      DateTime @db.Date
-  date_parution  DateTime @db.Date
-  description    String
-  fichier_nom    String
-  fichier_url    String
-  mime_type      String
-  taille_fichier BigInt
-  titre          String
-  type_texte     String
-  updatedAt      DateTime @db.Date
-  version        String
+  services       String[]
+  adresse        String?
+  contact        String?
+  mail           String?
+  site_web       String?
+  rs_1           String? // réseau social 1
+  rs_2           String? // réseau social 2
+  logo           String?
+  partenaire_feg Boolean?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("sea")
 }
 
-model utilisateur {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  /// Field referred in an index, but found no data to define the type.
-  email Json?  @unique
+model Utilisateur {
+  id_utilisateur     String    @id @default(auto()) @map("_id") @db.ObjectId
+  nom                String
+  prenom             String
+  email              String    @unique
+  mot_de_passe       String
+  role               Role      @default(ADMIN)
+  date_creation      DateTime  @default(now())
+  derniere_connexion DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@map("utilisateur")
+}
+
+enum Role {
+  ADMIN
+  MODERATEUR
+  EDITEUR
+  UTILISATEUR
 }
