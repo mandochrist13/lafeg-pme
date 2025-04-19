@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import {
   ChevronRight,
@@ -26,78 +26,17 @@ import {
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
+  // PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+} from "@/components/ui/pagination";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { fetchTextesJuridiques } from "../../services/texte/api";
+import { TexteJuridique } from "../../services/texte/api";
 
-// Données de textes juridiques pour la démonstration
-const textesJuridiques = [
-  {
-    id: 1,
-    type: "Loi",
-    date: "15/03/2024",
-    titre: "Loi n°023/2023 portant mesures d'allègement fiscal pour les PME",
-    description: "Texte relatif aux mesures d'allègement fiscal pour les petites et moyennes entreprises gabonaises.",
-    tags: ["Fiscalité", "PME"],
-    categorie: "pmes",
-    chemin: "https://flipbook-multi.vercel.app/livre"
-  },
-  {
-    id: 2,
-    type: "Décret",
-    date: "10/01/2024",
-    titre: "Décret n°001/2024 fixant les modalités de création des PME",
-    description: "Décret précisant les formalités administratives et les conditions de création des PME au Gabon.",
-    tags: ["Création d'entreprise", "Formalités"],
-    categorie: "pmes",
-    chemin: "https://flipbook-multi.vercel.app/livre"
-  },
-  {
-    id: 3,
-    type: "Traité",
-    date: "22/02/2023",
-    titre: "Accord de libre-échange continental africain (ZLECAF)",
-    description:
-      "Traité établissant une zone de libre-échange continentale en Afrique, avec implications pour les PME gabonaises.",
-    tags: ["Commerce international", "CEMAC"],
-    categorie: "internationaux",
-    chemin: "sant-"
-  },
-  {
-    id: 4,
-    type: "Directive",
-    date: "05/12/2022",
-    titre: "Directive CEMAC sur l'harmonisation des régimes fiscaux",
-    description: "Directive visant à harmoniser les politiques fiscales dans les pays membres de la CEMAC.",
-    tags: ["Fiscalité", "CEMAC"],
-    categorie: "internationaux",
-    chemin: "sant-"
-  },
-  {
-    id: 5,
-    type: "Circulaire",
-    date: "30/04/2024",
-    titre: "Circulaire DGID n°2024-001 sur les déclarations fiscales des PME",
-    description: "Instructions relatives aux nouvelles modalités de déclaration fiscale pour les petites entreprises.",
-    tags: ["Fiscalité", "DGID"],
-    categorie: "administrations",
-    chemin: "sant-"
-  },
-  {
-    id: 6,
-    type: "Arrêté",
-    date: "15/03/2024",
-    titre: "Arrêté ministériel n°045/MEF/2024 relatif aux seuils PME",
-    description: "Définition des seuils chiffrés pour la qualification des entreprises en tant que PME au Gabon.",
-    tags: ["Classification", "MEF"],
-    categorie: "administrations",
-    chemin: "sant-"
-  },
-]
 
 // Mapping des noms d'onglets pour l'affichage
 const tabNames = {
@@ -109,12 +48,15 @@ const tabNames = {
 export default function TextesJuridiques() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("pmes");
+  const [page, setPage] = useState(1);
+  const [textes, setTextes] = useState<TexteJuridique[]>([]); // <-- Utilisez l'interface du 3ème bloc
+
+  const [loading, setLoading] = useState(false);
+  const [totalPages, setTotalPages] = useState(1);
   const [sortOption, setSortOption] = useState("recent");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [suggestedTab, setSuggestedTab] = useState<string | null>(null);
-  const [suggestedResults, setSuggestedResults] = useState<
-    typeof textesJuridiques
-  >([]);
+  const [suggestedResults, setSuggestedResults] = useState<TexteJuridique[]>([]);
 
   // Fonction pour gérer la recherche
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,6 +68,7 @@ export default function TextesJuridiques() {
     setActiveTab(value);
     // Réinitialiser les suggestions lors du changement d'onglet
     setSuggestedTab(null);
+    setPage(1);
   };
 
   // Fonction pour gérer le tri
@@ -142,96 +85,101 @@ export default function TextesJuridiques() {
     }
   };
 
-  // Fonction pour appliquer tous les filtres
-  const applyFilters = () => {
-    // Cette fonction est appelée lorsque le bouton "Appliquer les filtres" est cliqué
-    // Dans cette implémentation, les filtres sont déjà appliqués en temps réel
-  };
-
   // Filtrer les textes en fonction de la recherche et des filtres
-  const filteredTextes = textesJuridiques.filter((texte) => {
-    // Filtre par onglet actif
-    if (texte.categorie !== activeTab) return false;
+ // Filtrer les textes en fonction de la recherche et des filtres
+const filteredTextes = textes.filter((texte: TexteJuridique) => {
+  // 1. Filtre par onglet actif
+  if (texte.categorie !== activeTab) return false;
 
-    // Filtre par terme de recherche
-    if (
-      searchTerm &&
-      !texte.titre.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      !texte.description.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      !texte.tags.some((tag) =>
-        tag.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    ) {
+  // 2. Filtre par terme de recherche (avec gestion des null/undefined)
+  if (searchTerm) {
+    const searchTermLower = searchTerm.toLowerCase();
+    const hasMatchInTitle = texte.titre?.toLowerCase().includes(searchTermLower) ?? false;
+    const hasMatchInDescription = texte.description?.toLowerCase().includes(searchTermLower) ?? false;
+    // const hasMatchInTags = texte.tags?.some(tag => 
+    //   tag?.toLowerCase().includes(searchTermLower)
+    // ) ?? false;
+
+    if (!hasMatchInTitle && !hasMatchInDescription /* && !hasMatchInTags */) {
       return false;
     }
+  }
 
-    // Filtre par type de texte
-    if (selectedTypes.length > 0 && !selectedTypes.includes(texte.type)) {
-      return false;
-    }
+  // 3. Filtre par type de texte (avec vérification de sécurité)
+  if (selectedTypes.length > 0 && !selectedTypes.includes(texte.type_texte)) {
+    return false;
+  }
 
-    return true;
-  });
+  return true;
+});
 
   // Trier les textes
-  const sortedTextes = [...filteredTextes].sort((a, b) => {
-    switch (sortOption) {
-      case "recent":
-        return (
-          new Date(b.date.split("/").reverse().join("-")).getTime() -
-          new Date(a.date.split("/").reverse().join("-")).getTime()
-        );
-      case "old":
-        return (
-          new Date(a.date.split("/").reverse().join("-")).getTime() -
-          new Date(b.date.split("/").reverse().join("-")).getTime()
-        );
-      case "az":
-        return a.titre.localeCompare(b.titre);
-      case "za":
-        return b.titre.localeCompare(a.titre);
-      default:
-        return 0;
+  const filteredAndSortedTextes = useMemo(() => {
+    let filtered = textes;
+
+    if (searchTerm) {
+      filtered = filtered.filter((texte) =>
+        texte.titre.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
-  });
+
+    switch (sortOption) {
+      case "az":
+        filtered.sort((a, b) => a.titre.localeCompare(b.titre));
+        break;
+      case "za":
+        filtered.sort((a, b) => b.titre.localeCompare(a.titre));
+        break;
+      case "old":
+        filtered.sort(
+          (a, b) =>
+            new Date(a.date_parution).getTime() -
+            new Date(b.date_parution).getTime()
+        );
+        break;
+      default:
+        filtered.sort(
+          (a, b) =>
+            new Date(b.date_parution).getTime() -
+            new Date(a.date_parution).getTime()
+        );
+    }
+
+    return filtered;
+  }, [textes, searchTerm, sortOption]);
 
   // Trouver des résultats dans d'autres onglets lorsqu'aucun résultat n'est trouvé
   useEffect(() => {
     if (searchTerm && filteredTextes.length === 0) {
       // Chercher dans les autres onglets
-      const otherTabsResults: Record<string, typeof textesJuridiques> = {};
+      const otherTabsResults: Record<string, TexteJuridique[]> = {};
 
       Object.keys(tabNames).forEach((tab) => {
         if (tab !== activeTab) {
-          const results = textesJuridiques.filter((texte) => {
+          const filteredResults = textes.filter((texte) => {
+            // Filtre par catégorie (onglet)
             if (texte.categorie !== tab) return false;
-
-            // Appliquer les mêmes filtres de recherche
-            if (
-              searchTerm &&
-              !texte.titre.toLowerCase().includes(searchTerm.toLowerCase()) &&
-              !texte.description
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase()) &&
-              !texte.tags.some((tag) =>
-                tag.toLowerCase().includes(searchTerm.toLowerCase())
-              )
-            ) {
+            
+            // Filtre par recherche texte (si searchTerm existe)
+            if (searchTerm) {
+              const searchLower = searchTerm.toLowerCase();
+              const matchesSearch = 
+                texte.titre.toLowerCase().includes(searchLower) ||
+                (texte.description && texte.description.toLowerCase().includes(searchLower));
+                // (texte.tags && texte.tags.some(tag => tag.toLowerCase().includes(searchLower)));
+              
+               if (!matchesSearch) return false;
+            }
+          
+            // Filtre par type (si types sélectionnés)
+            if (selectedTypes.length > 0 && !selectedTypes.includes(texte.type_texte)) {
               return false;
             }
-
-            // Appliquer les filtres de type
-            if (
-              selectedTypes.length > 0 &&
-              !selectedTypes.includes(texte.type)
-            ) {
-              return false;
-            }
-
+          
             return true;
           });
 
-          otherTabsResults[tab] = results;
+          otherTabsResults[tab] = filteredResults;
         }
       });
 
@@ -257,7 +205,28 @@ export default function TextesJuridiques() {
       setSuggestedTab(null);
       setSuggestedResults([]);
     }
-  }, [searchTerm, activeTab, selectedTypes, filteredTextes.length]);
+
+    const loadTextes = async () => {
+      setLoading(true);
+      try {
+        const { data, pagination } = await fetchTextesJuridiques(
+          page,
+          10,
+          activeTab,
+          selectedTypes.length > 0 ? selectedTypes.join(",") : undefined
+        );
+        console.log("data reçu :", data);
+        setTextes(data);
+        setTotalPages(pagination.totalPages);
+      } catch (error) {
+        console.error("Erreur :", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTextes();
+  }, [searchTerm, page, activeTab, selectedTypes, filteredTextes.length]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -458,161 +427,189 @@ export default function TextesJuridiques() {
                 </TabsList>
 
                 {["pmes", "internationaux", "administrations"].map((tab) => (
-                  <TabsContent key={tab} id={tab} value={tab}>
-                    <p className="text-sm text-muted-foreground mb-6 ">
-                      Affichage de{" "}
-                      {sortedTextes.length > 0
-                        ? `1-${sortedTextes.length}`
-                        : "0"}{" "}
-                      sur{" "}
-                      {
-                        textesJuridiques.filter((t) => t.categorie === tab)
-                          .length
-                      }{" "}
-                      résultats
-                      {searchTerm && ` pour "${searchTerm}"`}
-                    </p>
+  <TabsContent key={tab} value={tab}>
+    {/* En-tête statistiques */}
+    <div className="text-sm text-muted-foreground mb-6">
+      {loading ? (
+        <Skeleton className="h-4 w-[200px]" />
+      ) : (
+        <>
+          Affichage de{" "}
+          {filteredAndSortedTextes.length > 0
+            ? `1-${filteredAndSortedTextes.length}`
+            : "0"}{" "}
+          sur {textes.filter((t) => t.categorie === tab).length} résultats
+          {searchTerm && ` pour "${searchTerm}"`}
+        </>
+      )}
+    </div>
 
-                    {sortedTextes.length > 0 ? (
-                      <div className="space-y-4">
-                        {sortedTextes.map((texte) => (
-                          <Card
-                            key={texte.id}
-                            className="hover:shadow-sm transition-shadow"
-                          >
-                            <CardContent className="p-4">
-                              <div className="flex flex-col md:flex-row md:items-center gap-4">
-                                <div className="flex-1">
-                                  <div className="flex items-center gap-2 mb-1">
-                                    <Badge className="bg-[#063a1e] text-white">
-                                      {texte.type}
-                                    </Badge>
-                                    <span className="text-sm text-muted-foreground">
-                                      Publié le {texte.date}
-                                    </span>
-                                  </div>
-                                  <h3 className="font-medium">{texte.titre}</h3>
-                                  <p className="text-sm text-muted-foreground mt-1">
-                                    {texte.description}
-                                  </p>
-                                  <div className="flex flex-wrap gap-2 mt-2">
-                                    {texte.tags.map((tag, index) => (
-                                      <Badge
-                                        key={index}
-                                        variant="outline"
-                                        className="text-xs"
-                                      >
-                                        {tag}
-                                      </Badge>
-                                    ))}
-                                  </div>
-                                </div>
-                                <div className="flex gap-2">
-                                  <Link target="_blank" href={`${texte.chemin}/${texte.id}`}>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
-                                  >
-                                    <FileText className="h-4 w-4" />
-                                    <span>Lire</span>
-                                  </Button>
-                                  </Link>
-                                  
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
-                                  >
-                                    <Download className="h-4 w-4" />
-                                    <span>Télécharger</span>
-                                  </Button>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        <div className="text-center py-4">
-                          <p className="text-muted-foreground">
-                            Aucun résultat trouvé pour votre recherche dans
-                            cette section.
-                          </p>
-                        </div>
+    {/* Liste des textes */}
+    {loading ? (
+      <div className="space-y-4">
+        {[...Array(3)].map((_, i) => (
+          <Card key={`skeleton-${i}`}>
+            <CardContent className="p-4 space-y-3">
+               <Skeleton className="h-4 w-[200px]" />
+              <Skeleton className="h-4 w-[80%]" />
+              <Skeleton className="h-4 w-[60%]" /> 
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    ) : filteredAndSortedTextes.length > 0 ? (
+      <div className="space-y-4">
+        {filteredAndSortedTextes.map((texte) => (
+          <Card key={texte.id} className="hover:shadow-sm transition-shadow">
+            <CardContent className="p-4">
+              <div className="flex flex-col md:flex-row md:items-center gap-4">
+                {/* Métadonnées */}
+                <div className="flex-1">
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <Badge className="bg-[#063a1e] text-white">
+                      {texte.type_texte}
+                    </Badge>
+                    <span className="text-sm text-muted-foreground">
+                      Publié le{" "}
+                      {new Date(texte.date_parution).toLocaleDateString("fr-FR", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </span>
+                  </div>
+                  <h3 className="font-medium line-clamp-1">{texte.titre}</h3>
+                  <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                    {texte.description}
+                  </p>
+                  <div className="mt-2">
+                    <Badge variant="outline" className="text-xs">
+                      {texte.mime_type.toUpperCase()}
+                    </Badge>
+                  </div>
+                </div>
 
-                        {suggestedTab && suggestedResults.length > 0 && (
-                          <Alert className="bg-[#f0f9f1] border-[#063a1e]/20">
-                            <AlertTitle className="text-[#063a1e] flex items-center gap-2">
-                              <ArrowRight className="h-4 w-4" />
-                              Résultats trouvés dans une autre section
-                            </AlertTitle>
-                            <AlertDescription className="mt-2">
-                              <p className="mb-3">
-                                Nous avons trouvé {suggestedResults.length}{" "}
-                                résultat(s) pour "{searchTerm}" dans la section
-                                "
-                                {
-                                  tabNames[
-                                    suggestedTab as keyof typeof tabNames
-                                  ]
-                                }
-                                ".
-                              </p>
-                              <Button
-                                onClick={() => setActiveTab(suggestedTab)}
-                                className="bg-[#063a1e] hover:bg-[#063a1e]/90"
-                              >
-                                Voir les résultats
-                              </Button>
-                            </AlertDescription>
-                          </Alert>
-                        )}
+                {/* Actions */}
+                <div className="flex gap-2 shrink-0">
+                  <Link 
+                    href={`/textes/${texte.id}`} 
+                    target="_blank"
+                    aria-label={`Lire ${texte.titre}`}
+                  >
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
+                    >
+                      <FileText className="h-4 w-4" />
+                      <span>Lire</span>
+                    </Button>
+                  </Link>
 
+                  <a 
+                    href={texte.fichier_url} 
+                    download={texte.fichier_nom}
+                    aria-label={`Télécharger ${texte.fichier_nom}`}
+                  >
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
+                    >
+                      <Download className="h-4 w-4" />
+                      <span>Télécharger</span>
+                    </Button>
+                  </a>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    ) : (
+      /* Aucun résultat */
+      <div className="space-y-4">
+        <div className="text-center py-4">
+          <p className="text-muted-foreground">
+            Aucun résultat trouvé pour votre recherche dans cette section.
+          </p>
+        </div>
+        
 
-                        {(!suggestedTab || suggestedResults.length === 0) && (
-                          <div className="text-center py-4">
-                            <p className="text-muted-foreground">
-                              Aucun résultat trouvé dans les autres sections non
-                              plus.
-                            </p>
-                            <p className="text-muted-foreground mt-2">
-                              Essayez de modifier vos termes de recherche ou vos
-                              filtres.
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </TabsContent>
-                ))}
+        {/* Suggestions inter-onglets */}
+        {suggestedTab && suggestedResults.length > 0 && (
+          <Alert className="bg-[#f0f9f1] border-[#063a1e]/20">
+            <div className="flex items-start gap-2">
+              <ArrowRight className="h-4 w-4 mt-0.5 text-[#063a1e]" />
+              <div>
+                <AlertTitle className="text-[#063a1e]">
+                  Résultats trouvés dans une autre section
+                </AlertTitle>
+                <AlertDescription className="mt-2">
+                  <p className="mb-3">
+                    Nous avons trouvé {suggestedResults.length} résultat(s) pour "{searchTerm}" dans 
+                    la section "{tabNames[suggestedTab as keyof typeof tabNames]}".
+                  </p>
+                  <Button
+                    onClick={() => {
+                      setActiveTab(suggestedTab);
+                      setPage(1);
+                    }}
+                    className="bg-[#063a1e] hover:bg-[#063a1e]/90"
+                  >
+                    Voir les résultats
+                  </Button>
+                </AlertDescription>
+              </div>
+            </div>
+          </Alert>
+        )}
+
+        {/* Aucun résultat nulle part */}
+        {!loading && !suggestedTab && (
+          <div className="text-center py-4">
+            <p className="text-muted-foreground">
+              Essayez de modifier vos termes de recherche ou vos filtres.
+            </p>
+          </div>
+        )}
+      </div>
+    )}
+  </TabsContent>
+))}
               </Tabs>
 
               {/* Pagination */}
-              {sortedTextes.length > 0 && (
+              {filteredAndSortedTextes.length > 0 && (
                 <div className="mt-6 ">
                   <Pagination>
                     <PaginationContent>
                       <PaginationItem>
-                        <PaginationPrevious href="#" />
+                        <PaginationPrevious
+                          href="#"
+                          onClick={() =>
+                            setPage((prev) => Math.max(prev - 1, 1))
+                          }
+                        />
                       </PaginationItem>
+                      {Array.from({ length: totalPages }, (_, i) => (
+                        <PaginationItem key={i}>
+                          <PaginationLink
+                            href="#"
+                            isActive={page === i + 1}
+                            onClick={() => setPage(i + 1)}
+                          >
+                            {i + 1}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
                       <PaginationItem>
-                        <PaginationLink href="#" isActive>
-                          1
-                        </PaginationLink>
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationLink href="#">2</PaginationLink>
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationLink href="#">3</PaginationLink>
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationNext href="#" />
+                        <PaginationNext
+                          href="#"
+                          onClick={() =>
+                            setPage((prev) => Math.min(prev + 1, totalPages))
+                          }
+                        />
                       </PaginationItem>
                     </PaginationContent>
                   </Pagination>
