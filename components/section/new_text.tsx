@@ -90,7 +90,14 @@ export default function NewText() {
                       Nouveau
                     </Badge>
                     <span className="text-sm text-muted-foreground">
-                      {text.date_parution}
+                      {new Date(text.date_parution).toLocaleDateString(
+                        "fr-FR",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )}
                     </span>{" "}
                     {/* Utilisez la date de l'objet */}
                   </div>
