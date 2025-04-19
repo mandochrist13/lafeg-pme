@@ -69,9 +69,7 @@ interface PaginationData {
 }
 
 export default function TextesJuridiquesAdmin() {
-  const [textesJuridiques, setTextesJuridiques] = useState<TexteJuridique[]>(
-    []
-  );
+  const [textesJuridiques, setTextesJuridiques] = useState<TexteJuridique[]>([]);
   const [pagination, setPagination] = useState<PaginationData>({
     page: 1,
     limit: 10,
@@ -82,13 +80,12 @@ export default function TextesJuridiquesAdmin() {
   const [selectedType, setSelectedType] = useState("all");
   const [selectedCategorie, setSelectedCategorie] = useState("all");
   const [showAddForm, setShowAddForm] = useState(false);
+  const [viewingTexte, setViewingTexte] = useState<TexteJuridique | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const [newTexte, setNewTexte] = useState<
-    Omit<TexteJuridique, "id"> & { fichier?: File }
-  >({
+  const [newTexte, setNewTexte] = useState<Omit<TexteJuridique, "id"> & { fichier?: File }>({
     titre: "",
     type_texte: "",
     categorie: "",
@@ -96,30 +93,29 @@ export default function TextesJuridiquesAdmin() {
     fichier_url: "",
   });
 
-  // Récupérer les textes juridiques depuis l'API
+  // Fonction pour récupérer les textes juridiques
   const fetchTextesJuridiques = async () => {
     setIsLoading(true);
     setError(null);
-
+    
     try {
       const params = new URLSearchParams();
       params.append("page", pagination.page.toString());
       params.append("limit", pagination.limit.toString());
-
+      
       if (selectedType !== "all") params.append("type_texte", selectedType);
-      if (selectedCategorie !== "all")
-        params.append("categorie", selectedCategorie);
+      if (selectedCategorie !== "all") params.append("categorie", selectedCategorie);
       if (searchTerm) params.append("search", searchTerm);
 
       const response = await fetch(`/api/texte-juridique?${params.toString()}`);
-
+      
       if (!response.ok) {
         throw new Error("Erreur lors de la récupération des textes juridiques");
       }
 
       const data = await response.json();
       setTextesJuridiques(data.data);
-      setPagination((prev) => ({
+      setPagination(prev => ({
         ...prev,
         total: data.pagination.total,
         totalPages: data.pagination.totalPages,
@@ -137,12 +133,10 @@ export default function TextesJuridiquesAdmin() {
     }
   };
 
-  // Charger les données au montage et quand les filtres changent
   useEffect(() => {
     fetchTextesJuridiques();
   }, [pagination.page, selectedType, selectedCategorie]);
 
-  // Gérer la recherche avec un délai pour éviter trop de requêtes
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchTerm !== "") {
@@ -153,11 +147,8 @@ export default function TextesJuridiquesAdmin() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Extraire les types et catégories uniques pour les filtres
   const types = [...new Set(textesJuridiques.map((texte) => texte.type_texte))];
-  const categories = [
-    ...new Set(textesJuridiques.map((texte) => texte.categorie)),
-  ];
+  const categories = [...new Set(textesJuridiques.map((texte) => texte.categorie))];
 
   const handleAddTexte = async () => {
     if (
@@ -183,8 +174,7 @@ export default function TextesJuridiquesAdmin() {
       formData.append("categorie", newTexte.categorie);
       formData.append("date_parution", newTexte.date_parution);
       formData.append("fichier", newTexte.fichier);
-      if (newTexte.description)
-        formData.append("description", newTexte.description);
+      if (newTexte.description) formData.append("description", newTexte.description);
       if (newTexte.version) formData.append("version", newTexte.version);
 
       const response = await fetch("/api/texte-juridique", {
@@ -197,7 +187,7 @@ export default function TextesJuridiquesAdmin() {
       }
 
       const addedTexte = await response.json();
-
+      
       toast({
         title: "Succès",
         description: "Le texte juridique a été ajouté avec succès",
@@ -211,15 +201,13 @@ export default function TextesJuridiquesAdmin() {
         date_parution: "",
         fichier_url: "",
       });
-
-      // Recharger les données
+      
       fetchTextesJuridiques();
     } catch (err) {
       console.error("Erreur:", err);
       toast({
         title: "Erreur",
-        description:
-          err instanceof Error ? err.message : "Une erreur est survenue",
+        description: err instanceof Error ? err.message : "Une erreur est survenue",
         variant: "destructive",
       });
     } finally {
@@ -247,14 +235,12 @@ export default function TextesJuridiquesAdmin() {
         description: "Le texte juridique a été supprimé avec succès",
       });
 
-      // Recharger les données
       fetchTextesJuridiques();
     } catch (err) {
       console.error("Erreur:", err);
       toast({
         title: "Erreur",
-        description:
-          err instanceof Error ? err.message : "Une erreur est survenue",
+        description: err instanceof Error ? err.message : "Une erreur est survenue",
         variant: "destructive",
       });
     } finally {
@@ -264,7 +250,7 @@ export default function TextesJuridiquesAdmin() {
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= pagination.totalPages) {
-      setPagination((prev) => ({ ...prev, page: newPage }));
+      setPagination(prev => ({ ...prev, page: newPage }));
     }
   };
 
@@ -426,6 +412,67 @@ export default function TextesJuridiquesAdmin() {
         </div>
       )}
 
+      {/* Modal de visualisation */}
+      {viewingTexte && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b p-4">
+              <h2 className="text-xl font-bold">{viewingTexte.titre}</h2>
+              <button
+                onClick={() => setViewingTexte(null)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground">Type</h3>
+                  <p>{viewingTexte.type_texte}</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground">Catégorie</h3>
+                  <p>{viewingTexte.categorie}</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground">Date de publication</h3>
+                  <p>{new Date(viewingTexte.date_parution).toLocaleDateString('fr-FR')}</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground">Version</h3>
+                  <p>{viewingTexte.version || "Non spécifiée"}</p>
+                </div>
+              </div>
+
+              {viewingTexte.description && (
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground">Description</h3>
+                  <p className="whitespace-pre-line">{viewingTexte.description}</p>
+                </div>
+              )}
+
+              <div className="pt-4">
+                <a
+                  href={viewingTexte.fichier_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 bg-[#063a1e] text-white hover:bg-[#063a1e]/90 h-10 px-4 py-2"
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Télécharger le document
+                </a>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 p-4 border-t">
+              <Button variant="outline" onClick={() => setViewingTexte(null)}>
+                Fermer
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Contenu principal */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold tracking-tight">Textes juridiques</h1>
@@ -553,15 +600,11 @@ export default function TextesJuridiquesAdmin() {
                   <TableBody>
                     {textesJuridiques.map((texte) => (
                       <TableRow key={texte.id}>
-                        <TableCell className="font-medium">
-                          {texte.titre}
-                        </TableCell>
+                        <TableCell className="font-medium">{texte.titre}</TableCell>
                         <TableCell>{texte.type_texte}</TableCell>
                         <TableCell>{texte.categorie}</TableCell>
                         <TableCell>
-                          {new Date(texte.date_parution).toLocaleDateString(
-                            "fr-FR"
-                          )}
+                          {new Date(texte.date_parution).toLocaleDateString('fr-FR')}
                         </TableCell>
                         <TableCell className="text-right">
                           <DropdownMenu>
@@ -574,21 +617,20 @@ export default function TextesJuridiquesAdmin() {
                             <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Actions</DropdownMenuLabel>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => setViewingTexte(texte)}>
                                 <Eye className="mr-2 h-4 w-4" /> Voir
                               </DropdownMenuItem>
                               <DropdownMenuItem>
                                 <Edit className="mr-2 h-4 w-4" /> Modifier
                               </DropdownMenuItem>
                               <DropdownMenuItem>
-                                <a
-                                  href={texte.fichier_url}
-                                  target="_blank"
+                                <a 
+                                  href={texte.fichier_url} 
+                                  target="_blank" 
                                   rel="noopener noreferrer"
                                   className="flex items-center"
                                 >
-                                  <Download className="mr-2 h-4 w-4" />{" "}
-                                  Télécharger
+                                  <Download className="mr-2 h-4 w-4" /> Télécharger
                                 </a>
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
@@ -609,59 +651,48 @@ export default function TextesJuridiquesAdmin() {
 
               <div className="mt-4 flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
-                  Affichage de {textesJuridiques.length} sur {pagination.total}{" "}
-                  textes juridiques
+                  Affichage de {textesJuridiques.length} sur {pagination.total} textes juridiques
                 </p>
                 <Pagination>
                   <PaginationContent>
                     <PaginationItem>
-                      <PaginationPrevious
-                        href="#"
+                      <PaginationPrevious 
+                        href="#" 
                         onClick={(e) => {
                           e.preventDefault();
                           handlePageChange(pagination.page - 1);
                         }}
-                        className={
-                          pagination.page <= 1
-                            ? "opacity-50 cursor-not-allowed"
-                            : ""
-                        }
+                        className={pagination.page <= 1 ? "opacity-50 cursor-not-allowed" : ""}
                       />
                     </PaginationItem>
-
-                    {Array.from(
-                      { length: Math.min(5, pagination.totalPages) },
-                      (_, i) => {
-                        let pageNum;
-                        if (pagination.totalPages <= 5) {
-                          pageNum = i + 1;
-                        } else if (pagination.page <= 3) {
-                          pageNum = i + 1;
-                        } else if (
-                          pagination.page >=
-                          pagination.totalPages - 2
-                        ) {
-                          pageNum = pagination.totalPages - 4 + i;
-                        } else {
-                          pageNum = pagination.page - 2 + i;
-                        }
-
-                        return (
-                          <PaginationItem key={pageNum}>
-                            <PaginationLink
-                              href="#"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                handlePageChange(pageNum);
-                              }}
-                              isActive={pageNum === pagination.page}
-                            >
-                              {pageNum}
-                            </PaginationLink>
-                          </PaginationItem>
-                        );
+                    
+                    {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                      let pageNum;
+                      if (pagination.totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (pagination.page <= 3) {
+                        pageNum = i + 1;
+                      } else if (pagination.page >= pagination.totalPages - 2) {
+                        pageNum = pagination.totalPages - 4 + i;
+                      } else {
+                        pageNum = pagination.page - 2 + i;
                       }
-                    )}
+                      
+                      return (
+                        <PaginationItem key={pageNum}>
+                          <PaginationLink 
+                            href="#"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handlePageChange(pageNum);
+                            }}
+                            isActive={pageNum === pagination.page}
+                          >
+                            {pageNum}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    })}
 
                     {pagination.totalPages > 5 && (
                       <PaginationItem>
@@ -670,17 +701,13 @@ export default function TextesJuridiquesAdmin() {
                     )}
 
                     <PaginationItem>
-                      <PaginationNext
-                        href="#"
+                      <PaginationNext 
+                        href="#" 
                         onClick={(e) => {
                           e.preventDefault();
                           handlePageChange(pagination.page + 1);
                         }}
-                        className={
-                          pagination.page >= pagination.totalPages
-                            ? "opacity-50 cursor-not-allowed"
-                            : ""
-                        }
+                        className={pagination.page >= pagination.totalPages ? "opacity-50 cursor-not-allowed" : ""}
                       />
                     </PaginationItem>
                   </PaginationContent>
