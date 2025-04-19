@@ -6,75 +6,14 @@ import Form from "@/components/section/form";
 
 import { ArrowRight, FileText, BookOpen, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 // import AddressAutocomplete from "@/components/AddressAutocomplete"
-import { useState, useEffect } from "react"
 
-// Assurez-vous que le type de textesJuridiques est bien défini
-import textesJuridiques from "@/components/data/text/text"
-
+import TextSearch from "@/components/section/search";
 import NewText from "@/components/section/new_text"
 
-// Définir un type pour les textes juridiques
-interface TextJuridiques {
-  id: number;
-  type: string;
-  date: string;
-  titre: string; // Assurez-vous que le champ est 'titre' et non 'title'
-  description: string; // Assurez-vous que le champ est 'content' et non 'description'
-  tags: string[];
-  categorie: string; // Assurez-vous que le champ est 'categorie' et non 'category'
-}
-
-
 export default function Home() {
-  const [searchQuery, setSearchQuery] = useState<string>("")
-  const [searchResults, setSearchResults] = useState<TextJuridiques[]>([])
-  const [showResults, setShowResults] = useState<boolean>(false)
-  const [selectedCategory, setSelectedCategory] = useState<string>("")
-
-  // Fonction pour gérer la recherche
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-
-    if (!searchQuery && !selectedCategory) {
-      setShowResults(false)
-      return
-    }
-
-    // Filtrer les textes en fonction de la requête de recherche et/ou de la catégorie sélectionnée
-    const filteredResults = textesJuridiques.filter((text: TextJuridiques) => {
-      const matchesQuery =
-        searchQuery.trim() === "" ||
-        text.titre.toLowerCase().includes(searchQuery.toLowerCase()) || // Utilisez 'titre'
-        text.description.toLowerCase().includes(searchQuery.toLowerCase())
-
-      const matchesCategory = selectedCategory === "" || text.categorie === selectedCategory // Utilisez 'categorie'
-
-      return matchesQuery && matchesCategory
-    })
-
-    setSearchResults(filteredResults)
-    setShowResults(true)
-  }
-
-  // Fonction pour gérer le clic sur une catégorie
-  const handleCategoryClick = (category: string) => {
-    setSelectedCategory(category)
-    setSearchQuery("")
-  }
-
-  // Effacer les résultats de recherche lorsque la requête de recherche est vide
-  useEffect(() => {
-    if (searchQuery === "" && selectedCategory === "") {
-      setShowResults(false)
-    }
-  }, [searchQuery, selectedCategory])
-
-
-
 
   return (
     <div className="">
@@ -165,7 +104,8 @@ export default function Home() {
                 Trouvez rapidement les textes juridiques dont vous avez besoin pour votre entreprise
               </p>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm">
+            <TextSearch/>
+            {/* <div className="bg-white p-6 rounded-lg shadow-sm">
               <form className="space-y-4" onSubmit={handleSearch}>
                 <div className="flex flex-col md:flex-row gap-4">
                   <Input
@@ -182,92 +122,10 @@ export default function Home() {
                     </span>
                   </Button>
                 </div>
-                <div className="flex flex-wrap gap-2 pt-2">
-                  <Badge
-                    variant="secondary"
-                    className={`cursor-pointer hover:bg-secondary/80 ${selectedCategory === "creation" ? "bg-[#063a1e] text-white" : ""}`}
-                    onClick={() => handleCategoryClick("creation")}
-                  >
-                    Création d'entreprise
-                  </Badge>
-                  <Badge
-                    variant="secondary"
-                    className={`cursor-pointer hover:bg-secondary/80 ${selectedCategory === "fiscalite" ? "bg-[#063a1e] text-white" : ""}`}
-                    onClick={() => handleCategoryClick("fiscalite")}
-                  >
-                    Fiscalité
-                  </Badge>
-                  <Badge
-                    variant="secondary"
-                    className={`cursor-pointer hover:bg-secondary/80 ${selectedCategory === "travail" ? "bg-[#063a1e] text-white" : ""}`}
-                    onClick={() => handleCategoryClick("travail")}
-                  >
-                    Droit du travail
-                  </Badge>
-                  <Badge
-                    variant="secondary"
-                    className={`cursor-pointer hover:bg-secondary/80 ${selectedCategory === "ohada" ? "bg-[#063a1e] text-white" : ""}`}
-                    onClick={() => handleCategoryClick("ohada")}
-                  >
-                    OHADA
-                  </Badge>
-                  <Badge
-                    variant="secondary"
-                    className={`cursor-pointer hover:bg-secondary/80 ${selectedCategory === "import" ? "bg-[#063a1e] text-white" : ""}`}
-                    onClick={() => handleCategoryClick("import")}
-                  >
-                    Import/Export
-                  </Badge>
-                </div>
+                
               </form>
-              {showResults && (
-                <div className="mt-6 bg-white p-4 rounded-lg shadow-sm">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-semibold">Résultats de recherche ({searchResults.length})</h3>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setShowResults(false)
-                        setSearchQuery("")
-                        setSelectedCategory("")
-                      }}
-                    >
-                      Effacer
-                    </Button>
-                  </div>
-
-                  {searchResults.length > 0 ? (
-                    <div className="space-y-4 max-h-[400px] overflow-y-auto">
-                      {searchResults.map((text, index) => (
-                        <Card key={index} className="hover:shadow-sm transition-shadow">
-                          <CardHeader className="pb-2">
-                            <div className="flex items-center justify-between">
-                              <Badge className="bg-[#063a1e] text-white">{text.categorie}</Badge> {/* Utilisez 'categorie' */}
-                              <span className="text-xs text-muted-foreground">{text.date}</span>
-                            </div>
-                            <CardTitle className="mt-2 text-lg">{text.titre}</CardTitle> {/* Utilisez 'titre' */}
-                          </CardHeader>
-                          <CardContent>
-                            <p className="text-sm text-muted-foreground line-clamp-2">{text.description}</p>
-                          </CardContent>
-                          <CardFooter>
-                            <Button variant="ghost" className="w-full gap-1">
-                              Lire le texte complet <ArrowRight className="h-4 w-4" />
-                            </Button>
-                          </CardFooter>
-                        </Card>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <p className="text-muted-foreground">Aucun résultat trouvé pour votre recherche.</p>
-                      <p className="text-sm mt-2">Essayez avec d'autres mots-clés ou catégories.</p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+             
+            </div> */}
           </div>
         </div>
       </section>

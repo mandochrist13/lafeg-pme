@@ -17,7 +17,8 @@ export interface TexteJuridique {
     page = 1,
     limit = 10,
     categorie?: string,
-    type?: string
+    type?: string,
+    titre?: string
   ): Promise<{
     data: TexteJuridique[];
     pagination: {
@@ -32,8 +33,11 @@ export interface TexteJuridique {
     params.append('limit', limit.toString());
     if (categorie) params.append('categorie', categorie);
     if (type) params.append('type_texte', type);
+    if (titre) params.append('titre', titre);
   
-    const response = await fetch(`/api/texte-juridique?${params.toString()}`);
+    const response = await fetch(`/api/texte-juridique?${params.toString()}`, {
+      cache: "no-store",
+  });
     
     if (!response.ok) {
       throw new Error('Erreur lors de la récupération des textes juridiques');

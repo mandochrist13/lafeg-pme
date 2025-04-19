@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-// import textesJuridiques from "@/components/data/text/text";
+
 import {
   fetchTextesJuridiques,
   TexteJuridique,
