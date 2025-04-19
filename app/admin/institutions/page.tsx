@@ -78,7 +78,6 @@ import { createFinancialInstitution } from "@/app/services/institution/api";
 import { toast } from "sonner";
 
 export default function InstitutionsPage({
-  refreshInstitutions,
 }: {
   refreshInstitutions: () => void;
 }) {
@@ -90,10 +89,13 @@ export default function InstitutionsPage({
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [institutions, setInstitutions] = useState<FinancialInstitution[]>([]);
   const [newInstitution, setNewInstitution] = useState<
-    Omit<FinancialInstitution, "id" | "createdAt" | "updatedAt">
+    Omit<
+      FinancialInstitution,
+      "id_institutionFinanciere" | "createdAt" | "updatedAt"
+    >
   >({
     nom: "",
-    categorie: "banque",
+    categorie: "",
     type_institution: "",
     description: "",
     adresse: "",
@@ -104,13 +106,13 @@ export default function InstitutionsPage({
     logo: "",
     rs_1: "",
     rs_2: "",
-    partenaire_feg: "",
+    partenaire_feg: false,
   });
 
   const resetNewInstitutionForm = () => {
     setNewInstitution({
       nom: "",
-      categorie: "banque",
+      categorie: "",
       type_institution: "",
       description: "",
       adresse: "",
@@ -121,17 +123,30 @@ export default function InstitutionsPage({
       logo: "",
       rs_1: "",
       rs_2: "",
-      partenaire_feg: "",
+      partenaire_feg: false,
     });
   };
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const refreshInstitutions = async () => {
+    setLoading(true);
+    try {
+      const data = await fetchFinancialInstitutions();
+      setInstitutions(data);
+    } catch (err: any) {
+      setError(err.message || "Erreur inconnue");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   useEffect(() => {
     const loadData = async () => {
       try {
         const data = await fetchFinancialInstitutions();
+        console.log("🔎 Institutions récupérées :", data);
         setInstitutions(data);
       } catch (err: any) {
         setError(err.message || "Erreur inconnue");
@@ -139,9 +154,10 @@ export default function InstitutionsPage({
         setLoading(false);
       }
     };
-
+  
     loadData();
   }, []);
+  
 
   if (loading) return <p>Chargement...</p>;
   if (error) return <p>Erreur : {error}</p>;
@@ -165,8 +181,10 @@ export default function InstitutionsPage({
   const handleCreateInstitution = async () => {
     try {
       setLoading(true);
+      console.log("Institution envoyée :", newInstitution);
+
       await createFinancialInstitution(newInstitution);
-      refreshInstitutions(); // rafraîchit la liste
+      await refreshInstitutions(); // rafraîchit la liste
       resetNewInstitutionForm(); // reset du formulaire
       setIsAddDialogOpen(false); // ferme le dialog
     } catch (error) {
@@ -175,55 +193,6 @@ export default function InstitutionsPage({
       setLoading(false);
     }
   };
-
-  const convertTypeToCategorie = (type: string) => {
-    switch (type) {
-      case "Banque commerciale":
-        return "banque";
-      case "Microfinance":
-        return "microfinance";
-      case "Fonds d'investissement":
-        return "fonds";
-      case "Institution publique":
-        return "institution_publique";
-      default:
-        return "banque";
-    }
-  };
-
-  // const handleEdit = (institution: Institution) => {
-  //   setSelectedInstitution(institution);
-  //   setIsEditDialogOpen(true);
-  // };
-
-  // const handleDelete = (institution: Institution) => {
-  //   setSelectedInstitution(institution);
-  //   setIsDeleteDialogOpen(true);
-  // };
-
-  // const handleViewDetails = (institution: Institution) => {
-  //   setSelectedInstitutionDetails(institution);
-  //   setIsDetailsCardVisible(true);
-  // };
-
-  // const closeDetailsCard = () => {
-  //   setIsDetailsCardVisible(false);
-  //   setSelectedInstitutionDetails(null);
-  // };
-
-  // Fonction pour réinitialiser le formulaire d'ajout
-  // const resetNewInstitutionForm = () => {
-  //   setNewInstitution({
-  //     nom: "",
-  //     type: "",
-  //     adresse: "",
-  //     telephone: "",
-  //     email: "",
-  //     site_web: "",
-  //     description: "",
-  //     services: "",
-  //   });
-  // };
 
   return (
     <div className="space-y-6 relative">
@@ -300,7 +269,7 @@ export default function InstitutionsPage({
                     onValueChange={(value) =>
                       setNewInstitution({
                         ...newInstitution,
-                        type_institution: value,
+                        categorie: value, // ✅ ceci manquait
                       })
                     }
                   >
@@ -316,6 +285,45 @@ export default function InstitutionsPage({
                       <SelectItem value="institution_publique">
                         Institution publique
                       </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <label
+                    htmlFor="type_institution"
+                    className="text-sm font-medium"
+                  >
+                    Type d'institution
+                  </label>
+                  <Select
+                    value={newInstitution.type_institution}
+                    onValueChange={(value) =>
+                      setNewInstitution({
+                        ...newInstitution,
+                        type_institution: value,
+                      })
+                    }
+                  >
+                    <SelectTrigger id="type_institution">
+                      <SelectValue placeholder="Sélectionner un type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="banque commerciale">
+                        Banque commerciale
+                      </SelectItem>
+                      <SelectItem value="banque d'investissement">
+                        Banque d'investissement
+                      </SelectItem>
+                      <SelectItem value="cooperative d'épargne">
+                        Coopérative d'épargne
+                      </SelectItem>
+                      <SelectItem value="fonds souverain">
+                        Fonds souverain
+                      </SelectItem>
+                      <SelectItem value="établissement public">
+                        Établissement public
+                      </SelectItem>
+                      <SelectItem value="autre">Autre</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -450,6 +458,62 @@ export default function InstitutionsPage({
                   placeholder="Liste des services offerts par l'institution..."
                 />
               </div>
+              <div className="space-y-2">
+                <label htmlFor="rs_1" className="text-sm font-medium">
+                  Réseau social 1 (rs_1)
+                </label>
+                <Input
+                  id="rs_1"
+                  value={newInstitution.rs_1}
+                  onChange={(e) =>
+                    setNewInstitution({
+                      ...newInstitution,
+                      rs_1: e.target.value,
+                    })
+                  }
+                  placeholder="Ex: https://facebook.com/institution"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="rs_2" className="text-sm font-medium">
+                  Réseau social 2 (rs_2)
+                </label>
+                <Input
+                  id="rs_2"
+                  value={newInstitution.rs_2}
+                  onChange={(e) =>
+                    setNewInstitution({
+                      ...newInstitution,
+                      rs_2: e.target.value,
+                    })
+                  }
+                  placeholder="Ex: https://linkedin.com/institution"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="partenaire_feg" className="text-sm font-medium">
+                  Est partenaire FEG ?
+                </label>
+                <Select
+                  value={newInstitution.partenaire_feg ? "oui" : "non"}
+                  onValueChange={(value) =>
+                    setNewInstitution({
+                      ...newInstitution,
+                      partenaire_feg: value === "oui",
+                    })
+                  }
+                >
+                  <SelectTrigger id="partenaire_feg">
+                    <SelectValue placeholder="Oui ou Non" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="oui">Oui</SelectItem>
+                    <SelectItem value="non">Non</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <DialogFooter>
               <Button
@@ -460,19 +524,7 @@ export default function InstitutionsPage({
               </Button>
               <Button
                 className="bg-[#063a1e] hover:bg-[#063a1e]/90"
-                onClick={async () => {
-                  try {
-                    await createFinancialInstitution(newInstitution);
-                    setIsAddDialogOpen(false);
-                    resetNewInstitutionForm();
-                    // Ajouter un rafraîchissement des données
-                  } catch (error) {
-                    console.error(
-                      "Erreur lors de l'ajout de l'institution: ",
-                      error
-                    );
-                  }
-                }}
+                onClick={handleCreateInstitution}
               >
                 Ajouter l'institution
               </Button>
@@ -561,7 +613,7 @@ export default function InstitutionsPage({
             </TableHeader>
             <TableBody>
               {institutions.map((institution) => (
-                <TableRow key={institution.id}>
+                <TableRow key={institution.id_institutionFinanciere}>
                   <TableCell className="font-medium">
                     {institution.nom}
                   </TableCell>
