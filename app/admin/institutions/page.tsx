@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+
 import {
   Plus,
   Search,
@@ -69,206 +69,177 @@ import {
 } from "@/components/ui/pagination";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import { fetchFinancialInstitutions, FinancialInstitution } from "@/app/services/institution/api";
 
 // Interface pour les institutions financières
-interface Institution {
-  id: number;
-  nom: string;
-  type: string;
-  adresse: string;
-  telephone: string;
-  email: string;
-  site_web: string;
-  description: string;
-  services: string;
-  date_ajout: string;
-}
+// interface Institution {
+//   id: number;
+//   nom: string;
+//   type: string;
+//   adresse: string;
+//   telephone: string;
+//   email: string;
+//   site_web: string;
+//   description: string;
+//   services: string;
+//   date_ajout: string;
+// }
 
-// Interface pour la nouvelle institution
-interface NewInstitution {
-  nom: string;
-  type: string;
-  adresse: string;
-  telephone: string;
-  email: string;
-  site_web: string;
-  description: string;
-  services: string;
-}
+// // Interface pour la nouvelle institution
+// interface NewInstitution {
+//   nom: string;
+//   type: string;
+//   adresse: string;
+//   telephone: string;
+//   email: string;
+//   site_web: string;
+//   description: string;
+//   services: string;
+// }
 
 // Données fictives pour les institutions financières
-const institutionsData: Institution[] = [
-  {
-    id: 1,
-    nom: "Banque Gabonaise de Développement (BGD)",
-    type: "Banque publique",
-    adresse: "Boulevard de l'Indépendance, Libreville",
-    telephone: "+241 77 12 34 56",
-    email: "contact@bgd.ga",
-    site_web: "https://www.bgd.ga",
-    description:
-      "La Banque Gabonaise de Développement (BGD) est une institution financière publique qui accompagne le développement des PME/PMI gabonaises à travers des financements adaptés.",
-    services:
-      "Prêts d'investissement, Crédit d'exploitation, Garanties bancaires",
-    date_ajout: "2023-05-10",
-  },
-  {
-    id: 2,
-    nom: "Banque Gabonaise de Développement (BGD)",
-    type: "Banque publique",
-    adresse: "Boulevard de l'Indépendance, Libreville",
-    telephone: "+241 77 12 34 56",
-    email: "contact@bgd.ga",
-    site_web: "https://www.bgd.ga",
-    description:
-      "La Banque Gabonaise de Développement (BGD) est une institution financière publique qui accompagne le développement des PME/PMI gabonaises à travers des financements adaptés.",
-    services:
-      "Prêts d'investissement, Crédit d'exploitation, Garanties bancaires",
-    date_ajout: "2023-05-10",
-  },
-  {
-    id: 3,
-    nom: "Banque Gabonaise de Développement (BGD)",
-    type: "Banque publique",
-    adresse: "Boulevard de l'Indépendance, Libreville",
-    telephone: "+241 77 12 34 56",
-    email: "contact@bgd.ga",
-    site_web: "https://www.bgd.ga",
-    description:
-      "La Banque Gabonaise de Développement (BGD) est une institution financière publique qui accompagne le développement des PME/PMI gabonaises à travers des financements adaptés.",
-    services:
-      "Prêts d'investissement, Crédit d'exploitation, Garanties bancaires",
-    date_ajout: "2023-05-10",
-  },
-  {
-    id: 4,
-    nom: "Banque Gabonaise de Développement (BGD)",
-    type: "Banque publique",
-    adresse: "Boulevard de l'Indépendance, Libreville",
-    telephone: "+241 77 12 34 56",
-    email: "contact@bgd.ga",
-    site_web: "https://www.bgd.ga",
-    description:
-      "La Banque Gabonaise de Développement (BGD) est une institution financière publique qui accompagne le développement des PME/PMI gabonaises à travers des financements adaptés.",
-    services:
-      "Prêts d'investissement, Crédit d'exploitation, Garanties bancaires",
-    date_ajout: "2023-05-10",
-  },
-  {
-    id: 5,
-    nom: "Banque Gabonaise de Développement (BGD)",
-    type: "Banque publique",
-    adresse: "Boulevard de l'Indépendance, Libreville",
-    telephone: "+241 77 12 34 56",
-    email: "contact@bgd.ga",
-    site_web: "https://www.bgd.ga",
-    description:
-      "La Banque Gabonaise de Développement (BGD) est une institution financière publique qui accompagne le développement des PME/PMI gabonaises à travers des financements adaptés.",
-    services:
-      "Prêts d'investissement, Crédit d'exploitation, Garanties bancaires",
-    date_ajout: "2023-05-10",
-  },
-  {
-    id: 6,
-    nom: "Banque Gabonaise de Développement (BGD)",
-    type: "Banque publique",
-    adresse: "Boulevard de l'Indépendance, Libreville",
-    telephone: "+241 77 12 34 56",
-    email: "contact@bgd.ga",
-    site_web: "https://www.bgd.ga",
-    description:
-      "La Banque Gabonaise de Développement (BGD) est une institution financière publique qui accompagne le développement des PME/PMI gabonaises à travers des financements adaptés.",
-    services:
-      "Prêts d'investissement, Crédit d'exploitation, Garanties bancaires",
-    date_ajout: "2023-05-10",
-  },
-  {
-    id: 7,
-    nom: "Banque Gabonaise de Développement (BGD)",
-    type: "Banque publique",
-    adresse: "Boulevard de l'Indépendance, Libreville",
-    telephone: "+241 77 12 34 56",
-    email: "contact@bgd.ga",
-    site_web: "https://www.bgd.ga",
-    description:
-      "La Banque Gabonaise de Développement (BGD) est une institution financière publique qui accompagne le développement des PME/PMI gabonaises à travers des financements adaptés.",
-    services:
-      "Prêts d'investissement, Crédit d'exploitation, Garanties bancaires",
-    date_ajout: "2023-05-10",
-  },
-  // ... autres données d'institutions ...
-];
+// const institutionsData: Institution[] = [
+//   {
+//     id: 1,
+//     nom: "Banque Gabonaise de Développement (BGD)",
+//     type: "Banque publique",
+//     adresse: "Boulevard de l'Indépendance, Libreville",
+//     telephone: "+241 77 12 34 56",
+//     email: "contact@bgd.ga",
+//     site_web: "https://www.bgd.ga",
+//     description:
+//       "La Banque Gabonaise de Développement (BGD) est une institution financière publique qui accompagne le développement des PME/PMI gabonaises à travers des financements adaptés.",
+//     services:
+//       "Prêts d'investissement, Crédit d'exploitation, Garanties bancaires",
+//     date_ajout: "2023-05-10",
+//   },
+//   {
+//     id: 2,
+//     nom: "Banque Gabonaise de Développement (BGD)",
+//     type: "Banque publique",
+//     adresse: "Boulevard de l'Indépendance, Libreville",
+//     telephone: "+241 77 12 34 56",
+//     email: "contact@bgd.ga",
+//     site_web: "https://www.bgd.ga",
+//     description:
+//       "La Banque Gabonaise de Développement (BGD) est une institution financière publique qui accompagne le développement des PME/PMI gabonaises à travers des financements adaptés.",
+//     services:
+//       "Prêts d'investissement, Crédit d'exploitation, Garanties bancaires",
+//     date_ajout: "2023-05-10",
+//   },
+//   {
+//     id: 3,
+//     nom: "Banque Gabonaise de Développement (BGD)",
+//     type: "Banque publique",
+//     adresse: "Boulevard de l'Indépendance, Libreville",
+//     telephone: "+241 77 12 34 56",
+//     email: "contact@bgd.ga",
+//     site_web: "https://www.bgd.ga",
+//     description:
+//       "La Banque Gabonaise de Développement (BGD) est une institution financière publique qui accompagne le développement des PME/PMI gabonaises à travers des financements adaptés.",
+//     services:
+//       "Prêts d'investissement, Crédit d'exploitation, Garanties bancaires",
+//     date_ajout: "2023-05-10",
+//   },
+
+//   // ... autres données d'institutions ...
+// ];
 
 export default function InstitutionsPage() {
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [typeFilter, setTypeFilter] = useState<string>("");
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState<boolean>(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
-  const [selectedInstitution, setSelectedInstitution] =
-    useState<Institution | null>(null);
-  const [newInstitution, setNewInstitution] = useState<NewInstitution>({
-    nom: "",
-    type: "",
-    adresse: "",
-    telephone: "",
-    email: "",
-    site_web: "",
-    description: "",
-    services: "",
-  });
+  // const [searchTerm, setSearchTerm] = useState<string>("");
+  // const [typeFilter, setTypeFilter] = useState<string>("");
+  // const [isAddDialogOpen, setIsAddDialogOpen] = useState<boolean>(false);
+  // const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
+  // const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
 
-  const [selectedInstitutionDetails, setSelectedInstitutionDetails] =
-    useState<Institution | null>(null);
-  const [isDetailsCardVisible, setIsDetailsCardVisible] =
-    useState<boolean>(false);
+  const [institutions, setInstitutions] = useState<FinancialInstitution[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredInstitutions = institutionsData.filter((institution) => {
-    const matchesSearch =
-      institution.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      institution.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = typeFilter === "" || institution.type === typeFilter;
-    return matchesSearch && matchesType;
-  });
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const data = await fetchFinancialInstitutions();
+        setInstitutions(data);
+      } catch (err: any) {
+        setError(err.message || "Erreur inconnue");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleEdit = (institution: Institution) => {
-    setSelectedInstitution(institution);
-    setIsEditDialogOpen(true);
-  };
+    loadData();
+  }, []);
 
-  const handleDelete = (institution: Institution) => {
-    setSelectedInstitution(institution);
-    setIsDeleteDialogOpen(true);
-  };
 
-  const handleViewDetails = (institution: Institution) => {
-    setSelectedInstitutionDetails(institution);
-    setIsDetailsCardVisible(true);
-  };
+  if (loading) return <p>Chargement...</p>;
+  if (error) return <p>Erreur : {error}</p>;
 
-  const closeDetailsCard = () => {
-    setIsDetailsCardVisible(false);
-    setSelectedInstitutionDetails(null);
-  };
+  // const [selectedInstitution, setSelectedInstitution] =
+  //   useState<Institution | null>(null);
+  // const [newInstitution, setNewInstitution] = useState<NewInstitution>({
+  //   nom: "",
+  //   type: "",
+  //   adresse: "",
+  //   telephone: "",
+  //   email: "",
+  //   site_web: "",
+  //   description: "",
+  //   services: "",
+  // });
+
+  // const [selectedInstitutionDetails, setSelectedInstitutionDetails] =
+  //   useState<Institution | null>(null);
+  // const [isDetailsCardVisible, setIsDetailsCardVisible] =
+  //   useState<boolean>(false);
+
+  // const filteredInstitutions = institutionsData.filter((institution) => {
+  //   const matchesSearch =
+  //     institution.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     institution.description.toLowerCase().includes(searchTerm.toLowerCase());
+  //   const matchesType = typeFilter === "" || institution.type === typeFilter;
+  //   return matchesSearch && matchesType;
+  // });
+
+  // const handleEdit = (institution: Institution) => {
+  //   setSelectedInstitution(institution);
+  //   setIsEditDialogOpen(true);
+  // };
+
+  // const handleDelete = (institution: Institution) => {
+  //   setSelectedInstitution(institution);
+  //   setIsDeleteDialogOpen(true);
+  // };
+
+  // const handleViewDetails = (institution: Institution) => {
+  //   setSelectedInstitutionDetails(institution);
+  //   setIsDetailsCardVisible(true);
+  // };
+
+  // const closeDetailsCard = () => {
+  //   setIsDetailsCardVisible(false);
+  //   setSelectedInstitutionDetails(null);
+  // };
 
   // Fonction pour réinitialiser le formulaire d'ajout
-  const resetNewInstitutionForm = () => {
-    setNewInstitution({
-      nom: "",
-      type: "",
-      adresse: "",
-      telephone: "",
-      email: "",
-      site_web: "",
-      description: "",
-      services: "",
-    });
-  };
+  // const resetNewInstitutionForm = () => {
+  //   setNewInstitution({
+  //     nom: "",
+  //     type: "",
+  //     adresse: "",
+  //     telephone: "",
+  //     email: "",
+  //     site_web: "",
+  //     description: "",
+  //     services: "",
+  //   });
+  // };
 
   return (
     <div className="space-y-6 relative">
       {/* Overlay de fond flouté */}
-      {(isAddDialogOpen ||
+      {/* {(isAddDialogOpen ||
         isEditDialogOpen ||
         isDeleteDialogOpen ||
         isDetailsCardVisible) && (
@@ -281,7 +252,7 @@ export default function InstitutionsPage() {
             if (isDeleteDialogOpen) setIsDeleteDialogOpen(false);
           }}
         />
-      )}
+      )} */}
 
       {/* En-tête */}
       <div className="flex justify-between items-center">
@@ -293,7 +264,7 @@ export default function InstitutionsPage() {
             Gérez les institutions financières présentes sur la plateforme
           </p>
         </div>
-        <Dialog
+        {/* <Dialog
           open={isAddDialogOpen}
           onOpenChange={(open) => {
             setIsAddDialogOpen(open);
@@ -345,9 +316,6 @@ export default function InstitutionsPage() {
                       <SelectValue placeholder="Sélectionner un type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Banque publique">
-                        Banque publique
-                      </SelectItem>
                       <SelectItem value="Banque commerciale">
                         Banque commerciale
                       </SelectItem>
@@ -484,11 +452,11 @@ export default function InstitutionsPage() {
               </Button>
             </DialogFooter>
           </DialogContent>
-        </Dialog>
+        </Dialog> */}
       </div>
 
       {/* Filtres et recherche */}
-      <Card>
+      {/* <Card>
         <CardContent className="p-6">
           <div className="grid gap-4 md:grid-cols-4">
             <div className="space-y-2">
@@ -517,9 +485,6 @@ export default function InstitutionsPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tous les types</SelectItem>
-                  <SelectItem value="Banque publique">
-                    Banque publique
-                  </SelectItem>
                   <SelectItem value="Banque commerciale">
                     Banque commerciale
                   </SelectItem>
@@ -548,15 +513,15 @@ export default function InstitutionsPage() {
             </div>
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
 
       {/* Liste des institutions */}
       <Card>
         <CardHeader>
           <CardTitle>Liste des institutions financières</CardTitle>
-          <CardDescription>
+          {/* <CardDescription>
             {filteredInstitutions.length} institution(s) trouvée(s)
-          </CardDescription>
+          </CardDescription> */}
         </CardHeader>
         <CardContent>
           <Table>
@@ -569,17 +534,17 @@ export default function InstitutionsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredInstitutions.map((institution) => (
+              {institutions.map((institution) => (
                 <TableRow key={institution.id}>
                   <TableCell className="font-medium">
                     {institution.nom}
                   </TableCell>
-                  <TableCell>{institution.type}</TableCell>
+                  <TableCell>{institution.categorie}</TableCell>
                   <TableCell>
                     <div className="space-y-1">
-                      <div className="text-sm">{institution.telephone}</div>
+                      <div className="text-sm">{institution.contact}</div>
                       <div className="text-sm text-muted-foreground">
-                        {institution.email}
+                        {institution.mail}
                       </div>
                     </div>
                   </TableCell>
@@ -593,23 +558,23 @@ export default function InstitutionsPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
+                        {/* <DropdownMenuItem
                           onClick={() => handleViewDetails(institution)}
                         >
                           <Eye className="mr-2 h-4 w-4" /> Voir
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
+                        </DropdownMenuItem> */}
+                        {/* <DropdownMenuItem
                           onClick={() => handleEdit(institution)}
                         >
                           <Pencil className="mr-2 h-4 w-4" /> Modifier
-                        </DropdownMenuItem>
+                        </DropdownMenuItem> */}
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem
+                        {/* <DropdownMenuItem
                           onClick={() => handleDelete(institution)}
                           className="text-red-600"
                         >
                           <Trash2 className="mr-2 h-4 w-4" /> Supprimer
-                        </DropdownMenuItem>
+                        </DropdownMenuItem> */}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -619,10 +584,10 @@ export default function InstitutionsPage() {
           </Table>
         </CardContent>
         <CardFooter className="flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">
+          {/* <div className="text-sm text-muted-foreground">
             Affichage de {filteredInstitutions.length} sur{" "}
             {institutionsData.length} institutions
-          </div>
+          </div> */}
           <Pagination>
             <PaginationContent>
               <PaginationItem>
@@ -651,7 +616,7 @@ export default function InstitutionsPage() {
       </Card>
 
       {/* Dialogue de modification */}
-      {selectedInstitution && (
+      {/* {selectedInstitution && (
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
           <DialogContent className="sm:max-w-[600px] z-50">
             <DialogHeader>
@@ -695,7 +660,7 @@ export default function InstitutionsPage() {
                 </div>
               </div>
 
-              {/* Autres champs similaires à ceux du formulaire d'ajout */}
+              {/* Autres champs similaires à ceux du formulaire d'ajout 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label
@@ -782,10 +747,10 @@ export default function InstitutionsPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      )}
+      )} */}
 
       {/* Dialogue de suppression */}
-      {selectedInstitution && (
+      {/* {selectedInstitution && (
         <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
           <DialogContent className="sm:max-w-[425px] z-50">
             <DialogHeader>
@@ -811,10 +776,10 @@ export default function InstitutionsPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      )}
+      )} */}
 
       {/* Carte de détails de l'institution - NOUVELLE VERSION */}
-      {isDetailsCardVisible && selectedInstitutionDetails && (
+      {/* {isDetailsCardVisible && selectedInstitutionDetails && (
         <Card className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-11/12 max-w-2xl hover:shadow-md transition-shadow">
           <CardHeader className="pb-3">
             <div className="flex justify-between items-start">
@@ -824,7 +789,9 @@ export default function InstitutionsPage() {
                 </div>
                 <div>
                   <CardTitle>{selectedInstitutionDetails.nom}</CardTitle>
-                  <CardDescription>{selectedInstitutionDetails.type}</CardDescription>
+                  <CardDescription>
+                    {selectedInstitutionDetails.type}
+                  </CardDescription>
                 </div>
               </div>
               <Button
@@ -845,7 +812,9 @@ export default function InstitutionsPage() {
               <div className="space-y-2">
                 <div className="flex items-start gap-2">
                   <MapPin className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                  <span className="text-sm">{selectedInstitutionDetails.adresse}</span>
+                  <span className="text-sm">
+                    {selectedInstitutionDetails.adresse}
+                  </span>
                 </div>
                 <div className="flex items-start gap-2">
                   <Phone className="h-4 w-4 text-[#063a1e] mt-0.5" />
@@ -880,11 +849,17 @@ export default function InstitutionsPage() {
           </CardContent>
           <CardFooter className="flex justify-between">
             <div className="flex flex-wrap gap-2">
-              {selectedInstitutionDetails.services.split(', ').map((service, index) => (
-                <Badge key={index} variant="outline" className="text-[#063a1e]">
-                  {service.trim()}
-                </Badge>
-              ))}
+              {selectedInstitutionDetails.services
+                .split(", ")
+                .map((service, index) => (
+                  <Badge
+                    key={index}
+                    variant="outline"
+                    className="text-[#063a1e]"
+                  >
+                    {service.trim()}
+                  </Badge>
+                ))}
             </div>
             {selectedInstitutionDetails.site_web && (
               <Link target="_blank" href={selectedInstitutionDetails.site_web}>
@@ -899,7 +874,7 @@ export default function InstitutionsPage() {
             )}
           </CardFooter>
         </Card>
-      )}
+      )} */}
     </div>
   );
 }

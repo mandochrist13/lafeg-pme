@@ -29,7 +29,7 @@ import { fetchFinancialInstitutions, FinancialInstitution } from "@/app/services
 export default function InstitutionsFinancieres() {
 
   const [search, setSearch] = useState("");
-  const [activeTab, setActiveTab] = useState("banques")
+  const [activeTab, setActiveTab] = useState("banque")
 
   const [institutions, setInstitutions] = useState<FinancialInstitution[]>([]);
   const [loading, setLoading] = useState(true);
@@ -133,14 +133,14 @@ export default function InstitutionsFinancieres() {
       <div className="container py-12">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-8">
-            <TabsTrigger value="banque">Banques</TabsTrigger>
+            <TabsTrigger value="banque">Banque</TabsTrigger>
             <TabsTrigger value="microfinance">Microfinance</TabsTrigger>
             <TabsTrigger value="fonds">Fonds d'investissement</TabsTrigger>
             <TabsTrigger value="institution_publique">Institutions publiques</TabsTrigger>
           </TabsList>
 
           {/* Banques */}
-          <TabsContent value="banques" className="space-y-6">
+          <TabsContent value="banque" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Banque 1 */}
               {filteredBanque.map((item) => (
