@@ -69,7 +69,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "@/components/ui/use-toast";
 
 interface Structure {
-  id: number;
+  id_sea: string;
   nom: string;
   type_sea: string;
   categorie: string;
@@ -102,8 +102,8 @@ export default function StructuresPage() {
   const [logoUploading, setLogoUploading] = useState(false);
 
   // Structure par défaut pour la création
-  const defaultStructure: Structure = {
-    id: 0,
+  const defaultStructure: Omit<Structure, 'id_sea' | 'createdAt' | 'updatedAt'> & { id_sea: string, createdAt: string, updatedAt: string } = {
+    id_sea: "",
     nom: "",
     type_sea: "",
     categorie: "",
@@ -138,13 +138,7 @@ export default function StructuresPage() {
         if (!response.ok) throw new Error("Erreur lors de la récupération");
         const data = await response.json();
         
-        const sanitizedData = data.map((item: any) => ({
-          ...defaultStructure,
-          ...item,
-          services: item.services || [],
-        }));
-        
-        setStructures(sanitizedData);
+        setStructures(data);
       } catch (error) {
         console.error("Error:", error);
         toast({
@@ -211,15 +205,12 @@ export default function StructuresPage() {
   // Créer une nouvelle structure
   const handleAddStructure = async () => {
     try {
-      // Ne pas envoyer les champs createdAt et updatedAt pour une nouvelle création
-      const { id, createdAt, updatedAt, ...structureToCreate } = newStructure;
-      
       const response = await fetch("/api/sea", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(structureToCreate),
+        body: JSON.stringify(newStructure),
       });
 
       if (!response.ok) {
@@ -251,15 +242,12 @@ export default function StructuresPage() {
     if (!selectedStructure) return;
 
     try {
-      // Ne pas envoyer les champs createdAt et updatedAt pour la mise à jour
-      const { createdAt, updatedAt, ...structureToUpdate } = selectedStructure;
-      
-      const response = await fetch(`/api/sea/${selectedStructure.id}`, {
+      const response = await fetch(`/api/sea/${selectedStructure.id_sea}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(structureToUpdate),
+        body: JSON.stringify(selectedStructure),
       });
 
       if (!response.ok) {
@@ -270,7 +258,7 @@ export default function StructuresPage() {
       const updatedStructure = await response.json();
       setStructures(
         structures.map((s) =>
-          s.id === selectedStructure.id ? updatedStructure : s
+          s.id_sea === selectedStructure.id_sea ? updatedStructure : s
         )
       );
       setIsEditDialogOpen(false);
@@ -294,7 +282,7 @@ export default function StructuresPage() {
     if (!selectedStructure) return;
 
     try {
-      const response = await fetch(`/api/sea/${selectedStructure.id}`, {
+      const response = await fetch(`/api/sea/${selectedStructure.id_sea}`, {
         method: "DELETE",
       });
 
@@ -303,7 +291,7 @@ export default function StructuresPage() {
         throw new Error(errorData.error || "Erreur lors de la suppression");
       }
 
-      setStructures(structures.filter((s) => s.id !== selectedStructure.id));
+      setStructures(structures.filter((s) => s.id_sea !== selectedStructure.id_sea));
       setIsDeleteDialogOpen(false);
 
       toast({
@@ -433,6 +421,19 @@ export default function StructuresPage() {
                         handleNewStructureChange("nom", e.target.value)
                       }
                       placeholder="Ex: Gabon Incubateur"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="type_sea" className="text-sm font-medium">
+                      Type de structure*
+                    </label>
+                    <Input
+                      id="type_sea"
+                      value={newStructure.type_sea}
+                      onChange={(e) =>
+                        handleNewStructureChange("type_sea", e.target.value)
+                      }
+                      placeholder="Ex: Incubateur, Accélérateur"
                     />
                   </div>
                 </div>
@@ -733,7 +734,7 @@ export default function StructuresPage() {
                   </TableRow>
                 ) : (
                   filteredStructures.map((structure) => (
-                    <TableRow key={structure.id}>
+                    <TableRow key={structure.id_sea}>
                       <TableCell className="font-medium">
                         <div className="flex items-center gap-3">
                           {structure.logo ? (
@@ -865,6 +866,18 @@ export default function StructuresPage() {
                       value={selectedStructure.nom}
                       onChange={(e) =>
                         handleEditStructureChange("nom", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="edit-type_sea" className="text-sm font-medium">
+                      Type de structure*
+                    </label>
+                    <Input
+                      id="edit-type_sea"
+                      value={selectedStructure.type_sea}
+                      onChange={(e) =>
+                        handleEditStructureChange("type_sea", e.target.value)
                       }
                     />
                   </div>
