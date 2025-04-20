@@ -9,7 +9,6 @@ import {
   Trash2,
   Eye,
   X,
-  Building2,
   MapPin,
   Phone,
   Mail,
@@ -88,11 +87,13 @@ import { toast } from "sonner";
 export default function InstitutionsPage({}: {
   refreshInstitutions: () => void;
 }) {
-  // const [searchTerm, setSearchTerm] = useState<string>("");
-  // const [typeFilter, setTypeFilter] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedInstitution, setSelectedInstitution] =
     useState<FinancialInstitution | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Tu peux ajuster ce chiffre
 
   const [selectedInstitutionId, setSelectedInstitutionId] = useState<
     string | null
@@ -180,6 +181,11 @@ export default function InstitutionsPage({}: {
     loadData();
   }, []);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, typeFilter]);
+  
+
   if (loading) return <p>Chargement...</p>;
   if (error) return <p>Erreur : {error}</p>;
 
@@ -209,13 +215,14 @@ export default function InstitutionsPage({}: {
     setIsDetailsCardVisible(false);
   };
 
-  // const filteredInstitutions = institutionsData.filter((institution) => {
-  //   const matchesSearch =
-  //     institution.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //     institution.description.toLowerCase().includes(searchTerm.toLowerCase());
-  //   const matchesType = typeFilter === "" || institution.type === typeFilter;
-  //   return matchesSearch && matchesType;
-  // });
+  const filteredInstitutions = institutions.filter((institution) => {
+    const matchesSearch = institution.nom
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesType =
+      typeFilter === "all" || institution.categorie === typeFilter;
+    return matchesSearch && matchesType;
+  });
 
   const handleCreateInstitution = async () => {
     try {
@@ -232,6 +239,14 @@ export default function InstitutionsPage({}: {
       setLoading(false);
     }
   };
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedInstitutions = filteredInstitutions.slice(
+    startIndex,
+    endIndex
+  );
+  const totalPages = Math.ceil(filteredInstitutions.length / itemsPerPage);
 
   const handleEditInstitution = async (institution: FinancialInstitution) => {
     try {
@@ -625,7 +640,7 @@ export default function InstitutionsPage({}: {
       </div>
 
       {/* Filtres et recherche */}
-      {/* <Card>
+      <Card>
         <CardContent className="p-6">
           <div className="grid gap-4 md:grid-cols-4">
             <div className="space-y-2">
@@ -654,14 +669,10 @@ export default function InstitutionsPage({}: {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tous les types</SelectItem>
-                  <SelectItem value="Banque commerciale">
-                    Banque commerciale
-                  </SelectItem>
-                  <SelectItem value="Microfinance">Microfinance</SelectItem>
-                  <SelectItem value="Fonds d'investissement">
-                    Fonds d'investissement
-                  </SelectItem>
-                  <SelectItem value="Institution publique">
+                  <SelectItem value="banque">Banque</SelectItem>
+                  <SelectItem value="microfinance">Microfinance</SelectItem>
+                  <SelectItem value="fonds">Fonds d'investissement</SelectItem>
+                  <SelectItem value="institution_publique">
                     Institution publique
                   </SelectItem>
                 </SelectContent>
@@ -682,21 +693,21 @@ export default function InstitutionsPage({}: {
             </div>
           </div>
         </CardContent>
-      </Card> */}
+      </Card>
 
       {/* Liste des institutions */}
       <Card>
         <CardHeader>
           <CardTitle>Liste des institutions financières</CardTitle>
-          {/* <CardDescription>
+          <CardDescription>
             {filteredInstitutions.length} institution(s) trouvée(s)
-          </CardDescription> */}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead >Logo</TableHead>
+                <TableHead>Logo</TableHead>
                 <TableHead className="w-[300px]">Nom</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Contact</TableHead>
@@ -704,9 +715,9 @@ export default function InstitutionsPage({}: {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {institutions.map((institution) => (
+              {paginatedInstitutions.map((institution) => (
                 <TableRow key={institution.id_institutionFinanciere}>
-                  <TableCell >
+                  <TableCell>
                     {institution.logo && (
                       <Image
                         src={institution.logo}
@@ -765,31 +776,56 @@ export default function InstitutionsPage({}: {
           </Table>
         </CardContent>
         <CardFooter className="flex items-center justify-between">
-          {/* <div className="text-sm text-muted-foreground">
-            Affichage de {filteredInstitutions.length} sur{" "}
-            {institutionsData.length} institutions
-          </div> */}
+          <div className="text-sm text-muted-foreground">
+            Affichage de {filteredInstitutions.length} sur {institutions.length}{" "}
+            institutions
+          </div>
           <Pagination>
             <PaginationContent>
               <PaginationItem>
-                <PaginationPrevious href="#" />
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentPage((prev) => Math.max(prev - 1, 1));
+                  }}
+                  className={
+                    currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                  }
+                />
               </PaginationItem>
+
+              {[...Array(totalPages)].map((_, index) => {
+                const page = index + 1;
+                return (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      href="#"
+                      isActive={currentPage === page}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(page);
+                      }}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              })}
+
               <PaginationItem>
-                <PaginationLink href="#" isActive>
-                  1
-                </PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">2</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">3</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href="#" />
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+                  }}
+                  className={
+                    currentPage === totalPages
+                      ? "pointer-events-none opacity-50"
+                      : ""
+                  }
+                />
               </PaginationItem>
             </PaginationContent>
           </Pagination>
