@@ -74,18 +74,27 @@ import {
   fetchFinancialInstitutions,
   FinancialInstitution,
 } from "@/app/services/institution/api";
-import { createFinancialInstitution } from "@/app/services/institution/api";
+import {
+  createFinancialInstitution,
+  deleteFinancialInstitution,
+  updateFinancialInstitution,
+} from "@/app/services/institution/api";
 import { toast } from "sonner";
 
-export default function InstitutionsPage({
-}: {
+export default function InstitutionsPage({}: {
   refreshInstitutions: () => void;
 }) {
   // const [searchTerm, setSearchTerm] = useState<string>("");
   // const [typeFilter, setTypeFilter] = useState<string>("");
-  // const [isAddDialogOpen, setIsAddDialogOpen] = useState<boolean>(false);
-  // const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
-  // const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
+  const [selectedInstitutionId, setSelectedInstitutionId] = useState<
+    string | null
+  >(null);
+
+  const [editedInstitution, setEditedInstitution] = useState<
+    Partial<FinancialInstitution>
+  >({});
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [institutions, setInstitutions] = useState<FinancialInstitution[]>([]);
   const [newInstitution, setNewInstitution] = useState<
@@ -141,7 +150,7 @@ export default function InstitutionsPage({
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -154,16 +163,18 @@ export default function InstitutionsPage({
         setLoading(false);
       }
     };
-  
+
     loadData();
   }, []);
-  
 
   if (loading) return <p>Chargement...</p>;
   if (error) return <p>Erreur : {error}</p>;
 
-  // const [selectedInstitution, setSelectedInstitution] =
-  //   useState<Institution | null>(null);
+  const openEditDialog = (institution: FinancialInstitution) => {
+    setSelectedInstitutionId(institution.id_institutionFinanciere); // nombre
+    setEditedInstitution(institution); // ici pas besoin de changement
+    setIsEditDialogOpen(true);
+  };
 
   // const [selectedInstitutionDetails, setSelectedInstitutionDetails] =
   //   useState<Institution | null>(null);
@@ -189,6 +200,58 @@ export default function InstitutionsPage({
       setIsAddDialogOpen(false); // ferme le dialog
     } catch (error) {
       console.error("Erreur création:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditInstitution = async (institution: FinancialInstitution) => {
+    try {
+      setLoading(true);
+      setSelectedInstitutionId(institution.id_institutionFinanciere); // Ajoute l'ID de l'institution sélectionnée
+      setEditedInstitution({
+        nom: institution.nom,
+        categorie: institution.categorie,
+        type_institution: institution.type_institution,
+        description: institution.description,
+        adresse: institution.adresse,
+        contact: institution.contact,
+        mail: institution.mail,
+        site_web: institution.site_web,
+        service: institution.service,
+        logo: institution.logo,
+        rs_1: institution.rs_1,
+        rs_2: institution.rs_2,
+        partenaire_feg: institution.partenaire_feg,
+      });
+
+      // Vérifier que l'ID est bien défini avant de procéder
+      if (institution.id_institutionFinanciere) {
+        console.log("ID Institution:", institution.id_institutionFinanciere); // Vérification de l'ID
+
+        await updateFinancialInstitution(
+          institution.id_institutionFinanciere,
+          editedInstitution
+        );
+      } else {
+        console.error("L'ID de l'institution sélectionnée est manquant.");
+      }
+      await refreshInstitutions();
+      setIsEditDialogOpen(false);
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour :", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteInstitution = async (id: string) => {
+    try {
+      setLoading(true);
+      await deleteFinancialInstitution(id);
+      await refreshInstitutions();
+    } catch (error) {
+      console.error("Erreur suppression :", error);
     } finally {
       setLoading(false);
     }
@@ -641,11 +704,11 @@ export default function InstitutionsPage({
                         >
                           <Eye className="mr-2 h-4 w-4" /> Voir
                         </DropdownMenuItem> */}
-                        {/* <DropdownMenuItem
-                          onClick={() => handleEdit(institution)}
+                        <DropdownMenuItem
+                          onClick={() => openEditDialog(institution)}
                         >
                           <Pencil className="mr-2 h-4 w-4" /> Modifier
-                        </DropdownMenuItem> */}
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         {/* <DropdownMenuItem
                           onClick={() => handleDelete(institution)}
@@ -694,9 +757,9 @@ export default function InstitutionsPage({
       </Card>
 
       {/* Dialogue de modification */}
-      {/* {selectedInstitution && (
+      {selectedInstitutionId && (
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="sm:max-w-[600px] z-50">
+          <DialogContent className="sm:max-w-[600px] sm:max-h-[500px] overflow-y-auto z-50">
             <DialogHeader>
               <DialogTitle>Modifier une institution financière</DialogTitle>
               <DialogDescription>
@@ -709,28 +772,80 @@ export default function InstitutionsPage({
                   <label htmlFor="edit-nom" className="text-sm font-medium">
                     Nom de l'institution
                   </label>
-                  <Input id="edit-nom" defaultValue={selectedInstitution.nom} />
+                  <Input
+                    id="edit-nom"
+                    value={editedInstitution.nom}
+                    onChange={(e) =>
+                      setEditedInstitution({
+                        ...editedInstitution,
+                        nom: e.target.value,
+                      })
+                    }
+                  />
                 </div>
+
                 <div className="space-y-2">
-                  <label htmlFor="edit-type" className="text-sm font-medium">
+                  <label
+                    htmlFor="type_institution"
+                    className="text-sm font-medium"
+                  >
                     Type d'institution
                   </label>
-                  <Select defaultValue={selectedInstitution.type}>
-                    <SelectTrigger id="edit-type">
-                      <SelectValue placeholder={selectedInstitution.type} />
+                  <Select
+                    value={editedInstitution.type_institution}
+                    onValueChange={(value) =>
+                      setEditedInstitution({
+                        ...editedInstitution,
+                        type_institution: value,
+                      })
+                    }
+                  >
+                    <SelectTrigger id="type_institution">
+                      <SelectValue placeholder="Sélectionner un type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Banque publique">
-                        Banque publique
-                      </SelectItem>
-                      <SelectItem value="Banque commerciale">
+                      <SelectItem value="banque commerciale">
                         Banque commerciale
                       </SelectItem>
-                      <SelectItem value="Microfinance">Microfinance</SelectItem>
-                      <SelectItem value="Fonds d'investissement">
+                      <SelectItem value="banque d'investissement">
+                        Banque d'investissement
+                      </SelectItem>
+                      <SelectItem value="cooperative d'épargne">
+                        Coopérative d'épargne
+                      </SelectItem>
+                      <SelectItem value="fonds souverain">
+                        Fonds souverain
+                      </SelectItem>
+                      <SelectItem value="établissement public">
+                        Établissement public
+                      </SelectItem>
+                      <SelectItem value="autre">Autre</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="edit-categorie" className="text-sm font-medium">
+                  Catégorie d'institution
+                  </label>
+                  <Select
+                    value={editedInstitution.categorie}
+                    onValueChange={(value) =>
+                      setEditedInstitution({
+                        ...editedInstitution,
+                        categorie: value,
+                      })
+                    }
+                  >
+                    <SelectTrigger id="categorie">
+                      <SelectValue placeholder="Sélectionner une catégorie" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="banque">Banque</SelectItem>
+                      <SelectItem value="microfinance">Microfinance</SelectItem>
+                      <SelectItem value="fonds">
                         Fonds d'investissement
                       </SelectItem>
-                      <SelectItem value="Institution publique">
+                      <SelectItem value="institution_publique">
                         Institution publique
                       </SelectItem>
                     </SelectContent>
@@ -738,7 +853,6 @@ export default function InstitutionsPage({
                 </div>
               </div>
 
-              {/* Autres champs similaires à ceux du formulaire d'ajout 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label
@@ -749,17 +863,29 @@ export default function InstitutionsPage({
                   </label>
                   <Input
                     id="edit-telephone"
-                    defaultValue={selectedInstitution.telephone}
+                    value={editedInstitution.contact}
+                    onChange={(e) =>
+                      setEditedInstitution({
+                        ...editedInstitution,
+                        contact: e.target.value,
+                      })
+                    }
                   />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="edit-email" className="text-sm font-medium">
                     Email
                   </label>
+
                   <Input
                     id="edit-email"
-                    type="email"
-                    defaultValue={selectedInstitution.email}
+                    value={editedInstitution.mail}
+                    onChange={(e) =>
+                      setEditedInstitution({
+                        ...editedInstitution,
+                        mail: e.target.value,
+                      })
+                    }
                   />
                 </div>
               </div>
@@ -768,9 +894,16 @@ export default function InstitutionsPage({
                 <label htmlFor="edit-adresse" className="text-sm font-medium">
                   Adresse
                 </label>
+
                 <Input
                   id="edit-adresse"
-                  defaultValue={selectedInstitution.adresse}
+                  value={editedInstitution.adresse}
+                  onChange={(e) =>
+                    setEditedInstitution({
+                      ...editedInstitution,
+                      adresse: e.target.value,
+                    })
+                  }
                 />
               </div>
 
@@ -778,9 +911,16 @@ export default function InstitutionsPage({
                 <label htmlFor="edit-site_web" className="text-sm font-medium">
                   Site web
                 </label>
+
                 <Input
                   id="edit-site_web"
-                  defaultValue={selectedInstitution.site_web}
+                  value={editedInstitution.site_web}
+                  onChange={(e) =>
+                    setEditedInstitution({
+                      ...editedInstitution,
+                      site_web: e.target.value,
+                    })
+                  }
                 />
               </div>
 
@@ -791,10 +931,17 @@ export default function InstitutionsPage({
                 >
                   Description
                 </label>
-                <textarea
+                <Input defaultValue={editedInstitution.description} />
+                <Input
                   id="edit-description"
                   className="w-full min-h-[100px] p-2 border rounded-md"
-                  defaultValue={selectedInstitution.description}
+                  value={editedInstitution.description}
+                  onChange={(e) =>
+                    setEditedInstitution({
+                      ...editedInstitution,
+                      description: e.target.value,
+                    })
+                  }
                 />
               </div>
 
@@ -802,11 +949,72 @@ export default function InstitutionsPage({
                 <label htmlFor="edit-services" className="text-sm font-medium">
                   Services offerts
                 </label>
-                <textarea
+
+                <Input
                   id="edit-services"
                   className="w-full min-h-[80px] p-2 border rounded-md"
-                  defaultValue={selectedInstitution.services}
+                  value={editedInstitution.service}
+                  onChange={(e) =>
+                    setEditedInstitution({
+                      ...editedInstitution,
+                      service: e.target.value,
+                    })
+                  }
                 />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="rs_1" className="text-sm font-medium">
+                  Réseau social 1 (rs_1)
+                </label>
+                <Input
+                  id="rs_1"
+                  value={editedInstitution.rs_1}
+                  onChange={(e) =>
+                    setEditedInstitution({
+                      ...editedInstitution,
+                      rs_1: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="rs_2" className="text-sm font-medium">
+                  Réseau social 2 (rs_2)
+                </label>
+                <Input
+                  id="rs_2"
+                  value={editedInstitution.rs_2}
+                  onChange={(e) =>
+                    setEditedInstitution({
+                      ...editedInstitution,
+                      rs_2: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="partenaire_feg" className="text-sm font-medium">
+                  Est partenaire FEG ?
+                </label>
+                <Select
+                  value={editedInstitution.partenaire_feg ? "oui" : "non"}
+                  onValueChange={(value) =>
+                    setEditedInstitution({
+                      ...editedInstitution,
+                      partenaire_feg: value === "oui",
+                    })
+                  }
+                >
+                  <SelectTrigger id="partenaire_feg">
+                    <SelectValue placeholder="Oui ou Non" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="oui">Oui</SelectItem>
+                    <SelectItem value="non">Non</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <DialogFooter>
@@ -818,14 +1026,18 @@ export default function InstitutionsPage({
               </Button>
               <Button
                 className="bg-[#063a1e] hover:bg-[#063a1e]/90"
-                onClick={() => setIsEditDialogOpen(false)}
+                onClick={() =>
+                  handleEditInstitution(
+                    editedInstitution as FinancialInstitution
+                  )
+                }
               >
                 Enregistrer les modifications
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      )} */}
+      )}
 
       {/* Dialogue de suppression */}
       {/* {selectedInstitution && (
