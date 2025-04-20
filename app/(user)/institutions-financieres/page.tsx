@@ -9,7 +9,7 @@ import {
   MapPin,
   Phone,
   Mail,
-  ArrowRight,
+  ArrowRight, Facebook, Linkedin
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -145,7 +145,7 @@ export default function InstitutionsFinancieres() {
               {/* Banque 1 */}
               {filteredBanque.map((item) => (
                 <Card
-                  key={item.id}
+                  key={item.id_institutionFinanciere}
                   className="hover:shadow-md transition-shadow"
                 >
                   <CardHeader className="pb-3">
@@ -197,24 +197,23 @@ export default function InstitutionsFinancieres() {
                             {item.mail}{" "}
                           </a>
                         </div>
-                        {/* <Link
+                        <Link
                           target="_blank"
-                          href={item.rs_1}
+                          href={item.rs_1 || "#"}
                           className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
                         >
-                          {/* <Facebook className="h-4 w-4 text-[rgb(6,58,30)] mt-0.5" />
+                          <Facebook className="h-4 w-4 text-[rgb(6,58,30)] mt-0.5" />
                           <span className="text-sm">Visiter la page</span> 
-                          {item.rs_1}
+                     
                         </Link>
                         <Link
                           target="_blank"
-                          href={item.rs_2}
+                          href={item.rs_2 || "#"}
                           className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
                         >
-                          {item.rs_2}
-                          {/* <Linkedin className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                          <Linkedin className="h-4 w-4 text-[#063a1e] mt-0.5" />
                           <span className="text-sm">Visiter la page</span> 
-                        </Link> */}
+                        </Link>
                       </div>
                     </div>
                   </CardContent>
@@ -249,7 +248,7 @@ export default function InstitutionsFinancieres() {
               {/* Microfinance 1 */}
               {filteredMicro.map((item) => (
                 <Card
-                  key={item.id}
+                  key={item.id_institutionFinanciere}
                   className="hover:shadow-md transition-shadow"
                 >
                   <CardHeader className="pb-3">
@@ -351,7 +350,7 @@ export default function InstitutionsFinancieres() {
               
               {filteredFond.map((item) => (
                 <Card
-                  key={item.id}
+                  key={item.id_institutionFinanciere}
                   className="hover:shadow-md transition-shadow"
                 >
                   <CardHeader className="pb-3">
@@ -448,7 +447,7 @@ export default function InstitutionsFinancieres() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {filteredInstP.map((item) => (
                 <Card
-                  key={item.id}
+                  key={item.id_institutionFinanciere}
                   className="hover:shadow-md transition-shadow"
                 >
                   <CardHeader className="pb-3">

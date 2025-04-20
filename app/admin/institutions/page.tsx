@@ -15,6 +15,8 @@ import {
   Mail,
   Globe,
   ExternalLink,
+  Facebook,
+  Linkedin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -79,6 +81,8 @@ import {
   deleteFinancialInstitution,
   updateFinancialInstitution,
 } from "@/app/services/institution/api";
+import Image from "next/image";
+
 import { toast } from "sonner";
 
 export default function InstitutionsPage({}: {
@@ -86,6 +90,10 @@ export default function InstitutionsPage({}: {
 }) {
   // const [searchTerm, setSearchTerm] = useState<string>("");
   // const [typeFilter, setTypeFilter] = useState<string>("");
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedInstitution, setSelectedInstitution] =
+    useState<FinancialInstitution | null>(null);
+
   const [selectedInstitutionId, setSelectedInstitutionId] = useState<
     string | null
   >(null);
@@ -94,6 +102,11 @@ export default function InstitutionsPage({}: {
     Partial<FinancialInstitution>
   >({});
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDetailsCardVisible, setIsDetailsCardVisible] =
+    useState<boolean>(false);
+
+  const [selectedInstitutionDetails, setSelectedInstitutionDetails] =
+    useState<FinancialInstitution | null>(null);
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [institutions, setInstitutions] = useState<FinancialInstitution[]>([]);
@@ -176,10 +189,25 @@ export default function InstitutionsPage({}: {
     setIsEditDialogOpen(true);
   };
 
-  // const [selectedInstitutionDetails, setSelectedInstitutionDetails] =
-  //   useState<Institution | null>(null);
-  // const [isDetailsCardVisible, setIsDetailsCardVisible] =
-  //   useState<boolean>(false);
+  const openDeleteDialog = (institution: FinancialInstitution) => {
+    setSelectedInstitutionId(institution.id_institutionFinanciere);
+    setSelectedInstitution(institution);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const openViewDialog = (institution: FinancialInstitution) => {
+    setSelectedInstitutionId(institution.id_institutionFinanciere);
+    setSelectedInstitution(institution);
+    setSelectedInstitutionDetails(institution);
+    setIsDetailsCardVisible(true);
+  };
+
+  const closeViewDialog = () => {
+    setSelectedInstitution(null);
+    setSelectedInstitutionId(null);
+    setSelectedInstitutionDetails(null);
+    setIsDetailsCardVisible(false);
+  };
 
   // const filteredInstitutions = institutionsData.filter((institution) => {
   //   const matchesSearch =
@@ -260,20 +288,20 @@ export default function InstitutionsPage({}: {
   return (
     <div className="space-y-6 relative">
       {/* Overlay de fond flouté */}
-      {/* {(isAddDialogOpen ||
+      {(isAddDialogOpen ||
         isEditDialogOpen ||
         isDeleteDialogOpen ||
         isDetailsCardVisible) && (
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
           onClick={() => {
-            if (isDetailsCardVisible) closeDetailsCard();
+            if (isDetailsCardVisible) closeViewDialog();
             if (isAddDialogOpen) setIsAddDialogOpen(false);
             if (isEditDialogOpen) setIsEditDialogOpen(false);
             if (isDeleteDialogOpen) setIsDeleteDialogOpen(false);
           }}
         />
-      )} */}
+      )}
 
       {/* En-tête */}
       <div className="flex justify-between items-center">
@@ -668,6 +696,7 @@ export default function InstitutionsPage({}: {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead >Logo</TableHead>
                 <TableHead className="w-[300px]">Nom</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Contact</TableHead>
@@ -677,6 +706,17 @@ export default function InstitutionsPage({}: {
             <TableBody>
               {institutions.map((institution) => (
                 <TableRow key={institution.id_institutionFinanciere}>
+                  <TableCell >
+                    {institution.logo && (
+                      <Image
+                        src={institution.logo}
+                        alt={institution.nom}
+                        width={50}
+                        height={50}
+                        className="rounded-md"
+                      />
+                    )}
+                  </TableCell>
                   <TableCell className="font-medium">
                     {institution.nom}
                   </TableCell>
@@ -699,23 +739,23 @@ export default function InstitutionsPage({}: {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        {/* <DropdownMenuItem
-                          onClick={() => handleViewDetails(institution)}
+                        <DropdownMenuItem
+                          onClick={() => openViewDialog(institution)}
                         >
                           <Eye className="mr-2 h-4 w-4" /> Voir
-                        </DropdownMenuItem> */}
+                        </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => openEditDialog(institution)}
                         >
                           <Pencil className="mr-2 h-4 w-4" /> Modifier
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        {/* <DropdownMenuItem
-                          onClick={() => handleDelete(institution)}
+                        <DropdownMenuItem
+                          onClick={() => openDeleteDialog(institution)}
                           className="text-red-600"
                         >
                           <Trash2 className="mr-2 h-4 w-4" /> Supprimer
-                        </DropdownMenuItem> */}
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -824,8 +864,11 @@ export default function InstitutionsPage({}: {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="edit-categorie" className="text-sm font-medium">
-                  Catégorie d'institution
+                  <label
+                    htmlFor="edit-categorie"
+                    className="text-sm font-medium"
+                  >
+                    Catégorie d'institution
                   </label>
                   <Select
                     value={editedInstitution.categorie}
@@ -1040,14 +1083,14 @@ export default function InstitutionsPage({}: {
       )}
 
       {/* Dialogue de suppression */}
-      {/* {selectedInstitution && (
+      {selectedInstitutionId && (
         <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
           <DialogContent className="sm:max-w-[425px] z-50">
             <DialogHeader>
               <DialogTitle>Confirmer la suppression</DialogTitle>
               <DialogDescription>
                 Êtes-vous sûr de vouloir supprimer l'institution "
-                {selectedInstitution.nom}" ? Cette action est irréversible.
+                {selectedInstitution?.nom}" ? Cette action est irréversible.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="mt-4">
@@ -1059,35 +1102,55 @@ export default function InstitutionsPage({}: {
               </Button>
               <Button
                 variant="destructive"
-                onClick={() => setIsDeleteDialogOpen(false)}
+                onClick={async () => {
+                  if (selectedInstitutionId) {
+                    await handleDeleteInstitution(selectedInstitutionId);
+                    setIsDeleteDialogOpen(false);
+                    setSelectedInstitution(null);
+                    setSelectedInstitutionId(null);
+                  }
+                }}
               >
                 Supprimer
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      )} */}
+      )}
 
       {/* Carte de détails de l'institution - NOUVELLE VERSION */}
-      {/* {isDetailsCardVisible && selectedInstitutionDetails && (
-        <Card className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-11/12 max-w-2xl hover:shadow-md transition-shadow">
+      {isDetailsCardVisible && selectedInstitutionDetails && (
+        <Card
+          onClick={(e) => e.stopPropagation()}
+          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-11/12 max-w-2xl hover:shadow-md transition-shadow"
+        >
           <CardHeader className="pb-3">
             <div className="flex justify-between items-start">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-[#063a1e]/10 rounded-md flex items-center justify-center">
-                  <Building2 className="h-6 w-6 text-[#063a1e]" />
+                  <Image
+                    src={
+                      selectedInstitutionDetails?.logo ||
+                      "/images/default-logo.png"
+                    }
+                    alt="Logo de l'institution"
+                    width={48}
+                    height={48}
+                    className="rounded-md"
+                  />
                 </div>
+
                 <div>
                   <CardTitle>{selectedInstitutionDetails.nom}</CardTitle>
                   <CardDescription>
-                    {selectedInstitutionDetails.type}
+                    {selectedInstitutionDetails.type_institution}
                   </CardDescription>
                 </div>
               </div>
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={closeDetailsCard}
+                onClick={closeViewDialog}
                 className="h-8 w-8"
               >
                 <X className="h-4 w-4" />
@@ -1095,11 +1158,11 @@ export default function InstitutionsPage({}: {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-4 ">
               <p className="text-sm text-muted-foreground">
                 {selectedInstitutionDetails.description}
               </p>
-              <div className="space-y-2">
+              <div className="space-y-2 grid grid-cols-2">
                 <div className="flex items-start gap-2">
                   <MapPin className="h-4 w-4 text-[#063a1e] mt-0.5" />
                   <span className="text-sm">
@@ -1109,19 +1172,19 @@ export default function InstitutionsPage({}: {
                 <div className="flex items-start gap-2">
                   <Phone className="h-4 w-4 text-[#063a1e] mt-0.5" />
                   <a
-                    href={`tel:${selectedInstitutionDetails.telephone}`}
+                    href={`tel:${selectedInstitutionDetails.contact}`}
                     className="text-sm hover:underline underline-offset-4"
                   >
-                    {selectedInstitutionDetails.telephone}
+                    {selectedInstitutionDetails.contact}
                   </a>
                 </div>
                 <div className="flex items-start gap-2">
                   <Mail className="h-4 w-4 text-[#063a1e] mt-0.5" />
                   <a
-                    href={`mailto:${selectedInstitutionDetails.email}`}
+                    href={`mailto:${selectedInstitutionDetails.mail}`}
                     className="text-sm hover:underline underline-offset-4"
                   >
-                    {selectedInstitutionDetails.email}
+                    {selectedInstitutionDetails.mail}
                   </a>
                 </div>
                 {selectedInstitutionDetails.site_web && (
@@ -1134,22 +1197,43 @@ export default function InstitutionsPage({}: {
                     Visiter le site web
                   </Link>
                 )}
+                {selectedInstitutionDetails.rs_1 && (
+                  <Link
+                    target="_blank"
+                    href={selectedInstitutionDetails.rs_1}
+                    className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
+                  >
+                    <Facebook className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                    Facebook
+                  </Link>
+                )}
+                {selectedInstitutionDetails.rs_2 && (
+                  <Link
+                    target="_blank"
+                    href={selectedInstitutionDetails.rs_2}
+                    className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
+                  >
+                    <Linkedin className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                    Linkedin
+                  </Link>
+                )}
               </div>
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
             <div className="flex flex-wrap gap-2">
-              {selectedInstitutionDetails.services
-                .split(", ")
-                .map((service, index) => (
-                  <Badge
-                    key={index}
-                    variant="outline"
-                    className="text-[#063a1e]"
-                  >
-                    {service.trim()}
-                  </Badge>
-                ))}
+              {selectedInstitutionDetails?.service &&
+                selectedInstitutionDetails.service
+                  .split(", ")
+                  .map((service, index) => (
+                    <Badge
+                      key={index}
+                      variant="outline"
+                      className="text-[#063a1e]"
+                    >
+                      {service.trim()}
+                    </Badge>
+                  ))}
             </div>
             {selectedInstitutionDetails.site_web && (
               <Link target="_blank" href={selectedInstitutionDetails.site_web}>
@@ -1164,7 +1248,7 @@ export default function InstitutionsPage({}: {
             )}
           </CardFooter>
         </Card>
-      )} */}
+      )}
     </div>
   );
 }
