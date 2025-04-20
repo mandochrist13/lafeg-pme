@@ -35,13 +35,28 @@ export interface TexteJuridique {
     if (type) params.append('type_texte', type);
     if (titre) params.append('titre', titre);
   
-    const response = await fetch(`/api/texte-juridique?${params.toString()}`, {
-      cache: "no-store",
-  });
+    const appendIfDefined = (key: string, value?: string) => {
+      if (value) params.append(key, value);
+    };
     
-    if (!response.ok) {
-      throw new Error('Erreur lors de la récupération des textes juridiques');
+    appendIfDefined('categorie', categorie);
+    appendIfDefined('type_texte', type);
+    appendIfDefined('titre', titre);
+    
+
+    try {
+      const response = await fetch(`/api/texte-juridique?${params.toString()}`, {
+        cache: "no-store",
+      });
+    
+      if (!response.ok) {
+        throw new Error(`Erreur serveur : ${response.status}`);
+      }
+    
+      return response.json();
+    } catch (error) {
+      console.error("Erreur API fetchTextesJuridiques :", error);
+      throw error;
     }
     
-    return response.json();
   }

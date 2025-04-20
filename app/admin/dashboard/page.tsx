@@ -17,6 +17,10 @@ import {
   fetchFinancialInstitutions,
   FinancialInstitution,
 } from "@/app/services/institution/api";
+import {
+  fetchTextesJuridiques,
+  TexteJuridique,
+} from "@/app/services/texte/api";
 
 type ProgressProps = {
   value: number;
@@ -27,6 +31,23 @@ type ProgressProps = {
 export default function AdminDashboard() {
   const [institutions, setInstitutions] = useState<FinancialInstitution[]>([]);
   const [loading, setLoading] = useState(true);
+  const [textes, setTextes] = useState<TexteJuridique[]>([]);
+  const [loadingTextes, setLoadingTextes] = useState(true);
+
+  useEffect(() => {
+    const fetchTextesData = async () => {
+      try {
+        const { data } = await fetchTextesJuridiques();
+        setTextes(data);
+      } catch (error) {
+        console.error("Erreur lors du chargement des textes :", error);
+      } finally {
+        setLoadingTextes(false);
+      }
+    };
+
+    fetchTextesData();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,6 +81,23 @@ export default function AdminDashboard() {
   const getPercentage = (count: number) =>
     total ? Math.round((count / total) * 100) : 0;
 
+  const getTextCategorieCounts = () => {
+    const counts: Record<string, number> = {};
+
+    textes.forEach((texte) => {
+      const categorie = texte.categorie || "Autre";
+      counts[categorie] = (counts[categorie] || 0) + 1;
+    });
+
+    return counts;
+  };
+
+  const textesCategorieCounts = getTextCategorieCounts();
+  const totalTextes = textes.length;
+
+  const getTextPercentage = (count: number) =>
+    totalTextes ? Math.round((count / totalTextes) * 100) : 0;
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -76,7 +114,9 @@ export default function AdminDashboard() {
             <FileText className="h-8 w-8 text-[#063a1e]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">248</div>
+            <div className="text-2xl font-bold">
+              {loadingTextes ? "..." : totalTextes}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -113,39 +153,41 @@ export default function AdminDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-[#063a1e]"></div>
-                  <span className="text-sm">
-                    Textes des administrations publiques
-                  </span>
-                </div>
-                <span className="text-sm font-medium">98</span>
-              </div>
-              <Progress value={40} className="h-2 bg-gray-200" />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-[#dcdaa4]"></div>
-                  <span className="text-sm">Textes des PME</span>
-                </div>
-                <span className="text-sm font-medium">112</span>
-              </div>
-              <Progress value={45} className="h-2 bg-gray-200" />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-[#bdbd95]"></div>
-                  <span className="text-sm">Textes internationaux</span>
-                </div>
-                <span className="text-sm font-medium">38</span>
-              </div>
-              <Progress value={15} className="h-2 bg-gray-200" />
-            </div>
+            {loadingTextes ? (
+              <p className="text-sm text-gray-500">Chargement...</p>
+            ) : totalTextes === 0 ? (
+              <p className="text-sm text-gray-500">Aucun texte enregistré</p>
+            ) : (
+              Object.entries(textesCategorieCounts).map(
+                ([categorie, count], i) => (
+                  <div className="space-y-2" key={i}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{
+                            backgroundColor: [
+                              "#063a1e",
+                              "#dcdaa4",
+                              "#bdbd95",
+                              "#888",
+                            ][i % 4],
+                          }}
+                        ></div>
+                        <span className="text-sm capitalize">{categorie}</span>
+                      </div>
+                      <span className="text-sm font-medium">{count}</span>
+                    </div>
+                    <Progress
+                      value={getTextPercentage(count)}
+                      className="h-2 bg-gray-200"
+                    />
+                  </div>
+                )
+              )
+            )}
           </CardContent>
+
           <CardFooter>
             <Button variant="outline" className="w-full" asChild>
               <Link href="/admin/textes">Voir tous les textes</Link>
