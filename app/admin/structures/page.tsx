@@ -398,7 +398,7 @@ export default function StructuresPage() {
                 <Plus className="mr-2 h-4 w-4" /> Ajouter une structure
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px]">
+            <DialogContent className="sm:w-[600px] sm:max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
                   Ajouter une structure d'accompagnement
@@ -846,7 +846,7 @@ export default function StructuresPage() {
         {/* Dialogue de modification */}
         {selectedStructure && (
           <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-            <DialogContent className="sm:max-w-[600px]">
+            <DialogContent className="sm:w-[600px] sm:max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
                   Modifier une structure d'accompagnement
