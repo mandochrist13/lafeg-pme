@@ -112,7 +112,7 @@ export default function TextSearch() {
 
           <div className="space-y-4">
             {results.map((text) => (
-              <Card key={text.id} className="hover:shadow-md transition-shadow">
+              <Card key={text.id_texteJuridique} className="hover:shadow-md transition-shadow">
                 <div className="p-4">
                   <div className="flex flex-col md:flex-row md:items-center gap-4">
                     <div className="flex-1">
@@ -132,31 +132,22 @@ export default function TextSearch() {
                           {text.description}
                         </p>
                       )}
-                      <div className="mt-2">
-                        {text.mime_type && (
-                          <Badge variant="outline" className="text-xs">
-                            {text.mime_type.toUpperCase()} -{" "}
-                            {(text.taille_fichier / 1024).toFixed(1)} Ko
+                      <div className="mt-2 flex justify-between items-center">
+                        {text.categorie && (
+                          <Badge variant="secondary" className="text-xs">
+                            {text.categorie.toUpperCase()} -{" "}
+                         
                           </Badge>
                         )}
+                         <Badge variant="secondary" className="text-xs">
+                          <FileText className="h-4 w-4 inline-block mr-1" />
+                            {(text.taille_fichier / 1024).toFixed(1)} Ko
+                          </Badge>
                       </div>
                     </div>
 
                     <div className="flex gap-2 shrink-0">
-                      <Link
-                        href={`/textes/${text.id}`}
-                        target="_blank"
-                        className="hover:no-underline"
-                      >
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
-                        >
-                          <FileText className="h-4 w-4" />
-                          Lire
-                        </Button>
-                      </Link>
+                      
 
                       <a
                         href={text.fichier_url}
