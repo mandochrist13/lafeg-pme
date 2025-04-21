@@ -860,6 +860,7 @@ export default function InstitutionsPage({}: {
                     }
                   />
                 </div>
+
                 <div className="space-y-2">
                   <label htmlFor="logo" className="text-sm font-medium">
                     Logo de l'institution
