@@ -162,7 +162,7 @@ export default function InstitutionsFinancieres() {
                         </div>
                         <div>
                           <CardTitle>{item.nom}</CardTitle>
-                          <CardDescription>{item.description}</CardDescription>
+                          <CardDescription>{item.type_institution}</CardDescription>
                         </div>
                       </div>
                       <div>{item.partenaire_feg}</div>
@@ -219,7 +219,7 @@ export default function InstitutionsFinancieres() {
                   </CardContent>
                   <CardFooter className="flex justify-between">
                     <Badge variant="outline" className="text-[#063a1e]">
-                      Prêts PME
+                      {item.service}
                     </Badge>
                     <Link target="_blank" href={item.site_web}>
                       <Button
@@ -265,7 +265,7 @@ export default function InstitutionsFinancieres() {
                         </div>
                         <div>
                           <CardTitle>{item.nom}</CardTitle>
-                          <CardDescription>{item.description}</CardDescription>
+                          <CardDescription>{item.type_institution}</CardDescription>
                         </div>
                       </div>
                       <div>{item.partenaire_feg}</div>
@@ -300,30 +300,29 @@ export default function InstitutionsFinancieres() {
                             {item.mail}{" "}
                           </a>
                         </div>
-                        {/* <Link
+                        <Link
                           target="_blank"
-                          href={item.rs_1}
+                          href={item.rs_1 || "#"}
                           className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
                         >
-                          {/* <Facebook className="h-4 w-4 text-[rgb(6,58,30)] mt-0.5" />
+                          <Facebook className="h-4 w-4 text-[rgb(6,58,30)] mt-0.5" />
                           <span className="text-sm">Visiter la page</span> 
-                          {item.rs_1}
+                     
                         </Link>
                         <Link
                           target="_blank"
-                          href={item.rs_2}
+                          href={item.rs_2 || "#"}
                           className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
                         >
-                          {item.rs_2}
-                          {/* <Linkedin className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                          <Linkedin className="h-4 w-4 text-[#063a1e] mt-0.5" />
                           <span className="text-sm">Visiter la page</span> 
-                        </Link> */}
+                        </Link>
                       </div>
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-between">
                     <Badge variant="outline" className="text-[#063a1e]">
-                      Prêts PME
+                     {item.service}
                     </Badge>
                     <Link target="_blank" href={item.site_web}>
                       <Button
@@ -367,7 +366,7 @@ export default function InstitutionsFinancieres() {
                         </div>
                         <div>
                           <CardTitle>{item.nom}</CardTitle>
-                          <CardDescription>{item.description}</CardDescription>
+                          <CardDescription>{item.type_institution}</CardDescription>
                         </div>
                       </div>
                       <div>{item.partenaire_feg}</div>
@@ -402,26 +401,29 @@ export default function InstitutionsFinancieres() {
                             {item.mail}{" "}
                           </a>
                         </div>
-                        {/* <Link
+                        <Link
                           target="_blank"
-                             href={item.rs_1}
+                          href={item.rs_1 || "#"}
                           className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
                         >
-                          {item.rs_1}
+                          <Facebook className="h-4 w-4 text-[rgb(6,58,30)] mt-0.5" />
+                          <span className="text-sm">Visiter la page</span> 
+                     
                         </Link>
                         <Link
                           target="_blank"
-                          href={item.rs_2}
+                          href={item.rs_2 || "#"}
                           className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
                         >
-                          {item.rs_2}
-                             </Link> */}
+                          <Linkedin className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                          <span className="text-sm">Visiter la page</span> 
+                        </Link>
                       </div>
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-between">
                     <Badge variant="outline" className="text-[#063a1e]">
-                      Prêts PME
+                      {item.service}
                     </Badge>
                     <Link target="_blank" href={item.site_web}>
                       <Button
@@ -464,7 +466,7 @@ export default function InstitutionsFinancieres() {
                         </div>
                         <div>
                           <CardTitle>{item.nom}</CardTitle>
-                          <CardDescription>{item.description}</CardDescription>
+                          <CardDescription>{item.type_institution}</CardDescription>
                         </div>
                       </div>
                       <div>{item.partenaire_feg}</div>
@@ -499,19 +501,29 @@ export default function InstitutionsFinancieres() {
                             {item.mail}{" "}
                           </a>
                         </div>
-                        {/* <Link
+                        <Link
                           target="_blank"
-                             href={item.rs_1}
+                          href={item.rs_1 || "#"}
                           className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
                         >
-                          {item.rs_1}
-                        </Link> */}
+                          <Facebook className="h-4 w-4 text-[rgb(6,58,30)] mt-0.5" />
+                          <span className="text-sm">Visiter la page</span> 
+                     
+                        </Link>
+                        <Link
+                          target="_blank"
+                          href={item.rs_2 || "#"}
+                          className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
+                        >
+                          <Linkedin className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                          <span className="text-sm">Visiter la page</span> 
+                        </Link>
                       </div>
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-between">
                     <Badge variant="outline" className="text-[#063a1e]">
-                      Prêts PME
+                     {item.service}
                     </Badge>
                     <Link target="_blank" href={item.site_web}>
                       <Button

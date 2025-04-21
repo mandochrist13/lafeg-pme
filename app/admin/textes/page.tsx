@@ -49,7 +49,7 @@ import {
 } from "@/components/ui/pagination";
 import {
   TexteJuridique,
-  fetchTextesJuridiques,
+  fetchTextesJuridiques, createTexteJuridique
 } from "@/app/services/texte/api";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -58,19 +58,42 @@ export default function TextesJuridiquesAdmin() {
     []
   );
   const [filteredTextes, setFilteredTextes] = useState<TexteJuridique[]>([]);
+  const [fichier, setFichier] = useState<File | null>(null);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("all");
   const [selectedCategorie, setSelectedCategorie] = useState("all");
   const [showAddForm, setShowAddForm] = useState(false);
 
-  // const [newTexte, setNewTexte] = useState<Omit<TexteJuridique, "id">>({
-  //   titre: "",
-  //   type: "",
-  //   categorie: "",
-  //   datePublication: "",
-  //   lien: "",
-  // });
+  const [newTexte, setNewTexte] = useState<Omit<TexteJuridique, "id">>({
+    titre: "",
+    categorie: "",
+    type_texte: "",
+    description: "",
+    date_parution: "",
+    version: "",
+    fichier: null,
+    fichier_url: "",
+    fichier_nom: "",
+    taille_fichier: 0,
+    mime_type: "",
+  });
+
+  const resetNewTexteForm = () => {
+    setNewTexte({
+      titre: "",
+      categorie: "",
+      type_texte: "",
+      description: "",
+      date_parution: "",
+      version: "",
+      fichier: null,
+      fichier_url: "",
+      fichier_nom: "",
+      taille_fichier: 0,
+      mime_type: "",
+    });
+  };
 
   useEffect(() => {
     async function loadTextes() {
@@ -92,62 +115,65 @@ export default function TextesJuridiquesAdmin() {
       const matchSearch = texte.titre
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
-  
+
       const matchType =
         selectedType === "all" || texte.type_texte === selectedType;
-  
+
       const matchCategorie =
         selectedCategorie === "all" || texte.categorie === selectedCategorie;
-  
+
       return matchSearch && matchType && matchCategorie;
     });
-  
+
     setFilteredTextes(filtered);
   }, [searchTerm, selectedType, selectedCategorie, textesJuridiques]);
-  
 
-  // Extraire les types, catégories uniques pour les filtres
-  // const types = [...new Set(textesJuridiques.map((texte) => texte.type))];
-  // const categories = [
-  //   ...new Set(textesJuridiques.map((texte) => texte.categorie)),
-  // ];
+  const handleAddTexte = async () => {
+    if (
+      !newTexte.titre ||
+      !newTexte.type_texte ||
+      !newTexte.fichier_url ||
+      !newTexte.date_parution ||
+      !newTexte.categorie
+    ) {
+      alert("Veuillez remplir tous les champs obligatoires");
+      return;
+    }
 
-  // const handleAddTexte = () => {
-  //   if (
-  //     !newTexte.titre ||
-  //     !newTexte.type ||
-  //     !newTexte.lien ||
-  //     !newTexte.datePublication ||
-  //     !newTexte.categorie
-  //   ) {
-  //     alert("Veuillez remplir tous les champs obligatoires");
-  //     return;
-  //   }
+    try {
 
-  //   const newId = Math.max(...textesJuridiques.map((t) => t.id)) + 1;
-  //   const texteToAdd: TexteJuridique = {
-  //     id: newId,
-  //     ...newTexte,
-  //   };
+      console.log("Texte à envoyer :", newTexte);
+     
+      const createdTexte = await createTexteJuridique(newTexte);
+      console.log("Texte créé :", createdTexte);
+      
+      setTextesJuridiques([...textesJuridiques, createdTexte]);
+      setShowAddForm(false);
+      setNewTexte({
+        titre: "",
+        categorie: "",
+        type_texte: "",
+        description: "",
+        date_parution: "",
+        version: "",
+        fichier: null,
+        fichier_url: "",
+        fichier_nom: "",
+        taille_fichier: 0,
+        mime_type: "",
+      });
+      setFichier(null);
+    } catch (error) {
+      alert("Erreur lors de l’ajout du texte.");
+      console.error("Erreur lors de l’ajout du texte :", error);
+    }
+  };
 
-  //   setTextesJuridiques([texteToAdd, ...textesJuridiques]);
-  //   setShowAddForm(false);
-  //   setNewTexte({
-  //     titre: "",
-  //     type: "",
-  //     categorie: "",
-  //     datePublication: "",
-  //     lien: "",
-  //   });
-  // };
-
-  const handleDeleteTexte = (id: number) => {
+  const handleDeleteTexte = (id: string) => {
     if (confirm("Êtes-vous sûr de vouloir supprimer ce texte juridique ?")) {
       setTextesJuridiques(textesJuridiques.filter((texte) => texte.id !== id));
     }
   };
-
-  // ... (le reste de votre code JSX reste inchangé)
 
   return (
     <div className="space-y-6">
@@ -168,7 +194,9 @@ export default function TextesJuridiquesAdmin() {
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Titre*</label>
+                <label className="block text-sm font-medium mb-1">
+                  Titre <span className="text-red-600">*</span>
+                </label>
                 <Input
                   value={newTexte.titre}
                   onChange={(e) =>
@@ -178,16 +206,30 @@ export default function TextesJuridiquesAdmin() {
                   required
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Description 
+                </label>
+                <Input
+                  value={newTexte.description}
+                  onChange={(e) =>
+                    setNewTexte({ ...newTexte, description: e.target.value })
+                  }
+                  placeholder="Renseignez une description"
+              
+                />
+              </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-1">
-                    Type*
+                    Type <span className="text-red-600">*</span>
                   </label>
+
                   <Select
-                    value={newTexte.type}
+                    value={newTexte.type_texte}
                     onValueChange={(value) =>
-                      setNewTexte({ ...newTexte, type: value })
+                      setNewTexte({ ...newTexte, type_texte: value })
                     }
                     required
                   >
@@ -195,17 +237,18 @@ export default function TextesJuridiquesAdmin() {
                       <SelectValue placeholder="Sélectionner un type" />
                     </SelectTrigger>
                     <SelectContent>
-                      {types.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="all">Tous les types</SelectItem>
+                      <SelectItem value="Loi">Loi</SelectItem>
+                      <SelectItem value="Décret">Décret</SelectItem>
+                      <SelectItem value="Acte uniforme OHADA">OHADA</SelectItem>
+                      <SelectItem value="Code">Code</SelectItem>
+                      <SelectItem value="Arrêté">Arrêté</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">
-                    Catégorie*
+                    Catégorie <span className="text-red-600">*</span>
                   </label>
                   <Select
                     value={newTexte.categorie}
@@ -218,49 +261,63 @@ export default function TextesJuridiquesAdmin() {
                       <SelectValue placeholder="Sélectionner une catégorie" />
                     </SelectTrigger>
                     <SelectContent>
-                      {categories.map((cat) => (
-                        <SelectItem key={cat} value={cat}>
-                          {cat}
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="all">Toutes les catégories</SelectItem>
+                      <SelectItem value="pmes">Textes pour les PME</SelectItem>
+                      <SelectItem value="publique">
+                        Textes des administrations
+                      </SelectItem>
+                      <SelectItem value="internationaux">
+                        Textes régionaux et Internationaux
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Lien du document*
-                </label>
-                <Input
-                  type="url"
-                  value={newTexte.lien}
-                  onChange={(e) =>
-                    setNewTexte({ ...newTexte, lien: e.target.value })
-                  }
-                  placeholder="https://example.com/document.pdf"
-                  required
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Veuillez entrer l'URL complète du document (PDF, DOCX, etc.)
-                </p>
-              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Choisir le fichier <span className="text-red-600">*</span>
+                  </label>
 
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Date de publication*
-                </label>
-                <Input
-                  type="date"
-                  value={newTexte.datePublication}
-                  onChange={(e) =>
-                    setNewTexte({
-                      ...newTexte,
-                      datePublication: e.target.value,
-                    })
-                  }
-                  required
-                />
+                  <Input
+                    id="fichier"
+                    type="file"
+                    accept="application/pdf"
+                    required
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setFichier(file);
+                        setNewTexte({
+                          ...newTexte,
+                          fichier: file,
+                        });
+                      }
+                    }}
+                    
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Veuillez téléverser un document (PDF)
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Date de publication<span className="text-red-600">*</span>
+                  </label>
+                  <Input
+                    type="date"
+                    value={newTexte.date_parution}
+                    onChange={(e) =>
+                      setNewTexte({
+                        ...newTexte,
+                        date_parution: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                </div>
               </div>
             </div>
             <div className="flex justify-end gap-2 p-4 border-t">
@@ -309,11 +366,11 @@ export default function TextesJuridiquesAdmin() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tous les types</SelectItem>
-                    <SelectItem value="Loi">Loi</SelectItem>
-                    <SelectItem value="Décret">Décret</SelectItem>
-                    <SelectItem value="Acte uniforme OHADA">OHADA</SelectItem>
-                    <SelectItem value="Code">Code</SelectItem> 
-                    <SelectItem value="Arrêté">Arrêté</SelectItem> 
+                  <SelectItem value="Loi">Loi</SelectItem>
+                  <SelectItem value="Décret">Décret</SelectItem>
+                  <SelectItem value="Acte uniforme OHADA">OHADA</SelectItem>
+                  <SelectItem value="Code">Code</SelectItem>
+                  <SelectItem value="Arrêté">Arrêté</SelectItem>
                 </SelectContent>
               </Select>
               <Select
@@ -394,8 +451,8 @@ export default function TextesJuridiquesAdmin() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredTextes.map((texte) => (
-                  <TableRow key={texte.id}>
+                {filteredTextes.map((texte, index) => (
+                  <TableRow key={texte.id || index}>
                     <TableCell className="font-medium">{texte.titre}</TableCell>
                     <TableCell>{texte.type_texte}</TableCell>
                     <TableCell>{texte.categorie}</TableCell>

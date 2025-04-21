@@ -5,7 +5,7 @@ export interface FinancialInstitution {
   id_institutionFinanciere: string;
   nom: string;
   categorie: string;
-  type_institution: string;
+  type_institution?: string;
   partenaire_feg?: boolean;
   description: string;
   logo: string;

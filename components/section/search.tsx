@@ -1,75 +1,77 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { ArrowRight, Download, FileText } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { fetchTextesJuridiques, TexteJuridique } from "../../app/services/texte/api"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { ArrowRight, Download, FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  fetchTextesJuridiques,
+  TexteJuridique,
+} from "../../app/services/texte/api";
 
-type Category = "pmes" | "internationaux" | "administrations" | ""
+type Category = "pmes" | "internationaux" | "administrations" | "";
 
 export default function TextSearch() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [results, setResults] = useState<TexteJuridique[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+  const [searchQuery, setSearchQuery] = useState("");
+  const [results, setResults] = useState<TexteJuridique[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
     total: 0,
-    totalPages: 1
-  })
-  const [hasSearched, setHasSearched] = useState(false)
+    totalPages: 1,
+  });
+  const [hasSearched, setHasSearched] = useState(false);
 
   const searchTexts = async (newPage = 1) => {
     try {
-      setLoading(true)
-      setError("")
-      setResults([])
-      
+      setLoading(true);
+      setError("");
+      setResults([]);
+
       const { data, pagination: paginationData } = await fetchTextesJuridiques(
         newPage,
         pagination.limit,
-        undefined , 
         undefined,
-        searchQuery.trim() , 
+        undefined,
+        searchQuery.trim()
         // titreRecherche,
-        
-      )
+      );
 
-      const filteredResults = searchQuery.trim() 
-      ? data.filter(text => 
-          text.titre.toLowerCase().includes(searchQuery.toLowerCase()))
-      : []
+      const filteredResults = searchQuery.trim()
+        ? data.filter((text) =>
+            text.titre.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+        : [];
 
-    setResults(filteredResults)
-    setPagination({
-      ...paginationData,
-      total: filteredResults.length // Met à jour le total avec les résultats filtrés
-    })
-      setHasSearched(true)
+      setResults(filteredResults);
+      setPagination({
+        ...paginationData,
+        total: filteredResults.length, // Met à jour le total avec les résultats filtrés
+      });
+      setHasSearched(true);
     } catch (err) {
-      setError("Erreur lors de la recherche")
-      console.error(err)
+      setError("Erreur lors de la recherche");
+      console.error(err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (searchQuery.trim()) {
-        searchTexts(1)
-      }
-  }
+      searchTexts(1);
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value)
-  }
-
+    setSearchQuery(e.target.value);
+  };
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -82,11 +84,11 @@ export default function TextSearch() {
             onChange={handleInputChange}
             className="flex-1"
           />
-          <Button 
-            type="submit" 
-            disabled={loading || !searchQuery.trim()} 
-            variant="secondary" 
-            size="lg" 
+          <Button
+            type="submit"
+            disabled={loading || !searchQuery.trim()}
+            variant="secondary"
+            size="lg"
             className="bg-[#063a1e] relative hover:bg-white"
           >
             <span className="absolute inset-0 w-full h-full bg-[#dcdaa4] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0"></span>
@@ -97,17 +99,14 @@ export default function TextSearch() {
         </div>
       </form>
 
-      {error && (
-        <div className="mt-4 text-red-500 text-sm">
-          {error}
-        </div>
-      )}
+      {error && <div className="mt-4 text-red-500 text-sm">{error}</div>}
 
       {hasSearched && results.length > 0 && (
         <div className="mt-8">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-semibold">
-              {pagination.total} résultat{pagination.total > 1 ? "s" : ""} trouvé{pagination.total > 1 ? "s" : ""}
+              {pagination.total} résultat{pagination.total > 1 ? "s" : ""}{" "}
+              trouvé{pagination.total > 1 ? "s" : ""}
             </h3>
           </div>
 
@@ -122,7 +121,9 @@ export default function TextSearch() {
                           {text.type_texte}
                         </Badge>
                         <span className="text-sm text-muted-foreground">
-                          {new Date(text.date_parution).toLocaleDateString('fr-FR')}
+                          {new Date(text.date_parution).toLocaleDateString(
+                            "fr-FR"
+                          )}
                         </span>
                       </div>
                       <h3 className="font-medium">{text.titre}</h3>
@@ -132,14 +133,17 @@ export default function TextSearch() {
                         </p>
                       )}
                       <div className="mt-2">
-                        <Badge variant="outline" className="text-xs">
-                          {text.mime_type.toUpperCase()} - {(text.taille_fichier / 1024).toFixed(1)} Ko
-                        </Badge>
+                        {text.mime_type && (
+                          <Badge variant="outline" className="text-xs">
+                            {text.mime_type.toUpperCase()} -{" "}
+                            {(text.taille_fichier / 1024).toFixed(1)} Ko
+                          </Badge>
+                        )}
                       </div>
                     </div>
 
                     <div className="flex gap-2 shrink-0">
-                      <Link 
+                      <Link
                         href={`/textes/${text.id}`}
                         target="_blank"
                         className="hover:no-underline"
@@ -154,8 +158,8 @@ export default function TextSearch() {
                         </Button>
                       </Link>
 
-                      <a 
-                        href={text.fichier_url} 
+                      <a
+                        href={text.fichier_url}
                         download={text.fichier_nom}
                         className="hover:no-underline"
                       >
@@ -205,5 +209,5 @@ export default function TextSearch() {
         </div>
       )}
     </div>
-  )
+  );
 }

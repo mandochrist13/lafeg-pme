@@ -184,7 +184,6 @@ export default function InstitutionsPage({}: {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, typeFilter]);
-  
 
   if (loading) return <p>Chargement...</p>;
   if (error) return <p>Erreur : {error}</p>;
@@ -367,6 +366,29 @@ export default function InstitutionsPage({}: {
                   />
                 </div>
                 <div className="space-y-2">
+                  <label htmlFor="logo" className="text-sm font-medium">
+                    Logo de l'institution
+                  </label>
+                  <Input
+                    id="logo"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setNewInstitution({
+                            ...newInstitution,
+                            logo: reader.result as string, // Stocke l'URL base64 dans le state
+                          });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                </div>
+                <div className="space-y-2">
                   <label htmlFor="categorie" className="text-sm font-medium">
                     Catégorie d'institution
                   </label>
@@ -450,29 +472,6 @@ export default function InstitutionsPage({}: {
                       })
                     }
                     placeholder="Ex: +241 77 12 34 56"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="logo" className="text-sm font-medium">
-                    Logo de l'institution
-                  </label>
-                  <Input
-                    id="logo"
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          setNewInstitution({
-                            ...newInstitution,
-                            logo: reader.result as string, // Stocke l'URL base64 dans le state
-                          });
-                        };
-                        reader.readAsDataURL(file);
-                      }
-                    }}
                   />
                 </div>
 
@@ -564,38 +563,40 @@ export default function InstitutionsPage({}: {
                   placeholder="Liste des services offerts par l'institution..."
                 />
               </div>
-              <div className="space-y-2">
-                <label htmlFor="rs_1" className="text-sm font-medium">
-                  Réseau social 1 (rs_1)
-                </label>
-                <Input
-                  id="rs_1"
-                  value={newInstitution.rs_1}
-                  onChange={(e) =>
-                    setNewInstitution({
-                      ...newInstitution,
-                      rs_1: e.target.value,
-                    })
-                  }
-                  placeholder="Ex: https://facebook.com/institution"
-                />
-              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label htmlFor="rs_1" className="text-sm font-medium">
+                    Réseau social 1 (rs_1)
+                  </label>
+                  <Input
+                    id="rs_1"
+                    value={newInstitution.rs_1}
+                    onChange={(e) =>
+                      setNewInstitution({
+                        ...newInstitution,
+                        rs_1: e.target.value,
+                      })
+                    }
+                    placeholder="Ex: https://facebook.com/institution"
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <label htmlFor="rs_2" className="text-sm font-medium">
-                  Réseau social 2 (rs_2)
-                </label>
-                <Input
-                  id="rs_2"
-                  value={newInstitution.rs_2}
-                  onChange={(e) =>
-                    setNewInstitution({
-                      ...newInstitution,
-                      rs_2: e.target.value,
-                    })
-                  }
-                  placeholder="Ex: https://linkedin.com/institution"
-                />
+                <div className="space-y-2">
+                  <label htmlFor="rs_2" className="text-sm font-medium">
+                    Réseau social 2 (rs_2)
+                  </label>
+                  <Input
+                    id="rs_2"
+                    value={newInstitution.rs_2}
+                    onChange={(e) =>
+                      setNewInstitution({
+                        ...newInstitution,
+                        rs_2: e.target.value,
+                      })
+                    }
+                    placeholder="Ex: https://linkedin.com/institution"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -661,14 +662,14 @@ export default function InstitutionsPage({}: {
 
             <div className="space-y-2">
               <label htmlFor="type-filter" className="text-sm font-medium">
-                Type d'institution
+                Catégorie d'institution
               </label>
               <Select value={typeFilter} onValueChange={setTypeFilter}>
                 <SelectTrigger id="type-filter">
                   <SelectValue placeholder="Tous les types" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous les types</SelectItem>
+                  <SelectItem value="all">Toutes les catégories</SelectItem>
                   <SelectItem value="banque">Banque</SelectItem>
                   <SelectItem value="microfinance">Microfinance</SelectItem>
                   <SelectItem value="fonds">Fonds d'investissement</SelectItem>
@@ -709,7 +710,7 @@ export default function InstitutionsPage({}: {
               <TableRow>
                 <TableHead>Logo</TableHead>
                 <TableHead className="w-[300px]">Nom</TableHead>
-                <TableHead>Type</TableHead>
+                <TableHead>Catégorie</TableHead>
                 <TableHead>Contact</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -859,7 +860,29 @@ export default function InstitutionsPage({}: {
                     }
                   />
                 </div>
-
+                <div className="space-y-2">
+                  <label htmlFor="logo" className="text-sm font-medium">
+                    Logo de l'institution
+                  </label>
+                  <Input
+                    id="logo"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setEditedInstitution({
+                            ...editedInstitution,
+                            logo: reader.result as string, // Stocke l'URL base64 dans le state
+                          });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                </div>
                 <div className="space-y-2">
                   <label
                     htmlFor="type_institution"
@@ -1010,7 +1033,7 @@ export default function InstitutionsPage({}: {
                 >
                   Description
                 </label>
-                <Input defaultValue={editedInstitution.description} />
+
                 <Input
                   id="edit-description"
                   className="w-full min-h-[100px] p-2 border rounded-md"
