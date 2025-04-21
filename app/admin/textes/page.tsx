@@ -75,15 +75,28 @@ export default function TextesJuridiquesAdmin() {
   const [filteredTextes, setFilteredTextes] = useState<TexteJuridique[]>([]);
   const [fichier, setFichier] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [selectedTexte, setSelectedTexte] = useState<TexteJuridique | null>(
-    null
-  );
+   const [currentPage, setCurrentPage] = useState(1);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [selectedTexte, setSelectedTexte] =
+      useState<TexteJuridique | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("all");
   const [selectedCategorie, setSelectedCategorie] = useState("all");
   const [showAddForm, setShowAddForm] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+
+  const itemsPerPage = 5;
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedTexte = filteredTextes.slice(
+    startIndex,
+    endIndex
+  );
+
+
+  const totalPages = Math.ceil(filteredTextes.length / itemsPerPage);
 
   const [newTexte, setNewTexte] = useState<
     Omit<
@@ -290,25 +303,17 @@ export default function TextesJuridiquesAdmin() {
     }
   };
 
-  // const handleDeleteTexte = (id: string) => {
-  //   if (confirm("Êtes-vous sûr de vouloir supprimer ce texte juridique ?")) {
-  //     setTextesJuridiques(
-  //       textesJuridiques.filter((texte) => texte.id_texteJuridique !== id)
-  //     );
-  //   }
-  // };
-
-  const handleDeleteTexte = async (id: string) => {
-    try {
-      setLoading(true);
-      await deleteTexteJuridique(id);
-      await refreshTextes();
-    } catch (error) {
-      console.error("Erreur suppression :", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const handleDeleteTexte = async (id: string) => {
+      try {
+        setLoading(true);
+        await deleteTexteJuridique(id);
+        await refreshTextes();
+      } catch (error) {
+        console.error("Erreur suppression :", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
   return (
     <div className="space-y-6">
@@ -584,7 +589,7 @@ export default function TextesJuridiquesAdmin() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredTextes.map((texte) => (
+                {paginatedTexte.map((texte) => (
                   <TableRow key={texte.id_texteJuridique}>
                     <TableCell className="font-medium">{texte.titre}</TableCell>
                     <TableCell>{texte.type_texte}</TableCell>
@@ -669,26 +674,54 @@ export default function TextesJuridiquesAdmin() {
               textes juridiques
             </p>
             <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious href="#" />
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#" isActive>
-                    1
-                  </PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#">2</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationNext href="#" />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+                        <PaginationContent>
+                          <PaginationItem>
+                            <PaginationPrevious
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setCurrentPage((prev) => Math.max(prev - 1, 1));
+                              }}
+                              className={
+                                currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                              }
+                            />
+                          </PaginationItem>
+            
+                          {[...Array(totalPages)].map((_, index) => {
+                            const page = index + 1;
+                            return (
+                              <PaginationItem key={page}>
+                                <PaginationLink
+                                  href="#"
+                                  isActive={currentPage === page}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setCurrentPage(page);
+                                  }}
+                                >
+                                  {page}
+                                </PaginationLink>
+                              </PaginationItem>
+                            );
+                          })}
+            
+                          <PaginationItem>
+                            <PaginationNext
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+                              }}
+                              className={
+                                currentPage === totalPages
+                                  ? "pointer-events-none opacity-50"
+                                  : ""
+                              }
+                            />
+                          </PaginationItem>
+                        </PaginationContent>
+                      </Pagination>
           </div>
         </CardContent>
       </Card>
