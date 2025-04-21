@@ -67,12 +67,24 @@ export interface TexteJuridique {
     texte: Omit<TexteJuridique, "id">
   ): Promise<TexteJuridique> {
     try {
+      const formData = new FormData();
+      formData.append("titre", texte.titre);
+      formData.append("categorie", texte.categorie);
+      formData.append("type_texte", texte.type_texte);
+      formData.append("description", texte.description || "");
+      formData.append("date_parution", texte.date_parution);
+      formData.append("version", texte.version || "");
+      if (!texte.fichier) {
+        alert("Fichier requis !");
+        return Promise.reject("Fichier requis !");
+      }
+      formData.append("fichier", texte.fichier); // le fichier PDF
+
+
       const response = await fetch("/api/texte-juridique", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(texte),
+        
+        body: formData,
       });
   
       if (!response.ok) {
@@ -90,22 +102,21 @@ export interface TexteJuridique {
   // PUT - Mettre à jour un texte juridique
   export async function updateTexteJuridique(
     id: string,
-    updatedTexte: Partial<TexteJuridique>
+    formData: FormData
   ): Promise<TexteJuridique> {
     try {
       const response = await fetch(`/api/texte-juridique/${id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedTexte),
+        body: formData,
+        // Note: Ne pas mettre 'Content-Type' header quand on envoie FormData
+        // Le navigateur va automatiquement ajouter le bon content-type avec le boundary
       });
   
       if (!response.ok) {
         throw new Error(`Erreur mise à jour : ${response.status}`);
       }
   
-      return response.json();
+      return await response.json();
     } catch (error) {
       console.error("Erreur API updateTexteJuridique :", error);
       throw error;

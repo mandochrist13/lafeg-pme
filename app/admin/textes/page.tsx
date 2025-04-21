@@ -11,6 +11,15 @@ import {
   MoreHorizontal,
   X,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -49,7 +58,9 @@ import {
 } from "@/components/ui/pagination";
 import {
   TexteJuridique,
-  fetchTextesJuridiques, createTexteJuridique
+  fetchTextesJuridiques,
+  createTexteJuridique,
+  updateTexteJuridique,
 } from "@/app/services/texte/api";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -57,13 +68,18 @@ export default function TextesJuridiquesAdmin() {
   const [textesJuridiques, setTextesJuridiques] = useState<TexteJuridique[]>(
     []
   );
+  const [selectedTexteId, setSelectedTexteId] = useState<string | null>(null);
+  const [editedTexte, setEditedTexte] = useState<Partial<TexteJuridique>>({});
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [filteredTextes, setFilteredTextes] = useState<TexteJuridique[]>([]);
   const [fichier, setFichier] = useState<File | null>(null);
-
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("all");
   const [selectedCategorie, setSelectedCategorie] = useState("all");
   const [showAddForm, setShowAddForm] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
 
   const [newTexte, setNewTexte] = useState<Omit<TexteJuridique, "id">>({
     titre: "",
@@ -93,6 +109,19 @@ export default function TextesJuridiquesAdmin() {
       taille_fichier: 0,
       mime_type: "",
     });
+  };
+
+  const refreshTextes = async () => {
+    setLoading(true);
+    try {
+      const  {data}  = await fetchTextesJuridiques();
+      setTextesJuridiques(data);
+
+    } catch (err: any) {
+      setError(err.message || "Erreur inconnue");
+    } finally{
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -132,7 +161,7 @@ export default function TextesJuridiquesAdmin() {
     if (
       !newTexte.titre ||
       !newTexte.type_texte ||
-      !newTexte.fichier_url ||
+      !newTexte.fichier ||
       !newTexte.date_parution ||
       !newTexte.categorie
     ) {
@@ -141,12 +170,11 @@ export default function TextesJuridiquesAdmin() {
     }
 
     try {
-
       console.log("Texte à envoyer :", newTexte);
-     
+
       const createdTexte = await createTexteJuridique(newTexte);
       console.log("Texte créé :", createdTexte);
-      
+
       setTextesJuridiques([...textesJuridiques, createdTexte]);
       setShowAddForm(false);
       setNewTexte({
@@ -166,6 +194,51 @@ export default function TextesJuridiquesAdmin() {
     } catch (error) {
       alert("Erreur lors de l’ajout du texte.");
       console.error("Erreur lors de l’ajout du texte :", error);
+    }
+  };
+
+  const openEditDialog = (texte: TexteJuridique) => {
+    setSelectedTexteId(texte.id.toString); // nombre
+    setEditedTexte(texte); // ici pas besoin de changement
+    setIsEditDialogOpen(true);
+  };
+
+  const handleEditTexte = async (texteData: TexteJuridique) => {
+    if (!texteData.titre || !texteData.type_texte || !texteData.date_parution || !texteData.categorie) {
+      alert("Veuillez remplir tous les champs obligatoires");
+      return;
+    }
+  
+    try {
+      setLoading(true);
+      
+      if (!selectedTexteId) {
+        console.error("Aucun ID de texte sélectionné");
+        return;
+      }
+  
+      // Créer un FormData pour gérer les fichiers
+      const formData = new FormData();
+      formData.append('titre', texteData.titre);
+      formData.append('description', texteData.description || '');
+      formData.append('type_texte', texteData.type_texte);
+      formData.append('categorie', texteData.categorie);
+      formData.append('date_parution', texteData.date_parution);
+      
+      if (texteData.fichier instanceof File) {
+        formData.append('fichier', texteData.fichier);
+      }
+  
+      await updateTexteJuridique(selectedTexteId, formData);
+      await refreshTextes();
+      
+      setIsEditDialogOpen(false);
+      setSelectedTexteId(null);
+    } catch (error) {
+      console.error("Erreur lors de la modification du texte :", error);
+      alert("Une erreur est survenue lors de la modification du texte.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -208,7 +281,7 @@ export default function TextesJuridiquesAdmin() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Description 
+                  Description
                 </label>
                 <Input
                   value={newTexte.description}
@@ -216,7 +289,6 @@ export default function TextesJuridiquesAdmin() {
                     setNewTexte({ ...newTexte, description: e.target.value })
                   }
                   placeholder="Renseignez une description"
-              
                 />
               </div>
 
@@ -263,7 +335,7 @@ export default function TextesJuridiquesAdmin() {
                     <SelectContent>
                       <SelectItem value="all">Toutes les catégories</SelectItem>
                       <SelectItem value="pmes">Textes pour les PME</SelectItem>
-                      <SelectItem value="publique">
+                      <SelectItem value="administrations">
                         Textes des administrations
                       </SelectItem>
                       <SelectItem value="internationaux">
@@ -295,7 +367,6 @@ export default function TextesJuridiquesAdmin() {
                         });
                       }
                     }}
-                    
                   />
                   <p className="text-xs text-muted-foreground mt-1">
                     Veuillez téléverser un document (PDF)
@@ -383,7 +454,7 @@ export default function TextesJuridiquesAdmin() {
                 <SelectContent>
                   <SelectItem value="all">Toutes les catégories</SelectItem>
                   <SelectItem value="pmes">Textes pour les PME</SelectItem>
-                  <SelectItem value="publique">
+                  <SelectItem value="administrations">
                     Textes des administrations
                   </SelectItem>
                   <SelectItem value="internationaux">
@@ -492,7 +563,9 @@ export default function TextesJuridiquesAdmin() {
                           <DropdownMenuItem>
                             <Eye className="mr-2 h-4 w-4" /> Voir
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => openEditDialog(texte)}
+                          >
                             <Edit className="mr-2 h-4 w-4" /> Modifier
                           </DropdownMenuItem>
                           <DropdownMenuItem>
@@ -543,6 +616,165 @@ export default function TextesJuridiquesAdmin() {
           </div>
         </CardContent>
       </Card>
+    {/* Dialogue de modification */}
+{selectedTexteId && (
+  <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+    <DialogContent className="sm:max-w-[600px] sm:max-h-[500px] overflow-y-auto z-50">
+      <DialogHeader>
+        <DialogTitle>Modifier un texte juridique</DialogTitle>
+        <DialogDescription>
+          Modifiez les informations du texte juridique.
+        </DialogDescription>
+      </DialogHeader>
+      <div className="grid gap-4 p-6">
+        <div className="p-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Titre <span className="text-red-600">*</span>
+            </label>
+            <Input
+              id="edit-titre"
+              value={editedTexte.titre}
+              onChange={(e) =>
+                setEditedTexte({ ...editedTexte, titre: e.target.value })
+              }
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Description
+            </label>
+            <Input
+              id="edit-description"
+              value={editedTexte.description}
+              onChange={(e) =>
+                setEditedTexte({
+                  ...editedTexte,
+                  description: e.target.value,
+                })
+              }
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Type <span className="text-red-600">*</span>
+              </label>
+              <Select
+                value={editedTexte.type_texte}
+                onValueChange={(value) =>
+                  setEditedTexte({ ...editedTexte, type_texte: value })
+                }
+              >
+                <SelectTrigger id="type_texte">
+                  <SelectValue placeholder="Sélectionner un type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Loi">Loi</SelectItem>
+                  <SelectItem value="Décret">Décret</SelectItem>
+                  <SelectItem value="Acte uniforme OHADA">
+                    OHADA
+                  </SelectItem>
+                  <SelectItem value="Code">Code</SelectItem>
+                  <SelectItem value="Arrêté">Arrêté</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Catégorie <span className="text-red-600">*</span>
+              </label>
+              <Select
+                value={editedTexte.categorie}
+                onValueChange={(value) =>
+                  setEditedTexte({ ...editedTexte, categorie: value })
+                }
+              >
+                <SelectTrigger id="categorie">
+                  <SelectValue placeholder="Sélectionner une catégorie" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pmes">
+                    Textes pour les PME
+                  </SelectItem>
+                  <SelectItem value="administrations">
+                    Textes des administrations
+                  </SelectItem>
+                  <SelectItem value="internationaux">
+                    Textes régionaux et Internationaux
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Fichier actuel
+              </label>
+              <div className="text-sm text-gray-600 p-2 border rounded">
+                {editedTexte.fichier_nom || "Aucun fichier sélectionné"}
+              </div>
+              <label className="block text-sm font-medium mb-1 mt-2">
+                Changer le fichier (PDF)
+              </label>
+              <Input
+                id="fichier"
+                type="file"
+                accept="application/pdf"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setEditedTexte({
+                      ...editedTexte,
+                      fichier: file,
+                      fichier_nom: file.name,
+                    });
+                  }
+                }}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Date de publication
+                <span className="text-red-600">*</span>
+              </label>
+              <Input
+                type="date"
+                value={editedTexte.date_parution}
+                onChange={(e) =>
+                  setEditedTexte({
+                    ...editedTexte,
+                    date_parution: e.target.value,
+                  })
+                }
+                required
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <DialogFooter>
+        <Button
+          variant="outline"
+          onClick={() => setIsEditDialogOpen(false)}
+        >
+          Annuler
+        </Button>
+        <Button
+          className="bg-[#063a1e] hover:bg-[#063a1e]/90"
+          onClick={() => handleEditTexte(editedTexte as TexteJuridique)}
+          disabled={loading}
+        >
+          {loading ? "Enregistrement..." : "Enregistrer les modifications"}
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+)}
     </div>
   );
 }
