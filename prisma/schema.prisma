@@ -61,17 +61,9 @@ model texte_juridique {
   version        String
 }
 
-<<<<<<< HEAD
-model utilisateur {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  /// Field referred in an index, but found no data to define the type.
-  email Json?  @unique
-}
-=======
 enum Role {
   ADMIN
   MODERATEUR
   EDITEUR
   UTILISATEUR
 }
->>>>>>> 71d04e9f6d59e1d8d32d9a86b324a2f847285d6f
