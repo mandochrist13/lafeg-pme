@@ -8,17 +8,22 @@ import { ArrowRight, FileText, BookOpen, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import TickerTextes from "@/components/section/TickerTextes";
+
 // import AddressAutocomplete from "@/components/AddressAutocomplete"
 
 import TextSearch from "@/components/section/search";
 import NewText from "@/components/section/new_text"
 
+
+
 export default function Home() {
 
   return (
     <div className="">
+        <TickerTextes />
       {/* Scrolling News Ticker */}
-      <div className="bg-[#063a1e] py-2 text-white overflow-hidden">
+      {/* <div className="bg-[#063a1e] py-2 text-white overflow-hidden">
         <div className="ticker-container">
           <div className="ticker-wrapper">
             <div className="ticker-text">
@@ -30,7 +35,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Flash News */}
       <div className="bg-[#063a1e]/10 py-2 border-b">

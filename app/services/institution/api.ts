@@ -2,11 +2,11 @@
 const API_BASE_URL = "/api/FinancialInstitution";
 
 export interface FinancialInstitution {
-  id: number;
+  id_institutionFinanciere: string;
   nom: string;
-  categorie: "banque" | "microfinance" | "fonds" | "institution_publique";
+  categorie: string;
   type_institution: string;
-  partenaire_feg?: string;
+  partenaire_feg?: boolean;
   description: string;
   logo: string;
   adresse: string;
@@ -22,7 +22,7 @@ export interface FinancialInstitution {
 
 // CREATE - Créer une nouvelle institution
 export async function createFinancialInstitution(
-  data: Omit<FinancialInstitution, 'id' | 'createdAt' | 'updatedAt'>
+  data: Omit<FinancialInstitution, 'id_institutionFinanciere' | 'createdAt' | 'updatedAt'>
 ): Promise<FinancialInstitution> {
   const response = await fetch(API_BASE_URL, {
     method: 'POST',
@@ -65,7 +65,7 @@ export async function fetchFinancialInstitutionById(
 
 // UPDATE - Mettre à jour une institution
 export async function updateFinancialInstitution(
-  id: number,
+  id: string,
   data: Partial<FinancialInstitution>
 ): Promise<FinancialInstitution> {
   const response = await fetch(`${API_BASE_URL}/${id}`, {
@@ -85,7 +85,7 @@ export async function updateFinancialInstitution(
 
 // DELETE - Supprimer une institution
 export async function deleteFinancialInstitution(
-  id: number
+  id: string
 ): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/${id}`, {
     method: 'DELETE',
