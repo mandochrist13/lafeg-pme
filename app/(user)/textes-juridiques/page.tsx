@@ -483,9 +483,12 @@ const filteredTextes = textes.filter((texte: TexteJuridique) => {
                     {texte.description}
                   </p>
                   <div className="mt-2">
-                    <Badge variant="outline" className="text-xs">
+                    {texte.mime_type &&(
+                      <Badge variant="outline" className="text-xs">
                       {texte.mime_type.toUpperCase()}
                     </Badge>
+                    )}
+                    
                   </div>
                 </div>
 

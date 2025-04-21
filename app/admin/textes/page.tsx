@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Search,
   Plus,
@@ -47,108 +47,19 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+  TexteJuridique,
+  fetchTextesJuridiques, createTexteJuridique
+} from "@/app/services/texte/api";
 import { Textarea } from "@/components/ui/textarea";
-
-interface TexteJuridique {
-  id: number;
-  titre: string;
-  type: string;
-  categorie: string;
-  datePublication: string;
-  lien: string;
-}
-
-// Données fictives pour les textes juridiques
-const initialTextesJuridiques: TexteJuridique[] = [
-  {
-    id: 1,
-    titre: "Loi n°023/2023 portant mesures d'allègement fiscal pour les PME",
-    type: "Loi",
-    categorie: "Fiscalité",
-    datePublication: "15/03/2024",
-    lien: "https://example.com/loi-023-2023.pdf",
-  },
-  {
-    id: 2,
-    titre: "Décret n°2025-123 relatif à la fiscalité des PME",
-    type: "Décret",
-    categorie: "Fiscalité",
-    datePublication: "10/05/2025",
-    lien: "https://example.com/loi-023-2023.pdf",
-  },
-  {
-    id: 3,
-    titre:
-      "Arrêté n°0045/MPME fixant les modalités d'application du régime simplifié d'imposition",
-    type: "Arrêté",
-    categorie: "Fiscalité",
-    datePublication: "22/04/2025",
-    lien: "https://example.com/loi-023-2023.pdf",
-  },
-  {
-    id: 4,
-    titre:
-      "Acte uniforme OHADA relatif au droit des sociétés commerciales et du GIE",
-    type: "Acte uniforme",
-    categorie: "Création d'entreprise",
-    datePublication: "30/01/2024",
-    lien: "https://example.com/loi-023-2023.pdf",
-  },
-  {
-    id: 5,
-    titre: "Loi n°042/2024 sur la promotion des startups et de l'innovation",
-    type: "Loi",
-    categorie: "Innovation",
-    datePublication: "05/02/2024",
-    lien: "https://example.com/loi-023-2023.pdf",
-  },
-  {
-    id: 6,
-    titre: "Décret n°2024-089 relatif aux procédures simplifiées pour les PME",
-    type: "Décret",
-    categorie: "Procédures administratives",
-    datePublication: "18/03/2024",
-    lien: "https://example.com/loi-023-2023.pdf",
-  },
-  {
-    id: 7,
-    titre: "Loi n°031/2024 portant code du travail (révision)",
-    type: "Loi",
-    categorie: "Droit du travail",
-    datePublication: "12/04/2024",
-    lien: "https://example.com/loi-023-2023.pdf",
-  },
-  {
-    id: 8,
-    titre:
-      "Arrêté n°0078/MFP relatif aux obligations comptables simplifiées des TPE/PME",
-    type: "Arrêté",
-    categorie: "Comptabilité",
-    datePublication: "25/04/2024",
-    lien: "https://example.com/loi-023-2023.pdf",
-  },
-  {
-    id: 9,
-    titre: "Décret n°2025-056 relatif aux marchés publics réservés aux PME",
-    type: "Décret",
-    categorie: "Marchés publics",
-    datePublication: "03/05/2025",
-    lien: "https://example.com/loi-023-2023.pdf",
-  },
-  {
-    id: 10,
-    titre: "Loi n°015/2025 sur la protection des données personnelles",
-    type: "Loi",
-    categorie: "Numérique",
-    datePublication: "08/05/2025",
-    lien: "https://example.com/loi-023-2023.pdf",
-  },
-];
 
 export default function TextesJuridiquesAdmin() {
   const [textesJuridiques, setTextesJuridiques] = useState<TexteJuridique[]>(
-    initialTextesJuridiques
+    []
   );
+  const [filteredTextes, setFilteredTextes] = useState<TexteJuridique[]>([]);
+  const [fichier, setFichier] = useState<File | null>(null);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("all");
   const [selectedCategorie, setSelectedCategorie] = useState("all");
@@ -156,65 +67,113 @@ export default function TextesJuridiquesAdmin() {
 
   const [newTexte, setNewTexte] = useState<Omit<TexteJuridique, "id">>({
     titre: "",
-    type: "",
     categorie: "",
-    datePublication: "",
-    lien: "",
+    type_texte: "",
+    description: "",
+    date_parution: "",
+    version: "",
+    fichier: null,
+    fichier_url: "",
+    fichier_nom: "",
+    taille_fichier: 0,
+    mime_type: "",
   });
+
+  const resetNewTexteForm = () => {
+    setNewTexte({
+      titre: "",
+      categorie: "",
+      type_texte: "",
+      description: "",
+      date_parution: "",
+      version: "",
+      fichier: null,
+      fichier_url: "",
+      fichier_nom: "",
+      taille_fichier: 0,
+      mime_type: "",
+    });
+  };
+
+  useEffect(() => {
+    async function loadTextes() {
+      try {
+        const { data } = await fetchTextesJuridiques();
+        setTextesJuridiques(data);
+        setFilteredTextes(data); // ou appliquer ton filtre ici si besoin
+      } catch (error) {
+        console.error("Erreur de chargement des textes juridiques :", error);
+      }
+    }
+
+    loadTextes();
+  }, []);
 
   // Filtrer les textes juridiques
-  const filteredTextes = textesJuridiques.filter((texte) => {
-    const matchSearch = texte.titre
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchType = selectedType === "all" || texte.type === selectedType;
-    const matchCategorie =
-      selectedCategorie === "all" || texte.categorie === selectedCategorie;
-    return matchSearch && matchType && matchCategorie;
-  });
+  useEffect(() => {
+    const filtered = textesJuridiques.filter((texte) => {
+      const matchSearch = texte.titre
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
 
-  // Extraire les types, catégories uniques pour les filtres
-  const types = [...new Set(textesJuridiques.map((texte) => texte.type))];
-  const categories = [
-    ...new Set(textesJuridiques.map((texte) => texte.categorie)),
-  ];
+      const matchType =
+        selectedType === "all" || texte.type_texte === selectedType;
 
-  const handleAddTexte = () => {
+      const matchCategorie =
+        selectedCategorie === "all" || texte.categorie === selectedCategorie;
+
+      return matchSearch && matchType && matchCategorie;
+    });
+
+    setFilteredTextes(filtered);
+  }, [searchTerm, selectedType, selectedCategorie, textesJuridiques]);
+
+  const handleAddTexte = async () => {
     if (
       !newTexte.titre ||
-      !newTexte.type ||
-      !newTexte.lien ||
-      !newTexte.datePublication ||
+      !newTexte.type_texte ||
+      !newTexte.fichier_url ||
+      !newTexte.date_parution ||
       !newTexte.categorie
     ) {
       alert("Veuillez remplir tous les champs obligatoires");
       return;
     }
 
-    const newId = Math.max(...textesJuridiques.map((t) => t.id)) + 1;
-    const texteToAdd: TexteJuridique = {
-      id: newId,
-      ...newTexte,
-    };
+    try {
 
-    setTextesJuridiques([texteToAdd, ...textesJuridiques]);
-    setShowAddForm(false);
-    setNewTexte({
-      titre: "",
-      type: "",
-      categorie: "",
-      datePublication: "",
-      lien: "",
-    });
+      console.log("Texte à envoyer :", newTexte);
+     
+      const createdTexte = await createTexteJuridique(newTexte);
+      console.log("Texte créé :", createdTexte);
+      
+      setTextesJuridiques([...textesJuridiques, createdTexte]);
+      setShowAddForm(false);
+      setNewTexte({
+        titre: "",
+        categorie: "",
+        type_texte: "",
+        description: "",
+        date_parution: "",
+        version: "",
+        fichier: null,
+        fichier_url: "",
+        fichier_nom: "",
+        taille_fichier: 0,
+        mime_type: "",
+      });
+      setFichier(null);
+    } catch (error) {
+      alert("Erreur lors de l’ajout du texte.");
+      console.error("Erreur lors de l’ajout du texte :", error);
+    }
   };
 
-  const handleDeleteTexte = (id: number) => {
+  const handleDeleteTexte = (id: string) => {
     if (confirm("Êtes-vous sûr de vouloir supprimer ce texte juridique ?")) {
       setTextesJuridiques(textesJuridiques.filter((texte) => texte.id !== id));
     }
   };
-
-  // ... (le reste de votre code JSX reste inchangé)
 
   return (
     <div className="space-y-6">
@@ -235,7 +194,9 @@ export default function TextesJuridiquesAdmin() {
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Titre*</label>
+                <label className="block text-sm font-medium mb-1">
+                  Titre <span className="text-red-600">*</span>
+                </label>
                 <Input
                   value={newTexte.titre}
                   onChange={(e) =>
@@ -245,16 +206,30 @@ export default function TextesJuridiquesAdmin() {
                   required
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Description 
+                </label>
+                <Input
+                  value={newTexte.description}
+                  onChange={(e) =>
+                    setNewTexte({ ...newTexte, description: e.target.value })
+                  }
+                  placeholder="Renseignez une description"
+              
+                />
+              </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-1">
-                    Type*
+                    Type <span className="text-red-600">*</span>
                   </label>
+
                   <Select
-                    value={newTexte.type}
+                    value={newTexte.type_texte}
                     onValueChange={(value) =>
-                      setNewTexte({ ...newTexte, type: value })
+                      setNewTexte({ ...newTexte, type_texte: value })
                     }
                     required
                   >
@@ -262,17 +237,18 @@ export default function TextesJuridiquesAdmin() {
                       <SelectValue placeholder="Sélectionner un type" />
                     </SelectTrigger>
                     <SelectContent>
-                      {types.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="all">Tous les types</SelectItem>
+                      <SelectItem value="Loi">Loi</SelectItem>
+                      <SelectItem value="Décret">Décret</SelectItem>
+                      <SelectItem value="Acte uniforme OHADA">OHADA</SelectItem>
+                      <SelectItem value="Code">Code</SelectItem>
+                      <SelectItem value="Arrêté">Arrêté</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">
-                    Catégorie*
+                    Catégorie <span className="text-red-600">*</span>
                   </label>
                   <Select
                     value={newTexte.categorie}
@@ -285,49 +261,63 @@ export default function TextesJuridiquesAdmin() {
                       <SelectValue placeholder="Sélectionner une catégorie" />
                     </SelectTrigger>
                     <SelectContent>
-                      {categories.map((cat) => (
-                        <SelectItem key={cat} value={cat}>
-                          {cat}
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="all">Toutes les catégories</SelectItem>
+                      <SelectItem value="pmes">Textes pour les PME</SelectItem>
+                      <SelectItem value="publique">
+                        Textes des administrations
+                      </SelectItem>
+                      <SelectItem value="internationaux">
+                        Textes régionaux et Internationaux
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Lien du document*
-                </label>
-                <Input
-                  type="url"
-                  value={newTexte.lien}
-                  onChange={(e) =>
-                    setNewTexte({ ...newTexte, lien: e.target.value })
-                  }
-                  placeholder="https://example.com/document.pdf"
-                  required
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Veuillez entrer l'URL complète du document (PDF, DOCX, etc.)
-                </p>
-              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Choisir le fichier <span className="text-red-600">*</span>
+                  </label>
 
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Date de publication*
-                </label>
-                <Input
-                  type="date"
-                  value={newTexte.datePublication}
-                  onChange={(e) =>
-                    setNewTexte({
-                      ...newTexte,
-                      datePublication: e.target.value,
-                    })
-                  }
-                  required
-                />
+                  <Input
+                    id="fichier"
+                    type="file"
+                    accept="application/pdf"
+                    required
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setFichier(file);
+                        setNewTexte({
+                          ...newTexte,
+                          fichier: file,
+                        });
+                      }
+                    }}
+                    
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Veuillez téléverser un document (PDF)
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Date de publication<span className="text-red-600">*</span>
+                  </label>
+                  <Input
+                    type="date"
+                    value={newTexte.date_parution}
+                    onChange={(e) =>
+                      setNewTexte({
+                        ...newTexte,
+                        date_parution: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                </div>
               </div>
             </div>
             <div className="flex justify-end gap-2 p-4 border-t">
@@ -345,7 +335,7 @@ export default function TextesJuridiquesAdmin() {
         </div>
       )}
 
-      {/* Contenu principal */}
+      {/* Ajouter un texte */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold tracking-tight">Textes juridiques</h1>
         <Button
@@ -376,27 +366,29 @@ export default function TextesJuridiquesAdmin() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tous les types</SelectItem>
-                  {types.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="Loi">Loi</SelectItem>
+                  <SelectItem value="Décret">Décret</SelectItem>
+                  <SelectItem value="Acte uniforme OHADA">OHADA</SelectItem>
+                  <SelectItem value="Code">Code</SelectItem>
+                  <SelectItem value="Arrêté">Arrêté</SelectItem>
                 </SelectContent>
               </Select>
               <Select
                 value={selectedCategorie}
                 onValueChange={setSelectedCategorie}
               >
-                <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectTrigger id="categorie" className="w-full sm:w-[180px]">
                   <SelectValue placeholder="Catégorie" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Toutes les catégories</SelectItem>
-                  {categories.map((categorie) => (
-                    <SelectItem key={categorie} value={categorie}>
-                      {categorie}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="pmes">Textes pour les PME</SelectItem>
+                  <SelectItem value="publique">
+                    Textes des administrations
+                  </SelectItem>
+                  <SelectItem value="internationaux">
+                    Textes régionaux et Internationaux
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -453,26 +445,39 @@ export default function TextesJuridiquesAdmin() {
                   <TableHead className="w-[400px]">Titre</TableHead>
                   <TableHead>Type</TableHead>
                   <TableHead>Catégorie</TableHead>
+                  <TableHead>Document</TableHead>
                   <TableHead>Date de publication</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredTextes.map((texte) => (
-                  <TableRow key={texte.id}>
+                {filteredTextes.map((texte, index) => (
+                  <TableRow key={texte.id || index}>
                     <TableCell className="font-medium">{texte.titre}</TableCell>
-                    <TableCell>{texte.type}</TableCell>
+                    <TableCell>{texte.type_texte}</TableCell>
+                    <TableCell>{texte.categorie}</TableCell>
                     <TableCell>
                       <a
-                        href={texte.lien}
+                        href={texte.fichier_url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline"
                       >
-                        Télécharger
+                        Voir
                       </a>
                     </TableCell>
-                    <TableCell>{texte.datePublication}</TableCell>
+                    <TableCell>
+                      <span className="text-sm">
+                        {new Date(texte.date_parution).toLocaleDateString(
+                          "fr-FR",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          }
+                        )}
+                      </span>{" "}
+                    </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
