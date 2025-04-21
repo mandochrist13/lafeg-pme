@@ -635,30 +635,30 @@ export default function TextesJuridiquesAdmin() {
                           >
                             <Edit className="mr-2 h-4 w-4" /> Modifier
                           </DropdownMenuItem>
-                           <DropdownMenuItem>
-                           <a
-                            href={texte.fichier_url}
-                            download={texte.fichier_nom}
-                            aria-label={`Télécharger ${texte.fichier_nom}`}
-                          >
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
+                          <DropdownMenuItem>
+                            <a
+                              href={texte.fichier_url}
+                              download={texte.fichier_nom}
+                              aria-label={`Télécharger ${texte.fichier_nom}`}
                             >
-                              <Download className="h-4 w-4" />
-                              <span>Télécharger</span>
-                            </Button>
-                          </a>
-                          </DropdownMenuItem> 
-                         
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
+                              >
+                                <Download className="h-4 w-4" />
+                                <span>Télécharger</span>
+                              </Button>
+                            </a>
+                          </DropdownMenuItem>
+
                           <DropdownMenuSeparator />
-                           <DropdownMenuItem
+                          <DropdownMenuItem
                             className="text-red-600"
                             onClick={() => openDeleteDialog(texte)}
                           >
                             <Trash2 className="mr-2 h-4 w-4" /> Supprimer
-                          </DropdownMenuItem> 
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -886,42 +886,41 @@ export default function TextesJuridiquesAdmin() {
         </Dialog>
       )}
 
-
-       {/* Dialogue de suppression */}
-            {selectedTexteId && (
-              <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                <DialogContent className="sm:max-w-[425px] z-50">
-                  <DialogHeader>
-                    <DialogTitle>Confirmer la suppression</DialogTitle>
-                    <DialogDescription>
-                      Êtes-vous sûr de vouloir supprimer l'institution "
-                      {selectedTexte?.titre}" ? Cette action est irréversible.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <DialogFooter className="mt-4">
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsDeleteDialogOpen(false)}
-                    >
-                      Annuler
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      onClick={async () => {
-                        if (selectedTexteId) {
-                          await handleDeleteTexte(selectedTexteId);
-                          setIsDeleteDialogOpen(false);
-                          setSelectedTexte(null);
-                          setSelectedTexteId("");
-                        }
-                      }}
-                    >
-                      Supprimer
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            )}
+      {/* Dialogue de suppression */}
+      {selectedTexteId && (
+        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <DialogContent className="sm:max-w-[425px] z-50">
+            <DialogHeader>
+              <DialogTitle>Confirmer la suppression</DialogTitle>
+              <DialogDescription>
+                Êtes-vous sûr de vouloir supprimer l'institution "
+                {selectedTexte?.titre}" ? Cette action est irréversible.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="mt-4">
+              <Button
+                variant="outline"
+                onClick={() => setIsDeleteDialogOpen(false)}
+              >
+                Annuler
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={async () => {
+                  if (selectedTexteId) {
+                    await handleDeleteTexte(selectedTexteId);
+                    setIsDeleteDialogOpen(false);
+                    setSelectedTexte(null);
+                    setSelectedTexteId("");
+                  }
+                }}
+              >
+                Supprimer
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
