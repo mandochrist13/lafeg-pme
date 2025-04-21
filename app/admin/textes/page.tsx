@@ -68,7 +68,7 @@ export default function TextesJuridiquesAdmin() {
   const [textesJuridiques, setTextesJuridiques] = useState<TexteJuridique[]>(
     []
   );
-  const [selectedTexteId, setSelectedTexteId] = useState<string | null>(null);
+  const [selectedTexteId, setSelectedTexteId] = useState<string>("");
   const [editedTexte, setEditedTexte] = useState<Partial<TexteJuridique>>({});
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [filteredTextes, setFilteredTextes] = useState<TexteJuridique[]>([]);
@@ -81,7 +81,7 @@ export default function TextesJuridiquesAdmin() {
   const [error, setError] = useState<string | null>(null);
 
 
-  const [newTexte, setNewTexte] = useState<Omit<TexteJuridique, "id">>({
+  const [newTexte, setNewTexte] = useState<Omit<TexteJuridique, "id_texteJuridique" | "fichier_url" | "fichier_nom" | "taille_fichier" | "mime_type">>({
     titre: "",
     categorie: "",
     type_texte: "",
@@ -89,10 +89,10 @@ export default function TextesJuridiquesAdmin() {
     date_parution: "",
     version: "",
     fichier: null,
-    fichier_url: "",
-    fichier_nom: "",
-    taille_fichier: 0,
-    mime_type: "",
+    // fichier_url: "",
+    // fichier_nom: "",
+    // taille_fichier: 0,
+    // mime_type: "",
   });
 
   const resetNewTexteForm = () => {
@@ -104,10 +104,10 @@ export default function TextesJuridiquesAdmin() {
       date_parution: "",
       version: "",
       fichier: null,
-      fichier_url: "",
-      fichier_nom: "",
-      taille_fichier: 0,
-      mime_type: "",
+      // fichier_url: "",
+      // fichier_nom: "",
+      // taille_fichier: 0,
+      // mime_type: "",
     });
   };
 
@@ -172,7 +172,15 @@ export default function TextesJuridiquesAdmin() {
     try {
       console.log("Texte à envoyer :", newTexte);
 
-      const createdTexte = await createTexteJuridique(newTexte);
+      const createdTexte = await createTexteJuridique({
+        titre: newTexte.titre,
+        categorie: newTexte.categorie,
+        type_texte: newTexte.type_texte,
+        description: newTexte.description,
+        date_parution: newTexte.date_parution,
+        version: newTexte.version,
+        fichier: newTexte.fichier,
+      });
       console.log("Texte créé :", createdTexte);
 
       setTextesJuridiques([...textesJuridiques, createdTexte]);
@@ -185,10 +193,10 @@ export default function TextesJuridiquesAdmin() {
         date_parution: "",
         version: "",
         fichier: null,
-        fichier_url: "",
-        fichier_nom: "",
-        taille_fichier: 0,
-        mime_type: "",
+        // fichier_url: "",
+        // fichier_nom: "",
+        // taille_fichier: 0,
+        // mime_type: "",
       });
       setFichier(null);
     } catch (error) {
@@ -198,7 +206,15 @@ export default function TextesJuridiquesAdmin() {
   };
 
   const openEditDialog = (texte: TexteJuridique) => {
-    setSelectedTexteId(texte.id.toString); // nombre
+
+    if (!texte?.id_texteJuridique) {
+      console.error("Le texte sélectionné n’a pas d’ID. Données reçues :", JSON.stringify(texte, null, 2));
+      alert("Le texte sélectionné semble invalide.");
+      return;
+    }
+
+
+    setSelectedTexteId(String(texte.id_texteJuridique));
     setEditedTexte(texte); // ici pas besoin de changement
     setIsEditDialogOpen(true);
   };
@@ -208,12 +224,16 @@ export default function TextesJuridiquesAdmin() {
       alert("Veuillez remplir tous les champs obligatoires");
       return;
     }
+
+    
   
     try {
       setLoading(true);
       
       if (!selectedTexteId) {
         console.error("Aucun ID de texte sélectionné");
+        alert("Impossible de modifier : aucun texte sélectionné.");
+        setLoading(false);
         return;
       }
   
@@ -229,11 +249,13 @@ export default function TextesJuridiquesAdmin() {
         formData.append('fichier', texteData.fichier);
       }
   
-      await updateTexteJuridique(selectedTexteId, formData);
+      await updateTexteJuridique(String(selectedTexteId), formData);
+      console.log("selectedTexteId type :", typeof selectedTexteId, "valeur :", selectedTexteId);
+
       await refreshTextes();
       
       setIsEditDialogOpen(false);
-      setSelectedTexteId(null);
+      setSelectedTexteId("");
     } catch (error) {
       console.error("Erreur lors de la modification du texte :", error);
       alert("Une erreur est survenue lors de la modification du texte.");
@@ -244,7 +266,7 @@ export default function TextesJuridiquesAdmin() {
 
   const handleDeleteTexte = (id: string) => {
     if (confirm("Êtes-vous sûr de vouloir supprimer ce texte juridique ?")) {
-      setTextesJuridiques(textesJuridiques.filter((texte) => texte.id !== id));
+      setTextesJuridiques(textesJuridiques.filter((texte) => texte.id_texteJuridique !== id));
     }
   };
 
@@ -522,8 +544,9 @@ export default function TextesJuridiquesAdmin() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredTextes.map((texte, index) => (
-                  <TableRow key={texte.id || index}>
+
+                {filteredTextes.map((texte) => (
+                  <TableRow key={texte.id_texteJuridique}>
                     <TableCell className="font-medium">{texte.titre}</TableCell>
                     <TableCell>{texte.type_texte}</TableCell>
                     <TableCell>{texte.categorie}</TableCell>
@@ -560,24 +583,24 @@ export default function TextesJuridiquesAdmin() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem>
+                          {/* <DropdownMenuItem>
                             <Eye className="mr-2 h-4 w-4" /> Voir
-                          </DropdownMenuItem>
+                          </DropdownMenuItem> */}
                           <DropdownMenuItem
                             onClick={() => openEditDialog(texte)}
                           >
                             <Edit className="mr-2 h-4 w-4" /> Modifier
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+                          {/* <DropdownMenuItem>
                             <Download className="mr-2 h-4 w-4" /> Télécharger
-                          </DropdownMenuItem>
+                          </DropdownMenuItem> */}
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem
+                          {/* <DropdownMenuItem
                             className="text-red-600"
                             onClick={() => handleDeleteTexte(texte.id)}
                           >
                             <Trash2 className="mr-2 h-4 w-4" /> Supprimer
-                          </DropdownMenuItem>
+                          </DropdownMenuItem> */}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -767,9 +790,10 @@ export default function TextesJuridiquesAdmin() {
         <Button
           className="bg-[#063a1e] hover:bg-[#063a1e]/90"
           onClick={() => handleEditTexte(editedTexte as TexteJuridique)}
-          disabled={loading}
+          // disabled={loading}
         >
-          {loading ? "Enregistrement..." : "Enregistrer les modifications"}
+          {/* {loading ? "Enregistrement..." : "Enregistrer les modifications"} */}
+          Enregistrer les modifications
         </Button>
       </DialogFooter>
     </DialogContent>

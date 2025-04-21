@@ -460,7 +460,7 @@ const filteredTextes = textes.filter((texte: TexteJuridique) => {
     ) : filteredAndSortedTextes.length > 0 ? (
       <div className="space-y-4">
         {filteredAndSortedTextes.map((texte) => (
-          <Card key={texte.id} className="hover:shadow-sm transition-shadow">
+          <Card key={texte.id_texteJuridique} className="hover:shadow-sm transition-shadow">
             <CardContent className="p-4">
               <div className="flex flex-col md:flex-row md:items-center gap-4">
                 {/* Métadonnées */}
@@ -493,7 +493,7 @@ const filteredTextes = textes.filter((texte: TexteJuridique) => {
                 {/* Actions */}
                 <div className="flex gap-2 shrink-0">
                   <Link 
-                    href={`/textes/${texte.id}`} 
+                    href={`/textes/${texte.id_texteJuridique}`} 
                     target="_blank"
                     aria-label={`Lire ${texte.titre}`}
                   >

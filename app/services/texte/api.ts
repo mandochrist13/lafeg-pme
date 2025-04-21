@@ -1,6 +1,6 @@
 // src/services/api.ts
 export interface TexteJuridique {
-    id: string;
+    id_texteJuridique: string;
     titre: string;
     type_texte: string;
     categorie: string;
@@ -64,7 +64,7 @@ export interface TexteJuridique {
   // POST - Créer un texte juridique
 
   export async function createTexteJuridique(
-    texte: Omit<TexteJuridique, "id">
+    texte: Omit<TexteJuridique, "id_texteJuridique" | "fichier_url" | "fichier_nom" | "taille_fichier" | "mime_type"> & { fichier: File }
   ): Promise<TexteJuridique> {
     try {
       const formData = new FormData();
@@ -101,11 +101,11 @@ export interface TexteJuridique {
 
   // PUT - Mettre à jour un texte juridique
   export async function updateTexteJuridique(
-    id: string,
+    id_texteJuridique: string,
     formData: FormData
   ): Promise<TexteJuridique> {
     try {
-      const response = await fetch(`/api/texte-juridique/${id}`, {
+      const response = await fetch(`/api/texte-juridique/${id_texteJuridique}`, {
         method: "PUT",
         body: formData,
         // Note: Ne pas mettre 'Content-Type' header quand on envoie FormData
