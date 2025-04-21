@@ -9,7 +9,7 @@ import {
   MapPin,
   Phone,
   Mail,
-  ArrowRight,
+  ArrowRight, Facebook, Linkedin
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,33 +22,55 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import banque from "@/components/data/institution/banque";
-import fond from "@/components/data/institution/fond";
-import micro from "@/components/data/institution/micro";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
-import inst_public from "@/components/data/institution/inst_pub";
+import { useState, useEffect } from "react";
+import { fetchFinancialInstitutions, FinancialInstitution } from "@/app/services/institution/api";
 
 export default function InstitutionsFinancieres() {
 
   const [search, setSearch] = useState("");
-  const [activeTab, setActiveTab] = useState("banques")
-  
+  const [activeTab, setActiveTab] = useState("banque")
 
-  const filteredBanque = banque.filter((item) => item.title.toLowerCase().includes(search.toLowerCase()))
+  const [institutions, setInstitutions] = useState<FinancialInstitution[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredMicro = micro.filter((item) => item.title.toLowerCase().includes(search.toLowerCase()))
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const data = await fetchFinancialInstitutions();
+        setInstitutions(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Erreur de chargement");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const filteredFond = fond.filter((item) => item.title.toLowerCase().includes(search.toLowerCase()))
+    loadData();
+  }, []);
 
-  const filteredInstP = inst_public.filter((item) => item.title.toLowerCase().includes(search.toLowerCase()))
+  // Fonction de filtrage générique
+  const filterInstitutions = (category: string) => {
+    return institutions.filter(
+      (item) => 
+        item.categorie === category && 
+        item.nom.toLowerCase().includes(search.toLowerCase())
+    );
+  };
+
+  // Filtres pour chaque catégorie
+  const filteredBanque = filterInstitutions("banque");
+  const filteredMicro = filterInstitutions("microfinance");
+  const filteredFond = filterInstitutions("fonds");
+  const filteredInstP = filterInstitutions("institution_publique");
 
 
   const getOtherSectionResults = () => {
     const results = []
 
-    if (activeTab !== "banques" && filteredBanque.length > 0) {
-      results.push({ tab: "banques", count: filteredBanque.length, label: "Banques" })
+    if (activeTab !== "banque" && filteredBanque.length > 0) {
+      results.push({ tab: "banque", count: filteredBanque.length, label: "Banques" })
     }
 
     if (activeTab !== "microfinance" && filteredMicro.length > 0) {
@@ -58,8 +80,8 @@ export default function InstitutionsFinancieres() {
     if (activeTab !== "fonds" && filteredFond.length > 0) {
       results.push({ tab: "fonds", count: filteredFond.length, label: "Fonds d'investissement" })
     }
-    if (activeTab !== "publiques" && filteredInstP.length > 0) {
-     results.push({ tab: "publiques", count: filteredInstP.length, label: "Institutions publiques" })
+    if (activeTab !== "institution_publique" && filteredInstP.length > 0) {
+     results.push({ tab: "institution_publique", count: filteredInstP.length, label: "Institutions publiques" })
     }
 
     return results
@@ -111,19 +133,19 @@ export default function InstitutionsFinancieres() {
       <div className="container py-12">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-8">
-            <TabsTrigger value="banques">Banques</TabsTrigger>
+            <TabsTrigger value="banque">Banque</TabsTrigger>
             <TabsTrigger value="microfinance">Microfinance</TabsTrigger>
             <TabsTrigger value="fonds">Fonds d'investissement</TabsTrigger>
-            <TabsTrigger value="publiques">Institutions publiques</TabsTrigger>
+            <TabsTrigger value="institution_publique">Institutions publiques</TabsTrigger>
           </TabsList>
 
           {/* Banques */}
-          <TabsContent value="banques" className="space-y-6">
+          <TabsContent value="banque" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Banque 1 */}
               {filteredBanque.map((item) => (
                 <Card
-                  key={item.id}
+                  key={item.id_institutionFinanciere}
                   className="hover:shadow-md transition-shadow"
                 >
                   <CardHeader className="pb-3">
@@ -139,11 +161,11 @@ export default function InstitutionsFinancieres() {
                           />
                         </div>
                         <div>
-                          <CardTitle>{item.title}</CardTitle>
-                          <CardDescription>{item.type}</CardDescription>
+                          <CardTitle>{item.nom}</CardTitle>
+                          <CardDescription>{item.type_institution}</CardDescription>
                         </div>
                       </div>
-                      <div>{item.partenaire}</div>
+                      <div>{item.partenaire_feg}</div>
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -159,10 +181,10 @@ export default function InstitutionsFinancieres() {
                         <div className="flex items-start gap-2">
                           <Phone className="h-4 w-4 text-[#063a1e] mt-0.5" />
                           <a
-                            href={`tel:${item.tel}`}
+                            href={`tel:${item.contact}`}
                             className="text-sm hover:underline underline-offset-4"
                           >
-                            {item.tel}
+                            {item.contact}
                           </a>
                         </div>
                         <div className="flex items-start gap-2">
@@ -177,30 +199,29 @@ export default function InstitutionsFinancieres() {
                         </div>
                         <Link
                           target="_blank"
-                          href={item.rs1}
+                          href={item.rs_1 || "#"}
                           className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
                         >
-                          {/* <Facebook className="h-4 w-4 text-[rgb(6,58,30)] mt-0.5" />
-                          <span className="text-sm">Visiter la page</span> */}
-                          {item.textrs1}
+                          <Facebook className="h-4 w-4 text-[rgb(6,58,30)] mt-0.5" />
+                          <span className="text-sm">Visiter la page</span> 
+                     
                         </Link>
                         <Link
                           target="_blank"
-                          href={item.rs2}
+                          href={item.rs_2 || "#"}
                           className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
                         >
-                          {item.textrs2}
-                          {/* <Linkedin className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                          <span className="text-sm">Visiter la page</span> */}
+                          <Linkedin className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                          <span className="text-sm">Visiter la page</span> 
                         </Link>
                       </div>
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-between">
                     <Badge variant="outline" className="text-[#063a1e]">
-                      Prêts PME
+                      {item.service}
                     </Badge>
-                    <Link target="_blank" href={item.site}>
+                    <Link target="_blank" href={item.site_web}>
                       <Button
                         variant="outline"
                         size="sm"
@@ -227,7 +248,7 @@ export default function InstitutionsFinancieres() {
               {/* Microfinance 1 */}
               {filteredMicro.map((item) => (
                 <Card
-                  key={item.id}
+                  key={item.id_institutionFinanciere}
                   className="hover:shadow-md transition-shadow"
                 >
                   <CardHeader className="pb-3">
@@ -243,11 +264,11 @@ export default function InstitutionsFinancieres() {
                           />
                         </div>
                         <div>
-                          <CardTitle>{item.title}</CardTitle>
-                          <CardDescription>{item.type}</CardDescription>
+                          <CardTitle>{item.nom}</CardTitle>
+                          <CardDescription>{item.type_institution}</CardDescription>
                         </div>
                       </div>
-                      <div>{item.partenaire}</div>
+                      <div>{item.partenaire_feg}</div>
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -263,10 +284,10 @@ export default function InstitutionsFinancieres() {
                         <div className="flex items-start gap-2">
                           <Phone className="h-4 w-4 text-[#063a1e] mt-0.5" />
                           <a
-                            href={`tel:${item.tel}`}
+                            href={`tel:${item.contact}`}
                             className="text-sm hover:underline underline-offset-4"
                           >
-                            {item.tel}
+                            {item.contact}
                           </a>
                         </div>
                         <div className="flex items-start gap-2">
@@ -281,30 +302,29 @@ export default function InstitutionsFinancieres() {
                         </div>
                         <Link
                           target="_blank"
-                          href={item.rs1}
+                          href={item.rs_1 || "#"}
                           className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
                         >
-                          {/* <Facebook className="h-4 w-4 text-[rgb(6,58,30)] mt-0.5" />
-                          <span className="text-sm">Visiter la page</span> */}
-                          {item.textrs1}
+                          <Facebook className="h-4 w-4 text-[rgb(6,58,30)] mt-0.5" />
+                          <span className="text-sm">Visiter la page</span> 
+                     
                         </Link>
                         <Link
                           target="_blank"
-                          href={item.rs2}
+                          href={item.rs_2 || "#"}
                           className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
                         >
-                          {item.textrs2}
-                          {/* <Linkedin className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                          <span className="text-sm">Visiter la page</span> */}
+                          <Linkedin className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                          <span className="text-sm">Visiter la page</span> 
                         </Link>
                       </div>
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-between">
                     <Badge variant="outline" className="text-[#063a1e]">
-                      Prêts PME
+                     {item.service}
                     </Badge>
-                    <Link target="_blank" href={item.site}>
+                    <Link target="_blank" href={item.site_web}>
                       <Button
                         variant="outline"
                         size="sm"
@@ -329,7 +349,7 @@ export default function InstitutionsFinancieres() {
               
               {filteredFond.map((item) => (
                 <Card
-                  key={item.id}
+                  key={item.id_institutionFinanciere}
                   className="hover:shadow-md transition-shadow"
                 >
                   <CardHeader className="pb-3">
@@ -345,11 +365,11 @@ export default function InstitutionsFinancieres() {
                           />
                         </div>
                         <div>
-                          <CardTitle>{item.title}</CardTitle>
-                          <CardDescription>{item.type}</CardDescription>
+                          <CardTitle>{item.nom}</CardTitle>
+                          <CardDescription>{item.type_institution}</CardDescription>
                         </div>
                       </div>
-                      <div>{item.partenaire}</div>
+                      <div>{item.partenaire_feg}</div>
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -365,10 +385,10 @@ export default function InstitutionsFinancieres() {
                         <div className="flex items-start gap-2">
                           <Phone className="h-4 w-4 text-[#063a1e] mt-0.5" />
                           <a
-                            href={`tel:${item.tel}`}
+                            href={`tel:${item.contact}`}
                             className="text-sm hover:underline underline-offset-4"
                           >
-                            {item.tel}
+                            {item.contact}
                           </a>
                         </div>
                         <div className="flex items-start gap-2">
@@ -383,26 +403,29 @@ export default function InstitutionsFinancieres() {
                         </div>
                         <Link
                           target="_blank"
-                             href={item.rs1}
+                          href={item.rs_1 || "#"}
                           className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
                         >
-                          {item.textrs1}
+                          <Facebook className="h-4 w-4 text-[rgb(6,58,30)] mt-0.5" />
+                          <span className="text-sm">Visiter la page</span> 
+                     
                         </Link>
                         <Link
                           target="_blank"
-                          href={item.rs2}
+                          href={item.rs_2 || "#"}
                           className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
                         >
-                          {item.textrs2}
-                             </Link>
+                          <Linkedin className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                          <span className="text-sm">Visiter la page</span> 
+                        </Link>
                       </div>
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-between">
                     <Badge variant="outline" className="text-[#063a1e]">
-                      Prêts PME
+                      {item.service}
                     </Badge>
-                    <Link target="_blank" href={item.site}>
+                    <Link target="_blank" href={item.site_web}>
                       <Button
                         variant="outline"
                         size="sm"
@@ -422,11 +445,11 @@ export default function InstitutionsFinancieres() {
           </TabsContent>
 
           {/* Institutions publiques */}
-          <TabsContent value="publiques" className="space-y-6">
+          <TabsContent value="institution_publique" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {filteredInstP.map((item) => (
                 <Card
-                  key={item.id}
+                  key={item.id_institutionFinanciere}
                   className="hover:shadow-md transition-shadow"
                 >
                   <CardHeader className="pb-3">
@@ -442,11 +465,11 @@ export default function InstitutionsFinancieres() {
                           />
                         </div>
                         <div>
-                          <CardTitle>{item.title}</CardTitle>
-                          <CardDescription>{item.type}</CardDescription>
+                          <CardTitle>{item.nom}</CardTitle>
+                          <CardDescription>{item.type_institution}</CardDescription>
                         </div>
                       </div>
-                      <div>{item.partenaire}</div>
+                      <div>{item.partenaire_feg}</div>
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -462,10 +485,10 @@ export default function InstitutionsFinancieres() {
                         <div className="flex items-start gap-2">
                           <Phone className="h-4 w-4 text-[#063a1e] mt-0.5" />
                           <a
-                            href={`tel:${item.tel}`}
+                            href={`tel:${item.contact}`}
                             className="text-sm hover:underline underline-offset-4"
                           >
-                            {item.tel}
+                            {item.contact}
                           </a>
                         </div>
                         <div className="flex items-start gap-2">
@@ -480,19 +503,29 @@ export default function InstitutionsFinancieres() {
                         </div>
                         <Link
                           target="_blank"
-                             href={item.rs1}
+                          href={item.rs_1 || "#"}
                           className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
                         >
-                          {item.textrs1}
+                          <Facebook className="h-4 w-4 text-[rgb(6,58,30)] mt-0.5" />
+                          <span className="text-sm">Visiter la page</span> 
+                     
+                        </Link>
+                        <Link
+                          target="_blank"
+                          href={item.rs_2 || "#"}
+                          className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
+                        >
+                          <Linkedin className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                          <span className="text-sm">Visiter la page</span> 
                         </Link>
                       </div>
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-between">
                     <Badge variant="outline" className="text-[#063a1e]">
-                      Prêts PME
+                     {item.service}
                     </Badge>
-                    <Link target="_blank" href={item.site}>
+                    <Link target="_blank" href={item.site_web}>
                       <Button
                         variant="outline"
                         size="sm"

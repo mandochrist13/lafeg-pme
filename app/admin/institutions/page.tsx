@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+
 import {
   Plus,
   Search,
@@ -9,12 +9,13 @@ import {
   Trash2,
   Eye,
   X,
-  Building2,
   MapPin,
   Phone,
   Mail,
   Globe,
   ExternalLink,
+  Facebook,
+  Linkedin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -69,200 +70,233 @@ import {
 } from "@/components/ui/pagination";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import {
+  fetchFinancialInstitutions,
+  FinancialInstitution,
+} from "@/app/services/institution/api";
+import {
+  createFinancialInstitution,
+  deleteFinancialInstitution,
+  updateFinancialInstitution,
+} from "@/app/services/institution/api";
+import Image from "next/image";
 
-// Interface pour les institutions financières
-interface Institution {
-  id: number;
-  nom: string;
-  type: string;
-  adresse: string;
-  telephone: string;
-  email: string;
-  site_web: string;
-  description: string;
-  services: string;
-  date_ajout: string;
-}
+import { toast } from "sonner";
 
-// Interface pour la nouvelle institution
-interface NewInstitution {
-  nom: string;
-  type: string;
-  adresse: string;
-  telephone: string;
-  email: string;
-  site_web: string;
-  description: string;
-  services: string;
-}
-
-// Données fictives pour les institutions financières
-const institutionsData: Institution[] = [
-  {
-    id: 1,
-    nom: "Banque Gabonaise de Développement (BGD)",
-    type: "Banque publique",
-    adresse: "Boulevard de l'Indépendance, Libreville",
-    telephone: "+241 77 12 34 56",
-    email: "contact@bgd.ga",
-    site_web: "https://www.bgd.ga",
-    description:
-      "La Banque Gabonaise de Développement (BGD) est une institution financière publique qui accompagne le développement des PME/PMI gabonaises à travers des financements adaptés.",
-    services:
-      "Prêts d'investissement, Crédit d'exploitation, Garanties bancaires",
-    date_ajout: "2023-05-10",
-  },
-  {
-    id: 2,
-    nom: "Banque Gabonaise de Développement (BGD)",
-    type: "Banque publique",
-    adresse: "Boulevard de l'Indépendance, Libreville",
-    telephone: "+241 77 12 34 56",
-    email: "contact@bgd.ga",
-    site_web: "https://www.bgd.ga",
-    description:
-      "La Banque Gabonaise de Développement (BGD) est une institution financière publique qui accompagne le développement des PME/PMI gabonaises à travers des financements adaptés.",
-    services:
-      "Prêts d'investissement, Crédit d'exploitation, Garanties bancaires",
-    date_ajout: "2023-05-10",
-  },
-  {
-    id: 3,
-    nom: "Banque Gabonaise de Développement (BGD)",
-    type: "Banque publique",
-    adresse: "Boulevard de l'Indépendance, Libreville",
-    telephone: "+241 77 12 34 56",
-    email: "contact@bgd.ga",
-    site_web: "https://www.bgd.ga",
-    description:
-      "La Banque Gabonaise de Développement (BGD) est une institution financière publique qui accompagne le développement des PME/PMI gabonaises à travers des financements adaptés.",
-    services:
-      "Prêts d'investissement, Crédit d'exploitation, Garanties bancaires",
-    date_ajout: "2023-05-10",
-  },
-  {
-    id: 4,
-    nom: "Banque Gabonaise de Développement (BGD)",
-    type: "Banque publique",
-    adresse: "Boulevard de l'Indépendance, Libreville",
-    telephone: "+241 77 12 34 56",
-    email: "contact@bgd.ga",
-    site_web: "https://www.bgd.ga",
-    description:
-      "La Banque Gabonaise de Développement (BGD) est une institution financière publique qui accompagne le développement des PME/PMI gabonaises à travers des financements adaptés.",
-    services:
-      "Prêts d'investissement, Crédit d'exploitation, Garanties bancaires",
-    date_ajout: "2023-05-10",
-  },
-  {
-    id: 5,
-    nom: "Banque Gabonaise de Développement (BGD)",
-    type: "Banque publique",
-    adresse: "Boulevard de l'Indépendance, Libreville",
-    telephone: "+241 77 12 34 56",
-    email: "contact@bgd.ga",
-    site_web: "https://www.bgd.ga",
-    description:
-      "La Banque Gabonaise de Développement (BGD) est une institution financière publique qui accompagne le développement des PME/PMI gabonaises à travers des financements adaptés.",
-    services:
-      "Prêts d'investissement, Crédit d'exploitation, Garanties bancaires",
-    date_ajout: "2023-05-10",
-  },
-  {
-    id: 6,
-    nom: "Banque Gabonaise de Développement (BGD)",
-    type: "Banque publique",
-    adresse: "Boulevard de l'Indépendance, Libreville",
-    telephone: "+241 77 12 34 56",
-    email: "contact@bgd.ga",
-    site_web: "https://www.bgd.ga",
-    description:
-      "La Banque Gabonaise de Développement (BGD) est une institution financière publique qui accompagne le développement des PME/PMI gabonaises à travers des financements adaptés.",
-    services:
-      "Prêts d'investissement, Crédit d'exploitation, Garanties bancaires",
-    date_ajout: "2023-05-10",
-  },
-  {
-    id: 7,
-    nom: "Banque Gabonaise de Développement (BGD)",
-    type: "Banque publique",
-    adresse: "Boulevard de l'Indépendance, Libreville",
-    telephone: "+241 77 12 34 56",
-    email: "contact@bgd.ga",
-    site_web: "https://www.bgd.ga",
-    description:
-      "La Banque Gabonaise de Développement (BGD) est une institution financière publique qui accompagne le développement des PME/PMI gabonaises à travers des financements adaptés.",
-    services:
-      "Prêts d'investissement, Crédit d'exploitation, Garanties bancaires",
-    date_ajout: "2023-05-10",
-  },
-  // ... autres données d'institutions ...
-];
-
-export default function InstitutionsPage() {
+export default function InstitutionsPage({}: {
+  refreshInstitutions: () => void;
+}) {
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [typeFilter, setTypeFilter] = useState<string>("");
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState<boolean>(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
+  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedInstitution, setSelectedInstitution] =
-    useState<Institution | null>(null);
-  const [newInstitution, setNewInstitution] = useState<NewInstitution>({
-    nom: "",
-    type: "",
-    adresse: "",
-    telephone: "",
-    email: "",
-    site_web: "",
-    description: "",
-    services: "",
-  });
+    useState<FinancialInstitution | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Tu peux ajuster ce chiffre
 
-  const [selectedInstitutionDetails, setSelectedInstitutionDetails] =
-    useState<Institution | null>(null);
+  const [selectedInstitutionId, setSelectedInstitutionId] = useState<
+    string | null
+  >(null);
+
+  const [editedInstitution, setEditedInstitution] = useState<
+    Partial<FinancialInstitution>
+  >({});
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDetailsCardVisible, setIsDetailsCardVisible] =
     useState<boolean>(false);
 
-  const filteredInstitutions = institutionsData.filter((institution) => {
-    const matchesSearch =
-      institution.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      institution.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = typeFilter === "" || institution.type === typeFilter;
-    return matchesSearch && matchesType;
+  const [selectedInstitutionDetails, setSelectedInstitutionDetails] =
+    useState<FinancialInstitution | null>(null);
+
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [institutions, setInstitutions] = useState<FinancialInstitution[]>([]);
+  const [newInstitution, setNewInstitution] = useState<
+    Omit<
+      FinancialInstitution,
+      "id_institutionFinanciere" | "createdAt" | "updatedAt"
+    >
+  >({
+    nom: "",
+    categorie: "",
+    type_institution: "",
+    description: "",
+    adresse: "",
+    contact: "",
+    mail: "",
+    site_web: "",
+    service: "",
+    logo: "",
+    rs_1: "",
+    rs_2: "",
+    partenaire_feg: false,
   });
 
-  const handleEdit = (institution: Institution) => {
-    setSelectedInstitution(institution);
+  const resetNewInstitutionForm = () => {
+    setNewInstitution({
+      nom: "",
+      categorie: "",
+      type_institution: "",
+      description: "",
+      adresse: "",
+      contact: "",
+      mail: "",
+      site_web: "",
+      service: "",
+      logo: "",
+      rs_1: "",
+      rs_2: "",
+      partenaire_feg: false,
+    });
+  };
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const refreshInstitutions = async () => {
+    setLoading(true);
+    try {
+      const data = await fetchFinancialInstitutions();
+      setInstitutions(data);
+    } catch (err: any) {
+      setError(err.message || "Erreur inconnue");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const data = await fetchFinancialInstitutions();
+        console.log("🔎 Institutions récupérées :", data);
+        setInstitutions(data);
+      } catch (err: any) {
+        setError(err.message || "Erreur inconnue");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, typeFilter]);
+
+  if (loading) return <p>Chargement...</p>;
+  if (error) return <p>Erreur : {error}</p>;
+
+  const openEditDialog = (institution: FinancialInstitution) => {
+    setSelectedInstitutionId(institution.id_institutionFinanciere); // nombre
+    setEditedInstitution(institution); // ici pas besoin de changement
     setIsEditDialogOpen(true);
   };
 
-  const handleDelete = (institution: Institution) => {
+  const openDeleteDialog = (institution: FinancialInstitution) => {
+    setSelectedInstitutionId(institution.id_institutionFinanciere);
     setSelectedInstitution(institution);
     setIsDeleteDialogOpen(true);
   };
 
-  const handleViewDetails = (institution: Institution) => {
+  const openViewDialog = (institution: FinancialInstitution) => {
+    setSelectedInstitutionId(institution.id_institutionFinanciere);
+    setSelectedInstitution(institution);
     setSelectedInstitutionDetails(institution);
     setIsDetailsCardVisible(true);
   };
 
-  const closeDetailsCard = () => {
-    setIsDetailsCardVisible(false);
+  const closeViewDialog = () => {
+    setSelectedInstitution(null);
+    setSelectedInstitutionId(null);
     setSelectedInstitutionDetails(null);
+    setIsDetailsCardVisible(false);
   };
 
-  // Fonction pour réinitialiser le formulaire d'ajout
-  const resetNewInstitutionForm = () => {
-    setNewInstitution({
-      nom: "",
-      type: "",
-      adresse: "",
-      telephone: "",
-      email: "",
-      site_web: "",
-      description: "",
-      services: "",
-    });
+  const filteredInstitutions = institutions.filter((institution) => {
+    const matchesSearch = institution.nom
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesType =
+      typeFilter === "all" || institution.categorie === typeFilter;
+    return matchesSearch && matchesType;
+  });
+
+  const handleCreateInstitution = async () => {
+    try {
+      setLoading(true);
+      console.log("Institution envoyée :", newInstitution);
+
+      await createFinancialInstitution(newInstitution);
+      await refreshInstitutions(); // rafraîchit la liste
+      resetNewInstitutionForm(); // reset du formulaire
+      setIsAddDialogOpen(false); // ferme le dialog
+    } catch (error) {
+      console.error("Erreur création:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedInstitutions = filteredInstitutions.slice(
+    startIndex,
+    endIndex
+  );
+  const totalPages = Math.ceil(filteredInstitutions.length / itemsPerPage);
+
+  const handleEditInstitution = async (institution: FinancialInstitution) => {
+    try {
+      setLoading(true);
+      setSelectedInstitutionId(institution.id_institutionFinanciere); // Ajoute l'ID de l'institution sélectionnée
+      setEditedInstitution({
+        nom: institution.nom,
+        categorie: institution.categorie,
+        type_institution: institution.type_institution,
+        description: institution.description,
+        adresse: institution.adresse,
+        contact: institution.contact,
+        mail: institution.mail,
+        site_web: institution.site_web,
+        service: institution.service,
+        logo: institution.logo,
+        rs_1: institution.rs_1,
+        rs_2: institution.rs_2,
+        partenaire_feg: institution.partenaire_feg,
+      });
+
+      // Vérifier que l'ID est bien défini avant de procéder
+      if (institution.id_institutionFinanciere) {
+        console.log("ID Institution:", institution.id_institutionFinanciere); // Vérification de l'ID
+
+        await updateFinancialInstitution(
+          institution.id_institutionFinanciere,
+          editedInstitution
+        );
+      } else {
+        console.error("L'ID de l'institution sélectionnée est manquant.");
+      }
+      await refreshInstitutions();
+      setIsEditDialogOpen(false);
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour :", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteInstitution = async (id: string) => {
+    try {
+      setLoading(true);
+      await deleteFinancialInstitution(id);
+      await refreshInstitutions();
+    } catch (error) {
+      console.error("Erreur suppression :", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -275,7 +309,7 @@ export default function InstitutionsPage() {
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
           onClick={() => {
-            if (isDetailsCardVisible) closeDetailsCard();
+            if (isDetailsCardVisible) closeViewDialog();
             if (isAddDialogOpen) setIsAddDialogOpen(false);
             if (isEditDialogOpen) setIsEditDialogOpen(false);
             if (isDeleteDialogOpen) setIsDeleteDialogOpen(false);
@@ -305,7 +339,7 @@ export default function InstitutionsPage() {
               <Plus className="mr-2 h-4 w-4" /> Ajouter une institution
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[600px] z-50">
+          <DialogContent className="sm:max-w-[600px] sm:max-h-[500px] overflow-y-auto z-50">
             <DialogHeader>
               <DialogTitle>Ajouter une institution financière</DialogTitle>
               <DialogDescription>
@@ -332,32 +366,92 @@ export default function InstitutionsPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="type" className="text-sm font-medium">
+                  <label htmlFor="logo" className="text-sm font-medium">
+                    Logo de l'institution
+                  </label>
+                  <Input
+                    id="logo"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setNewInstitution({
+                            ...newInstitution,
+                            logo: reader.result as string, // Stocke l'URL base64 dans le state
+                          });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="categorie" className="text-sm font-medium">
+                    Catégorie d'institution
+                  </label>
+                  <Select
+                    value={newInstitution.categorie}
+                    onValueChange={(value) =>
+                      setNewInstitution({
+                        ...newInstitution,
+                        categorie: value, // ✅ ceci manquait
+                      })
+                    }
+                  >
+                    <SelectTrigger id="categorie">
+                      <SelectValue placeholder="Sélectionner une catégorie" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="banque">Banque</SelectItem>
+                      <SelectItem value="microfinance">Microfinance</SelectItem>
+                      <SelectItem value="fonds">
+                        Fonds d'investissement
+                      </SelectItem>
+                      <SelectItem value="institution_publique">
+                        Institution publique
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <label
+                    htmlFor="type_institution"
+                    className="text-sm font-medium"
+                  >
                     Type d'institution
                   </label>
                   <Select
-                    value={newInstitution.type}
+                    value={newInstitution.type_institution}
                     onValueChange={(value) =>
-                      setNewInstitution({ ...newInstitution, type: value })
+                      setNewInstitution({
+                        ...newInstitution,
+                        type_institution: value,
+                      })
                     }
                   >
-                    <SelectTrigger id="type">
+                    <SelectTrigger id="type_institution">
                       <SelectValue placeholder="Sélectionner un type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Banque publique">
-                        Banque publique
-                      </SelectItem>
-                      <SelectItem value="Banque commerciale">
+                      <SelectItem value="banque commerciale">
                         Banque commerciale
                       </SelectItem>
-                      <SelectItem value="Microfinance">Microfinance</SelectItem>
-                      <SelectItem value="Fonds d'investissement">
-                        Fonds d'investissement
+                      <SelectItem value="banque d'investissement">
+                        Banque d'investissement
                       </SelectItem>
-                      <SelectItem value="Institution publique">
-                        Institution publique
+                      <SelectItem value="cooperative d'épargne">
+                        Coopérative d'épargne
                       </SelectItem>
+                      <SelectItem value="fonds souverain">
+                        Fonds souverain
+                      </SelectItem>
+                      <SelectItem value="établissement public">
+                        Établissement public
+                      </SelectItem>
+                      <SelectItem value="autre">Autre</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -365,33 +459,34 @@ export default function InstitutionsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label htmlFor="telephone" className="text-sm font-medium">
-                    Téléphone
+                  <label htmlFor="contact" className="text-sm font-medium">
+                    Contact (Téléphone)
                   </label>
                   <Input
-                    id="telephone"
-                    value={newInstitution.telephone}
+                    id="contact"
+                    value={newInstitution.contact}
                     onChange={(e) =>
                       setNewInstitution({
                         ...newInstitution,
-                        telephone: e.target.value,
+                        contact: e.target.value,
                       })
                     }
                     placeholder="Ex: +241 77 12 34 56"
                   />
                 </div>
+
                 <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-medium">
+                  <label htmlFor="mail" className="text-sm font-medium">
                     Email
                   </label>
                   <Input
-                    id="email"
+                    id="mail"
                     type="email"
-                    value={newInstitution.email}
+                    value={newInstitution.mail}
                     onChange={(e) =>
                       setNewInstitution({
                         ...newInstitution,
-                        email: e.target.value,
+                        mail: e.target.value,
                       })
                     }
                     placeholder="Ex: contact@institution.ga"
@@ -452,21 +547,79 @@ export default function InstitutionsPage() {
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="services" className="text-sm font-medium">
+                <label htmlFor="service" className="text-sm font-medium">
                   Services offerts
                 </label>
                 <textarea
-                  id="services"
+                  id="service"
                   className="w-full min-h-[80px] p-2 border rounded-md"
-                  value={newInstitution.services}
+                  value={newInstitution.service}
                   onChange={(e) =>
                     setNewInstitution({
                       ...newInstitution,
-                      services: e.target.value,
+                      service: e.target.value,
                     })
                   }
                   placeholder="Liste des services offerts par l'institution..."
                 />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label htmlFor="rs_1" className="text-sm font-medium">
+                    Réseau social 1 (rs_1)
+                  </label>
+                  <Input
+                    id="rs_1"
+                    value={newInstitution.rs_1}
+                    onChange={(e) =>
+                      setNewInstitution({
+                        ...newInstitution,
+                        rs_1: e.target.value,
+                      })
+                    }
+                    placeholder="Ex: https://facebook.com/institution"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="rs_2" className="text-sm font-medium">
+                    Réseau social 2 (rs_2)
+                  </label>
+                  <Input
+                    id="rs_2"
+                    value={newInstitution.rs_2}
+                    onChange={(e) =>
+                      setNewInstitution({
+                        ...newInstitution,
+                        rs_2: e.target.value,
+                      })
+                    }
+                    placeholder="Ex: https://linkedin.com/institution"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="partenaire_feg" className="text-sm font-medium">
+                  Est partenaire FEG ?
+                </label>
+                <Select
+                  value={newInstitution.partenaire_feg ? "oui" : "non"}
+                  onValueChange={(value) =>
+                    setNewInstitution({
+                      ...newInstitution,
+                      partenaire_feg: value === "oui",
+                    })
+                  }
+                >
+                  <SelectTrigger id="partenaire_feg">
+                    <SelectValue placeholder="Oui ou Non" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="oui">Oui</SelectItem>
+                    <SelectItem value="non">Non</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <DialogFooter>
@@ -478,7 +631,7 @@ export default function InstitutionsPage() {
               </Button>
               <Button
                 className="bg-[#063a1e] hover:bg-[#063a1e]/90"
-                onClick={() => setIsAddDialogOpen(false)}
+                onClick={handleCreateInstitution}
               >
                 Ajouter l'institution
               </Button>
@@ -509,25 +662,18 @@ export default function InstitutionsPage() {
 
             <div className="space-y-2">
               <label htmlFor="type-filter" className="text-sm font-medium">
-                Type d'institution
+                Catégorie d'institution
               </label>
               <Select value={typeFilter} onValueChange={setTypeFilter}>
                 <SelectTrigger id="type-filter">
                   <SelectValue placeholder="Tous les types" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous les types</SelectItem>
-                  <SelectItem value="Banque publique">
-                    Banque publique
-                  </SelectItem>
-                  <SelectItem value="Banque commerciale">
-                    Banque commerciale
-                  </SelectItem>
-                  <SelectItem value="Microfinance">Microfinance</SelectItem>
-                  <SelectItem value="Fonds d'investissement">
-                    Fonds d'investissement
-                  </SelectItem>
-                  <SelectItem value="Institution publique">
+                  <SelectItem value="all">Toutes les catégories</SelectItem>
+                  <SelectItem value="banque">Banque</SelectItem>
+                  <SelectItem value="microfinance">Microfinance</SelectItem>
+                  <SelectItem value="fonds">Fonds d'investissement</SelectItem>
+                  <SelectItem value="institution_publique">
                     Institution publique
                   </SelectItem>
                 </SelectContent>
@@ -562,24 +708,36 @@ export default function InstitutionsPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Logo</TableHead>
                 <TableHead className="w-[300px]">Nom</TableHead>
-                <TableHead>Type</TableHead>
+                <TableHead>Catégorie</TableHead>
                 <TableHead>Contact</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredInstitutions.map((institution) => (
-                <TableRow key={institution.id}>
+              {paginatedInstitutions.map((institution) => (
+                <TableRow key={institution.id_institutionFinanciere}>
+                  <TableCell>
+                    {institution.logo && (
+                      <Image
+                        src={institution.logo}
+                        alt={institution.nom}
+                        width={50}
+                        height={50}
+                        className="rounded-md"
+                      />
+                    )}
+                  </TableCell>
                   <TableCell className="font-medium">
                     {institution.nom}
                   </TableCell>
-                  <TableCell>{institution.type}</TableCell>
+                  <TableCell>{institution.categorie}</TableCell>
                   <TableCell>
                     <div className="space-y-1">
-                      <div className="text-sm">{institution.telephone}</div>
+                      <div className="text-sm">{institution.contact}</div>
                       <div className="text-sm text-muted-foreground">
-                        {institution.email}
+                        {institution.mail}
                       </div>
                     </div>
                   </TableCell>
@@ -594,18 +752,18 @@ export default function InstitutionsPage() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem
-                          onClick={() => handleViewDetails(institution)}
+                          onClick={() => openViewDialog(institution)}
                         >
                           <Eye className="mr-2 h-4 w-4" /> Voir
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => handleEdit(institution)}
+                          onClick={() => openEditDialog(institution)}
                         >
                           <Pencil className="mr-2 h-4 w-4" /> Modifier
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
-                          onClick={() => handleDelete(institution)}
+                          onClick={() => openDeleteDialog(institution)}
                           className="text-red-600"
                         >
                           <Trash2 className="mr-2 h-4 w-4" /> Supprimer
@@ -620,30 +778,55 @@ export default function InstitutionsPage() {
         </CardContent>
         <CardFooter className="flex items-center justify-between">
           <div className="text-sm text-muted-foreground">
-            Affichage de {filteredInstitutions.length} sur{" "}
-            {institutionsData.length} institutions
+            Affichage de {filteredInstitutions.length} sur {institutions.length}{" "}
+            institutions
           </div>
           <Pagination>
             <PaginationContent>
               <PaginationItem>
-                <PaginationPrevious href="#" />
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentPage((prev) => Math.max(prev - 1, 1));
+                  }}
+                  className={
+                    currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                  }
+                />
               </PaginationItem>
+
+              {[...Array(totalPages)].map((_, index) => {
+                const page = index + 1;
+                return (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      href="#"
+                      isActive={currentPage === page}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(page);
+                      }}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              })}
+
               <PaginationItem>
-                <PaginationLink href="#" isActive>
-                  1
-                </PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">2</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">3</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href="#" />
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+                  }}
+                  className={
+                    currentPage === totalPages
+                      ? "pointer-events-none opacity-50"
+                      : ""
+                  }
+                />
               </PaginationItem>
             </PaginationContent>
           </Pagination>
@@ -651,9 +834,9 @@ export default function InstitutionsPage() {
       </Card>
 
       {/* Dialogue de modification */}
-      {selectedInstitution && (
+      {selectedInstitutionId && (
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="sm:max-w-[600px] z-50">
+          <DialogContent className="sm:max-w-[600px] sm:max-h-[500px] overflow-y-auto z-50">
             <DialogHeader>
               <DialogTitle>Modifier une institution financière</DialogTitle>
               <DialogDescription>
@@ -666,28 +849,106 @@ export default function InstitutionsPage() {
                   <label htmlFor="edit-nom" className="text-sm font-medium">
                     Nom de l'institution
                   </label>
-                  <Input id="edit-nom" defaultValue={selectedInstitution.nom} />
+                  <Input
+                    id="edit-nom"
+                    value={editedInstitution.nom}
+                    onChange={(e) =>
+                      setEditedInstitution({
+                        ...editedInstitution,
+                        nom: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="logo" className="text-sm font-medium">
+                    Logo de l'institution
+                  </label>
+                  <Input
+                    id="logo"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setEditedInstitution({
+                            ...editedInstitution,
+                            logo: reader.result as string, // Stocke l'URL base64 dans le state
+                          });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="edit-type" className="text-sm font-medium">
+                  <label
+                    htmlFor="type_institution"
+                    className="text-sm font-medium"
+                  >
                     Type d'institution
                   </label>
-                  <Select defaultValue={selectedInstitution.type}>
-                    <SelectTrigger id="edit-type">
-                      <SelectValue placeholder={selectedInstitution.type} />
+                  <Select
+                    value={editedInstitution.type_institution}
+                    onValueChange={(value) =>
+                      setEditedInstitution({
+                        ...editedInstitution,
+                        type_institution: value,
+                      })
+                    }
+                  >
+                    <SelectTrigger id="type_institution">
+                      <SelectValue placeholder="Sélectionner un type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Banque publique">
-                        Banque publique
-                      </SelectItem>
-                      <SelectItem value="Banque commerciale">
+                      <SelectItem value="banque commerciale">
                         Banque commerciale
                       </SelectItem>
-                      <SelectItem value="Microfinance">Microfinance</SelectItem>
-                      <SelectItem value="Fonds d'investissement">
+                      <SelectItem value="banque d'investissement">
+                        Banque d'investissement
+                      </SelectItem>
+                      <SelectItem value="cooperative d'épargne">
+                        Coopérative d'épargne
+                      </SelectItem>
+                      <SelectItem value="fonds souverain">
+                        Fonds souverain
+                      </SelectItem>
+                      <SelectItem value="établissement public">
+                        Établissement public
+                      </SelectItem>
+                      <SelectItem value="autre">Autre</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <label
+                    htmlFor="edit-categorie"
+                    className="text-sm font-medium"
+                  >
+                    Catégorie d'institution
+                  </label>
+                  <Select
+                    value={editedInstitution.categorie}
+                    onValueChange={(value) =>
+                      setEditedInstitution({
+                        ...editedInstitution,
+                        categorie: value,
+                      })
+                    }
+                  >
+                    <SelectTrigger id="categorie">
+                      <SelectValue placeholder="Sélectionner une catégorie" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="banque">Banque</SelectItem>
+                      <SelectItem value="microfinance">Microfinance</SelectItem>
+                      <SelectItem value="fonds">
                         Fonds d'investissement
                       </SelectItem>
-                      <SelectItem value="Institution publique">
+                      <SelectItem value="institution_publique">
                         Institution publique
                       </SelectItem>
                     </SelectContent>
@@ -695,7 +956,6 @@ export default function InstitutionsPage() {
                 </div>
               </div>
 
-              {/* Autres champs similaires à ceux du formulaire d'ajout */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label
@@ -706,17 +966,29 @@ export default function InstitutionsPage() {
                   </label>
                   <Input
                     id="edit-telephone"
-                    defaultValue={selectedInstitution.telephone}
+                    value={editedInstitution.contact}
+                    onChange={(e) =>
+                      setEditedInstitution({
+                        ...editedInstitution,
+                        contact: e.target.value,
+                      })
+                    }
                   />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="edit-email" className="text-sm font-medium">
                     Email
                   </label>
+
                   <Input
                     id="edit-email"
-                    type="email"
-                    defaultValue={selectedInstitution.email}
+                    value={editedInstitution.mail}
+                    onChange={(e) =>
+                      setEditedInstitution({
+                        ...editedInstitution,
+                        mail: e.target.value,
+                      })
+                    }
                   />
                 </div>
               </div>
@@ -725,9 +997,16 @@ export default function InstitutionsPage() {
                 <label htmlFor="edit-adresse" className="text-sm font-medium">
                   Adresse
                 </label>
+
                 <Input
                   id="edit-adresse"
-                  defaultValue={selectedInstitution.adresse}
+                  value={editedInstitution.adresse}
+                  onChange={(e) =>
+                    setEditedInstitution({
+                      ...editedInstitution,
+                      adresse: e.target.value,
+                    })
+                  }
                 />
               </div>
 
@@ -735,9 +1014,16 @@ export default function InstitutionsPage() {
                 <label htmlFor="edit-site_web" className="text-sm font-medium">
                   Site web
                 </label>
+
                 <Input
                   id="edit-site_web"
-                  defaultValue={selectedInstitution.site_web}
+                  value={editedInstitution.site_web}
+                  onChange={(e) =>
+                    setEditedInstitution({
+                      ...editedInstitution,
+                      site_web: e.target.value,
+                    })
+                  }
                 />
               </div>
 
@@ -748,10 +1034,17 @@ export default function InstitutionsPage() {
                 >
                   Description
                 </label>
-                <textarea
+
+                <Input
                   id="edit-description"
                   className="w-full min-h-[100px] p-2 border rounded-md"
-                  defaultValue={selectedInstitution.description}
+                  value={editedInstitution.description}
+                  onChange={(e) =>
+                    setEditedInstitution({
+                      ...editedInstitution,
+                      description: e.target.value,
+                    })
+                  }
                 />
               </div>
 
@@ -759,11 +1052,72 @@ export default function InstitutionsPage() {
                 <label htmlFor="edit-services" className="text-sm font-medium">
                   Services offerts
                 </label>
-                <textarea
+
+                <Input
                   id="edit-services"
                   className="w-full min-h-[80px] p-2 border rounded-md"
-                  defaultValue={selectedInstitution.services}
+                  value={editedInstitution.service}
+                  onChange={(e) =>
+                    setEditedInstitution({
+                      ...editedInstitution,
+                      service: e.target.value,
+                    })
+                  }
                 />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="rs_1" className="text-sm font-medium">
+                  Réseau social 1 (rs_1)
+                </label>
+                <Input
+                  id="rs_1"
+                  value={editedInstitution.rs_1}
+                  onChange={(e) =>
+                    setEditedInstitution({
+                      ...editedInstitution,
+                      rs_1: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="rs_2" className="text-sm font-medium">
+                  Réseau social 2 (rs_2)
+                </label>
+                <Input
+                  id="rs_2"
+                  value={editedInstitution.rs_2}
+                  onChange={(e) =>
+                    setEditedInstitution({
+                      ...editedInstitution,
+                      rs_2: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="partenaire_feg" className="text-sm font-medium">
+                  Est partenaire FEG ?
+                </label>
+                <Select
+                  value={editedInstitution.partenaire_feg ? "oui" : "non"}
+                  onValueChange={(value) =>
+                    setEditedInstitution({
+                      ...editedInstitution,
+                      partenaire_feg: value === "oui",
+                    })
+                  }
+                >
+                  <SelectTrigger id="partenaire_feg">
+                    <SelectValue placeholder="Oui ou Non" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="oui">Oui</SelectItem>
+                    <SelectItem value="non">Non</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <DialogFooter>
@@ -775,7 +1129,11 @@ export default function InstitutionsPage() {
               </Button>
               <Button
                 className="bg-[#063a1e] hover:bg-[#063a1e]/90"
-                onClick={() => setIsEditDialogOpen(false)}
+                onClick={() =>
+                  handleEditInstitution(
+                    editedInstitution as FinancialInstitution
+                  )
+                }
               >
                 Enregistrer les modifications
               </Button>
@@ -785,14 +1143,14 @@ export default function InstitutionsPage() {
       )}
 
       {/* Dialogue de suppression */}
-      {selectedInstitution && (
+      {selectedInstitutionId && (
         <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
           <DialogContent className="sm:max-w-[425px] z-50">
             <DialogHeader>
               <DialogTitle>Confirmer la suppression</DialogTitle>
               <DialogDescription>
                 Êtes-vous sûr de vouloir supprimer l'institution "
-                {selectedInstitution.nom}" ? Cette action est irréversible.
+                {selectedInstitution?.nom}" ? Cette action est irréversible.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="mt-4">
@@ -804,7 +1162,14 @@ export default function InstitutionsPage() {
               </Button>
               <Button
                 variant="destructive"
-                onClick={() => setIsDeleteDialogOpen(false)}
+                onClick={async () => {
+                  if (selectedInstitutionId) {
+                    await handleDeleteInstitution(selectedInstitutionId);
+                    setIsDeleteDialogOpen(false);
+                    setSelectedInstitution(null);
+                    setSelectedInstitutionId(null);
+                  }
+                }}
               >
                 Supprimer
               </Button>
@@ -815,22 +1180,37 @@ export default function InstitutionsPage() {
 
       {/* Carte de détails de l'institution - NOUVELLE VERSION */}
       {isDetailsCardVisible && selectedInstitutionDetails && (
-        <Card className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-11/12 max-w-2xl hover:shadow-md transition-shadow">
+        <Card
+          onClick={(e) => e.stopPropagation()}
+          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-11/12 max-w-2xl hover:shadow-md transition-shadow"
+        >
           <CardHeader className="pb-3">
             <div className="flex justify-between items-start">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-[#063a1e]/10 rounded-md flex items-center justify-center">
-                  <Building2 className="h-6 w-6 text-[#063a1e]" />
+                  <Image
+                    src={
+                      selectedInstitutionDetails?.logo ||
+                      "/images/default-logo.png"
+                    }
+                    alt="Logo de l'institution"
+                    width={48}
+                    height={48}
+                    className="rounded-md"
+                  />
                 </div>
+
                 <div>
                   <CardTitle>{selectedInstitutionDetails.nom}</CardTitle>
-                  <CardDescription>{selectedInstitutionDetails.type}</CardDescription>
+                  <CardDescription>
+                    {selectedInstitutionDetails.type_institution}
+                  </CardDescription>
                 </div>
               </div>
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={closeDetailsCard}
+                onClick={closeViewDialog}
                 className="h-8 w-8"
               >
                 <X className="h-4 w-4" />
@@ -838,31 +1218,33 @@ export default function InstitutionsPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-4 ">
               <p className="text-sm text-muted-foreground">
                 {selectedInstitutionDetails.description}
               </p>
-              <div className="space-y-2">
+              <div className="space-y-2 grid grid-cols-2">
                 <div className="flex items-start gap-2">
                   <MapPin className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                  <span className="text-sm">{selectedInstitutionDetails.adresse}</span>
+                  <span className="text-sm">
+                    {selectedInstitutionDetails.adresse}
+                  </span>
                 </div>
                 <div className="flex items-start gap-2">
                   <Phone className="h-4 w-4 text-[#063a1e] mt-0.5" />
                   <a
-                    href={`tel:${selectedInstitutionDetails.telephone}`}
+                    href={`tel:${selectedInstitutionDetails.contact}`}
                     className="text-sm hover:underline underline-offset-4"
                   >
-                    {selectedInstitutionDetails.telephone}
+                    {selectedInstitutionDetails.contact}
                   </a>
                 </div>
                 <div className="flex items-start gap-2">
                   <Mail className="h-4 w-4 text-[#063a1e] mt-0.5" />
                   <a
-                    href={`mailto:${selectedInstitutionDetails.email}`}
+                    href={`mailto:${selectedInstitutionDetails.mail}`}
                     className="text-sm hover:underline underline-offset-4"
                   >
-                    {selectedInstitutionDetails.email}
+                    {selectedInstitutionDetails.mail}
                   </a>
                 </div>
                 {selectedInstitutionDetails.site_web && (
@@ -875,16 +1257,43 @@ export default function InstitutionsPage() {
                     Visiter le site web
                   </Link>
                 )}
+                {selectedInstitutionDetails.rs_1 && (
+                  <Link
+                    target="_blank"
+                    href={selectedInstitutionDetails.rs_1}
+                    className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
+                  >
+                    <Facebook className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                    Facebook
+                  </Link>
+                )}
+                {selectedInstitutionDetails.rs_2 && (
+                  <Link
+                    target="_blank"
+                    href={selectedInstitutionDetails.rs_2}
+                    className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
+                  >
+                    <Linkedin className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                    Linkedin
+                  </Link>
+                )}
               </div>
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
             <div className="flex flex-wrap gap-2">
-              {selectedInstitutionDetails.services.split(', ').map((service, index) => (
-                <Badge key={index} variant="outline" className="text-[#063a1e]">
-                  {service.trim()}
-                </Badge>
-              ))}
+              {selectedInstitutionDetails?.service &&
+                selectedInstitutionDetails.service
+                  .split(", ")
+                  .map((service, index) => (
+                    <Badge
+                      key={index}
+                      variant="outline"
+                      className="text-[#063a1e]"
+                    >
+                      {service.trim()}
+                    </Badge>
+                  ))}
             </div>
             {selectedInstitutionDetails.site_web && (
               <Link target="_blank" href={selectedInstitutionDetails.site_web}>
