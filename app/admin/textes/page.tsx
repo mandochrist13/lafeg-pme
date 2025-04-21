@@ -61,6 +61,7 @@ import {
   fetchTextesJuridiques,
   createTexteJuridique,
   updateTexteJuridique,
+  deleteTexteJuridique,
 } from "@/app/services/texte/api";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -74,14 +75,25 @@ export default function TextesJuridiquesAdmin() {
   const [filteredTextes, setFilteredTextes] = useState<TexteJuridique[]>([]);
   const [fichier, setFichier] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [selectedTexte, setSelectedTexte] =
+      useState<TexteJuridique | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("all");
   const [selectedCategorie, setSelectedCategorie] = useState("all");
   const [showAddForm, setShowAddForm] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-
-  const [newTexte, setNewTexte] = useState<Omit<TexteJuridique, "id_texteJuridique" | "fichier_url" | "fichier_nom" | "taille_fichier" | "mime_type">>({
+  const [newTexte, setNewTexte] = useState<
+    Omit<
+      TexteJuridique,
+      | "id_texteJuridique"
+      | "fichier_url"
+      | "fichier_nom"
+      | "taille_fichier"
+      | "mime_type"
+    >
+  >({
     titre: "",
     categorie: "",
     type_texte: "",
@@ -114,12 +126,11 @@ export default function TextesJuridiquesAdmin() {
   const refreshTextes = async () => {
     setLoading(true);
     try {
-      const  {data}  = await fetchTextesJuridiques();
+      const { data } = await fetchTextesJuridiques();
       setTextesJuridiques(data);
-
     } catch (err: any) {
       setError(err.message || "Erreur inconnue");
-    } finally{
+    } finally {
       setLoading(false);
     }
   };
@@ -206,54 +217,68 @@ export default function TextesJuridiquesAdmin() {
   };
 
   const openEditDialog = (texte: TexteJuridique) => {
-
     if (!texte?.id_texteJuridique) {
-      console.error("Le texte sélectionné n’a pas d’ID. Données reçues :", JSON.stringify(texte, null, 2));
+      console.error(
+        "Le texte sélectionné n’a pas d’ID. Données reçues :",
+        JSON.stringify(texte, null, 2)
+      );
       alert("Le texte sélectionné semble invalide.");
       return;
     }
-
 
     setSelectedTexteId(String(texte.id_texteJuridique));
     setEditedTexte(texte); // ici pas besoin de changement
     setIsEditDialogOpen(true);
   };
+  const openDeleteDialog = (texte: TexteJuridique) => {
+    setSelectedTexteId(texte.id_texteJuridique);
+    setSelectedTexte(texte);
+    setIsDeleteDialogOpen(true);
+  };
 
   const handleEditTexte = async (texteData: TexteJuridique) => {
-    if (!texteData.titre || !texteData.type_texte || !texteData.date_parution || !texteData.categorie) {
+    if (
+      !texteData.titre ||
+      !texteData.type_texte ||
+      !texteData.date_parution ||
+      !texteData.categorie
+    ) {
       alert("Veuillez remplir tous les champs obligatoires");
       return;
     }
 
-    
-  
     try {
       setLoading(true);
-      
+
       if (!selectedTexteId) {
         console.error("Aucun ID de texte sélectionné");
         alert("Impossible de modifier : aucun texte sélectionné.");
         setLoading(false);
         return;
       }
-  
+
       // Créer un FormData pour gérer les fichiers
       const formData = new FormData();
-      formData.append('titre', texteData.titre);
-      formData.append('description', texteData.description || '');
-      formData.append('type_texte', texteData.type_texte);
-      formData.append('categorie', texteData.categorie);
-      formData.append('date_parution', texteData.date_parution);
-      
+      formData.append("titre", texteData.titre);
+      formData.append("description", texteData.description || "");
+      formData.append("type_texte", texteData.type_texte);
+      formData.append("categorie", texteData.categorie);
+      formData.append("date_parution", texteData.date_parution);
+
       if (texteData.fichier instanceof File) {
-        formData.append('fichier', texteData.fichier);
+        formData.append("fichier", texteData.fichier);
       }
-  
+
       await updateTexteJuridique(String(selectedTexteId), formData);
-      console.log("selectedTexteId type :", typeof selectedTexteId, "valeur :", selectedTexteId);
+      console.log(
+        "selectedTexteId type :",
+        typeof selectedTexteId,
+        "valeur :",
+        selectedTexteId
+      );
 
       await refreshTextes();
-      
+
       setIsEditDialogOpen(false);
       setSelectedTexteId("");
     } catch (error) {
@@ -264,11 +289,25 @@ export default function TextesJuridiquesAdmin() {
     }
   };
 
-  const handleDeleteTexte = (id: string) => {
-    if (confirm("Êtes-vous sûr de vouloir supprimer ce texte juridique ?")) {
-      setTextesJuridiques(textesJuridiques.filter((texte) => texte.id_texteJuridique !== id));
-    }
-  };
+  // const handleDeleteTexte = (id: string) => {
+  //   if (confirm("Êtes-vous sûr de vouloir supprimer ce texte juridique ?")) {
+  //     setTextesJuridiques(
+  //       textesJuridiques.filter((texte) => texte.id_texteJuridique !== id)
+  //     );
+  //   }
+  // };
+
+    const handleDeleteTexte = async (id: string) => {
+      try {
+        setLoading(true);
+        await deleteTexteJuridique(id);
+        await refreshTextes();
+      } catch (error) {
+        console.error("Erreur suppression :", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
   return (
     <div className="space-y-6">
@@ -544,7 +583,6 @@ export default function TextesJuridiquesAdmin() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-
                 {filteredTextes.map((texte) => (
                   <TableRow key={texte.id_texteJuridique}>
                     <TableCell className="font-medium">{texte.titre}</TableCell>
@@ -591,16 +629,30 @@ export default function TextesJuridiquesAdmin() {
                           >
                             <Edit className="mr-2 h-4 w-4" /> Modifier
                           </DropdownMenuItem>
-                          {/* <DropdownMenuItem>
-                            <Download className="mr-2 h-4 w-4" /> Télécharger
-                          </DropdownMenuItem> */}
+                           <DropdownMenuItem>
+                           <a
+                            href={texte.fichier_url}
+                            download={texte.fichier_nom}
+                            aria-label={`Télécharger ${texte.fichier_nom}`}
+                          >
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
+                            >
+                              <Download className="h-4 w-4" />
+                              <span>Télécharger</span>
+                            </Button>
+                          </a>
+                          </DropdownMenuItem> 
+                         
                           <DropdownMenuSeparator />
-                          {/* <DropdownMenuItem
+                           <DropdownMenuItem
                             className="text-red-600"
-                            onClick={() => handleDeleteTexte(texte.id)}
+                            onClick={() => openDeleteDialog(texte)}
                           >
                             <Trash2 className="mr-2 h-4 w-4" /> Supprimer
-                          </DropdownMenuItem> */}
+                          </DropdownMenuItem> 
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -639,166 +691,203 @@ export default function TextesJuridiquesAdmin() {
           </div>
         </CardContent>
       </Card>
-    {/* Dialogue de modification */}
-{selectedTexteId && (
-  <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-    <DialogContent className="sm:max-w-[600px] sm:max-h-[500px] overflow-y-auto z-50">
-      <DialogHeader>
-        <DialogTitle>Modifier un texte juridique</DialogTitle>
-        <DialogDescription>
-          Modifiez les informations du texte juridique.
-        </DialogDescription>
-      </DialogHeader>
-      <div className="grid gap-4 p-6">
-        <div className="p-6 space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Titre <span className="text-red-600">*</span>
-            </label>
-            <Input
-              id="edit-titre"
-              value={editedTexte.titre}
-              onChange={(e) =>
-                setEditedTexte({ ...editedTexte, titre: e.target.value })
-              }
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Description
-            </label>
-            <Input
-              id="edit-description"
-              value={editedTexte.description}
-              onChange={(e) =>
-                setEditedTexte({
-                  ...editedTexte,
-                  description: e.target.value,
-                })
-              }
-            />
-          </div>
+      {/* Dialogue de modification */}
+      {selectedTexteId && (
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="sm:max-w-[600px] sm:max-h-[500px] overflow-y-auto z-50">
+            <DialogHeader>
+              <DialogTitle>Modifier un texte juridique</DialogTitle>
+              <DialogDescription>
+                Modifiez les informations du texte juridique.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 p-6">
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Titre <span className="text-red-600">*</span>
+                  </label>
+                  <Input
+                    id="edit-titre"
+                    value={editedTexte.titre}
+                    onChange={(e) =>
+                      setEditedTexte({ ...editedTexte, titre: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Description
+                  </label>
+                  <Input
+                    id="edit-description"
+                    value={editedTexte.description}
+                    onChange={(e) =>
+                      setEditedTexte({
+                        ...editedTexte,
+                        description: e.target.value,
+                      })
+                    }
+                  />
+                </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Type <span className="text-red-600">*</span>
-              </label>
-              <Select
-                value={editedTexte.type_texte}
-                onValueChange={(value) =>
-                  setEditedTexte({ ...editedTexte, type_texte: value })
-                }
-              >
-                <SelectTrigger id="type_texte">
-                  <SelectValue placeholder="Sélectionner un type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Loi">Loi</SelectItem>
-                  <SelectItem value="Décret">Décret</SelectItem>
-                  <SelectItem value="Acte uniforme OHADA">
-                    OHADA
-                  </SelectItem>
-                  <SelectItem value="Code">Code</SelectItem>
-                  <SelectItem value="Arrêté">Arrêté</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Catégorie <span className="text-red-600">*</span>
-              </label>
-              <Select
-                value={editedTexte.categorie}
-                onValueChange={(value) =>
-                  setEditedTexte({ ...editedTexte, categorie: value })
-                }
-              >
-                <SelectTrigger id="categorie">
-                  <SelectValue placeholder="Sélectionner une catégorie" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pmes">
-                    Textes pour les PME
-                  </SelectItem>
-                  <SelectItem value="administrations">
-                    Textes des administrations
-                  </SelectItem>
-                  <SelectItem value="internationaux">
-                    Textes régionaux et Internationaux
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Type <span className="text-red-600">*</span>
+                    </label>
+                    <Select
+                      value={editedTexte.type_texte}
+                      onValueChange={(value) =>
+                        setEditedTexte({ ...editedTexte, type_texte: value })
+                      }
+                    >
+                      <SelectTrigger id="type_texte">
+                        <SelectValue placeholder="Sélectionner un type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Loi">Loi</SelectItem>
+                        <SelectItem value="Décret">Décret</SelectItem>
+                        <SelectItem value="Acte uniforme OHADA">
+                          OHADA
+                        </SelectItem>
+                        <SelectItem value="Code">Code</SelectItem>
+                        <SelectItem value="Arrêté">Arrêté</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Catégorie <span className="text-red-600">*</span>
+                    </label>
+                    <Select
+                      value={editedTexte.categorie}
+                      onValueChange={(value) =>
+                        setEditedTexte({ ...editedTexte, categorie: value })
+                      }
+                    >
+                      <SelectTrigger id="categorie">
+                        <SelectValue placeholder="Sélectionner une catégorie" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pmes">
+                          Textes pour les PME
+                        </SelectItem>
+                        <SelectItem value="administrations">
+                          Textes des administrations
+                        </SelectItem>
+                        <SelectItem value="internationaux">
+                          Textes régionaux et Internationaux
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Fichier actuel
-              </label>
-              <div className="text-sm text-gray-600 p-2 border rounded">
-                {editedTexte.fichier_nom || "Aucun fichier sélectionné"}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Fichier actuel
+                    </label>
+                    <div className="text-sm text-gray-600 p-2 border rounded">
+                      {editedTexte.fichier_nom || "Aucun fichier sélectionné"}
+                    </div>
+                    <label className="block text-sm font-medium mb-1 mt-2">
+                      Changer le fichier (PDF)
+                    </label>
+                    <Input
+                      id="fichier"
+                      type="file"
+                      accept="application/pdf"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setEditedTexte({
+                            ...editedTexte,
+                            fichier: file,
+                            fichier_nom: file.name,
+                          });
+                        }
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Date de publication
+                      <span className="text-red-600">*</span>
+                    </label>
+                    <Input
+                      type="date"
+                      value={editedTexte.date_parution}
+                      onChange={(e) =>
+                        setEditedTexte({
+                          ...editedTexte,
+                          date_parution: e.target.value,
+                        })
+                      }
+                      required
+                    />
+                  </div>
+                </div>
               </div>
-              <label className="block text-sm font-medium mb-1 mt-2">
-                Changer le fichier (PDF)
-              </label>
-              <Input
-                id="fichier"
-                type="file"
-                accept="application/pdf"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    setEditedTexte({
-                      ...editedTexte,
-                      fichier: file,
-                      fichier_nom: file.name,
-                    });
-                  }
-                }}
-              />
             </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setIsEditDialogOpen(false)}
+              >
+                Annuler
+              </Button>
+              <Button
+                className="bg-[#063a1e] hover:bg-[#063a1e]/90"
+                onClick={() => handleEditTexte(editedTexte as TexteJuridique)}
+                // disabled={loading}
+              >
+                {/* {loading ? "Enregistrement..." : "Enregistrer les modifications"} */}
+                Enregistrer les modifications
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
 
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Date de publication
-                <span className="text-red-600">*</span>
-              </label>
-              <Input
-                type="date"
-                value={editedTexte.date_parution}
-                onChange={(e) =>
-                  setEditedTexte({
-                    ...editedTexte,
-                    date_parution: e.target.value,
-                  })
-                }
-                required
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-      <DialogFooter>
-        <Button
-          variant="outline"
-          onClick={() => setIsEditDialogOpen(false)}
-        >
-          Annuler
-        </Button>
-        <Button
-          className="bg-[#063a1e] hover:bg-[#063a1e]/90"
-          onClick={() => handleEditTexte(editedTexte as TexteJuridique)}
-          // disabled={loading}
-        >
-          {/* {loading ? "Enregistrement..." : "Enregistrer les modifications"} */}
-          Enregistrer les modifications
-        </Button>
-      </DialogFooter>
-    </DialogContent>
-  </Dialog>
-)}
+
+       {/* Dialogue de suppression */}
+            {selectedTexteId && (
+              <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                <DialogContent className="sm:max-w-[425px] z-50">
+                  <DialogHeader>
+                    <DialogTitle>Confirmer la suppression</DialogTitle>
+                    <DialogDescription>
+                      Êtes-vous sûr de vouloir supprimer l'institution "
+                      {selectedTexte?.titre}" ? Cette action est irréversible.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter className="mt-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsDeleteDialogOpen(false)}
+                    >
+                      Annuler
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      onClick={async () => {
+                        if (selectedTexteId) {
+                          await handleDeleteTexte(selectedTexteId);
+                          setIsDeleteDialogOpen(false);
+                          setSelectedTexte(null);
+                          setSelectedTexteId("");
+                        }
+                      }}
+                    >
+                      Supprimer
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
     </div>
   );
 }
