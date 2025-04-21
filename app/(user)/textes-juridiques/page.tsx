@@ -484,6 +484,7 @@ const filteredTextes = textes.filter((texte: TexteJuridique) => {
                   </p>
                   <div className="mt-2">
                   <Badge variant="outline" className="text-xs font-extralight">
+                  <FileText className="h-4 w-4 inline-block mr-1" />
                   {(texte.taille_fichier / 1024).toFixed(2)} Mo
                     </Badge>
                     
@@ -492,20 +493,7 @@ const filteredTextes = textes.filter((texte: TexteJuridique) => {
 
                 {/* Actions */}
                 <div className="flex gap-2 shrink-0">
-                  <Link 
-                    href={`/textes/${texte.id_texteJuridique}`} 
-                    target="_blank"
-                    aria-label={`Lire ${texte.titre}`}
-                  >
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
-                    >
-                      <FileText className="h-4 w-4" />
-                      <span>Lire</span>
-                    </Button>
-                  </Link>
+              
 
                   <a 
                     href={texte.fichier_url} 
