@@ -81,7 +81,7 @@ export default function NewText() {
             (
               text // Afficher les 4 premiers objets
             ) => (
-              <Card key={text.id} className="hover:shadow-md transition-shadow">
+              <Card key={text.id_texteJuridique} className="hover:shadow-md transition-shadow">
                 {" "}
                 {/* Assurez-vous que 'id' est une propriété unique */}
                 <CardHeader className="pb-3">
