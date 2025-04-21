@@ -98,11 +98,16 @@ export default function StructuresPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState<boolean>(false);
-  const [selectedStructure, setSelectedStructure] = useState<Structure | null>(null);
+  const [selectedStructure, setSelectedStructure] = useState<Structure | null>(
+    null
+  );
   const [logoUploading, setLogoUploading] = useState(false);
 
   // Structure par défaut pour la création
-  const defaultStructure: Omit<Structure, 'id_sea' | 'createdAt' | 'updatedAt'> & { id_sea: string, createdAt: string, updatedAt: string } = {
+  const defaultStructure: Omit<
+    Structure,
+    "id_sea" | "createdAt" | "updatedAt"
+  > & { id_sea: string; createdAt: string; updatedAt: string } = {
     id_sea: "",
     nom: "",
     type_sea: "",
@@ -137,7 +142,7 @@ export default function StructuresPage() {
         const response = await fetch("/api/sea");
         if (!response.ok) throw new Error("Erreur lors de la récupération");
         const data = await response.json();
-        
+
         setStructures(data);
       } catch (error) {
         console.error("Error:", error);
@@ -169,21 +174,21 @@ export default function StructuresPage() {
     try {
       setLogoUploading(true);
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append("file", file);
 
-      const response = await fetch('/api/upload', {
-        method: 'POST',
+      const response = await fetch("/api/upload", {
+        method: "POST",
         body: formData,
       });
 
-      if (!response.ok) throw new Error('Upload failed');
+      if (!response.ok) throw new Error("Upload failed");
 
       const data = await response.json();
-      
+
       if (isNew) {
-        setNewStructure(prev => ({ ...prev, logo: data.url }));
+        setNewStructure((prev) => ({ ...prev, logo: data.url }));
       } else if (selectedStructure) {
-        setSelectedStructure(prev => ({ ...prev!, logo: data.url }));
+        setSelectedStructure((prev) => ({ ...prev!, logo: data.url }));
       }
 
       toast({
@@ -191,7 +196,7 @@ export default function StructuresPage() {
         description: "Logo téléchargé avec succès",
       });
     } catch (error) {
-      console.error('Upload error:', error);
+      console.error("Upload error:", error);
       toast({
         title: "Erreur",
         description: "Échec du téléchargement du logo",
@@ -200,6 +205,19 @@ export default function StructuresPage() {
     } finally {
       setLogoUploading(false);
     }
+  };
+
+  // Gérer la sélection de fichier
+  const handleFileSelect = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    isNew: boolean = true
+  ) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      handleLogoUpload(file, isNew);
+    }
+    // Reset la valeur pour permettre de sélectionner le même fichier à nouveau
+    event.target.value = "";
   };
 
   // Créer une nouvelle structure
@@ -291,7 +309,9 @@ export default function StructuresPage() {
         throw new Error(errorData.error || "Erreur lors de la suppression");
       }
 
-      setStructures(structures.filter((s) => s.id_sea !== selectedStructure.id_sea));
+      setStructures(
+        structures.filter((s) => s.id_sea !== selectedStructure.id_sea)
+      );
       setIsDeleteDialogOpen(false);
 
       toast({
@@ -347,7 +367,10 @@ export default function StructuresPage() {
       handleNewStructureChange("services", [...newStructure.services, ""]);
     } else {
       if (!selectedStructure) return;
-      handleEditStructureChange("services", [...selectedStructure.services, ""]);
+      handleEditStructureChange("services", [
+        ...selectedStructure.services,
+        "",
+      ]);
     }
   };
 
@@ -463,7 +486,9 @@ export default function StructuresPage() {
                       />
                     ) : (
                       <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center">
-                        <span className="text-xs text-gray-500">Pas de logo</span>
+                        <span className="text-xs text-gray-500">
+                          Pas de logo
+                        </span>
                       </div>
                     )}
                     <label className="cursor-pointer">
@@ -471,22 +496,31 @@ export default function StructuresPage() {
                         type="file"
                         accept="image/*"
                         className="hidden"
-                        onChange={(e) => {
-                          if (e.target.files?.[0]) {
-                            handleLogoUpload(e.target.files[0], true);
-                          }
-                        }}
+                        onChange={(e) => handleFileSelect(e, true)}
                         disabled={logoUploading}
                       />
                       <Button
                         variant="outline"
                         type="button"
+                        onClick={() =>
+                          document.getElementById("add-logo-input")?.click()
+                        }
                         disabled={logoUploading}
                       >
                         <Upload className="mr-2 h-4 w-4" />
-                        {logoUploading ? "Téléchargement..." : "Choisir un logo"}
+                        {logoUploading
+                          ? "Téléchargement..."
+                          : "Choisir un logo"}
                       </Button>
                     </label>
+                    <input
+                      id="add-logo-input"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => handleFileSelect(e, true)}
+                      disabled={logoUploading}
+                    />
                   </div>
                 </div>
 
@@ -499,7 +533,10 @@ export default function StructuresPage() {
                       id="contact"
                       value={newStructure.contact || ""}
                       onChange={(e) =>
-                        handleNewStructureChange("contact", e.target.value || null)
+                        handleNewStructureChange(
+                          "contact",
+                          e.target.value || null
+                        )
                       }
                       placeholder="Ex: +241 77 12 34 56"
                     />
@@ -542,7 +579,10 @@ export default function StructuresPage() {
                     id="site_web"
                     value={newStructure.site_web || ""}
                     onChange={(e) =>
-                      handleNewStructureChange("site_web", e.target.value || null)
+                      handleNewStructureChange(
+                        "site_web",
+                        e.target.value || null
+                      )
                     }
                     placeholder="Ex: https://www.structure.ga"
                   />
@@ -682,7 +722,7 @@ export default function StructuresPage() {
                   />
                 </div>
               </div>
-             
+
               <div className="flex items-end">
                 <Button
                   variant="outline"
@@ -738,14 +778,16 @@ export default function StructuresPage() {
                       <TableCell className="font-medium">
                         <div className="flex items-center gap-3">
                           {structure.logo ? (
-                            <img 
-                              src={structure.logo} 
+                            <img
+                              src={structure.logo}
                               alt={`Logo de ${structure.nom}`}
                               className="h-10 w-10 rounded-full object-cover"
                             />
                           ) : (
                             <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                              <span className="text-xs text-gray-500">Pas de logo</span>
+                              <span className="text-xs text-gray-500">
+                                Pas de logo
+                              </span>
                             </div>
                           )}
                           <span>{structure.nom}</span>
@@ -870,7 +912,10 @@ export default function StructuresPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label htmlFor="edit-type_sea" className="text-sm font-medium">
+                    <label
+                      htmlFor="edit-type_sea"
+                      className="text-sm font-medium"
+                    >
                       Type de structure*
                     </label>
                     <Input
@@ -910,7 +955,9 @@ export default function StructuresPage() {
                       />
                     ) : (
                       <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center">
-                        <span className="text-xs text-gray-500">Pas de logo</span>
+                        <span className="text-xs text-gray-500">
+                          Pas de logo
+                        </span>
                       </div>
                     )}
                     <label className="cursor-pointer">
@@ -918,20 +965,22 @@ export default function StructuresPage() {
                         type="file"
                         accept="image/*"
                         className="hidden"
-                        onChange={(e) => {
-                          if (e.target.files?.[0]) {
-                            handleLogoUpload(e.target.files[0], false);
-                          }
-                        }}
+                        onChange={(e) => handleFileSelect(e, false)}
                         disabled={logoUploading}
+                        id="edit-logo-input"
                       />
                       <Button
                         variant="outline"
                         type="button"
+                        onClick={() =>
+                          document.getElementById("edit-logo-input")?.click()
+                        }
                         disabled={logoUploading}
                       >
                         <Upload className="mr-2 h-4 w-4" />
-                        {logoUploading ? "Téléchargement..." : "Changer de logo"}
+                        {logoUploading
+                          ? "Téléchargement..."
+                          : "Changer de logo"}
                       </Button>
                     </label>
                   </div>
@@ -949,7 +998,10 @@ export default function StructuresPage() {
                       id="edit-contact"
                       value={selectedStructure.contact || ""}
                       onChange={(e) =>
-                        handleEditStructureChange("contact", e.target.value || null)
+                        handleEditStructureChange(
+                          "contact",
+                          e.target.value || null
+                        )
                       }
                     />
                   </div>
@@ -962,7 +1014,10 @@ export default function StructuresPage() {
                       type="email"
                       value={selectedStructure.mail || ""}
                       onChange={(e) =>
-                        handleEditStructureChange("mail", e.target.value || null)
+                        handleEditStructureChange(
+                          "mail",
+                          e.target.value || null
+                        )
                       }
                     />
                   </div>
@@ -992,7 +1047,10 @@ export default function StructuresPage() {
                     id="edit-site_web"
                     value={selectedStructure.site_web || ""}
                     onChange={(e) =>
-                      handleEditStructureChange("site_web", e.target.value || null)
+                      handleEditStructureChange(
+                        "site_web",
+                        e.target.value || null
+                      )
                     }
                   />
                 </div>
@@ -1142,7 +1200,6 @@ export default function StructuresPage() {
             </DialogContent>
           </Dialog>
         )}
-
         {/* Vue détaillée */}
         {selectedStructure && (
           <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
@@ -1153,12 +1210,12 @@ export default function StructuresPage() {
                   Détails de la structure d'accompagnement
                 </DialogDescription>
               </DialogHeader>
-              
+
               <div className="grid gap-6">
                 <div className="flex items-start gap-6">
                   {selectedStructure.logo ? (
-                    <img 
-                      src={selectedStructure.logo} 
+                    <img
+                      src={selectedStructure.logo}
                       alt={`Logo de ${selectedStructure.nom}`}
                       className="h-24 w-24 rounded-lg object-cover"
                     />
@@ -1167,30 +1224,50 @@ export default function StructuresPage() {
                       <span className="text-sm text-gray-500">Pas de logo</span>
                     </div>
                   )}
-                  
+
                   <div className="grid gap-1.5">
                     <div>
-                      <h3 className="text-lg font-semibold">Informations générales</h3>
+                      <h3 className="text-lg font-semibold">
+                        Informations générales
+                      </h3>
                       <div className="grid grid-cols-2 gap-4 mt-2">
                         <div>
                           <p className="text-sm text-muted-foreground">Type</p>
                           <p>{selectedStructure.type_sea}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground">Catégorie</p>
+                          <p className="text-sm text-muted-foreground">
+                            Catégorie
+                          </p>
                           <p>{selectedStructure.categorie}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground">Partenaire FEG</p>
-                          <p>{selectedStructure.partenaire_feg ? "Oui" : "Non"}</p>
+                          <p className="text-sm text-muted-foreground">
+                            Partenaire FEG
+                          </p>
+                          <p>
+                            {selectedStructure.partenaire_feg ? "Oui" : "Non"}
+                          </p>
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground">Date de création</p>
-                          <p>{new Date(selectedStructure.createdAt).toLocaleDateString()}</p>
+                          <p className="text-sm text-muted-foreground">
+                            Date de création
+                          </p>
+                          <p>
+                            {new Date(
+                              selectedStructure.createdAt
+                            ).toLocaleDateString()}
+                          </p>
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground">Dernière mise à jour</p>
-                          <p>{new Date(selectedStructure.updatedAt).toLocaleDateString()}</p>
+                          <p className="text-sm text-muted-foreground">
+                            Dernière mise à jour
+                          </p>
+                          <p>
+                            {new Date(
+                              selectedStructure.updatedAt
+                            ).toLocaleDateString()}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -1216,9 +1293,9 @@ export default function StructuresPage() {
                       <p className="text-sm text-muted-foreground">Site web</p>
                       <p>
                         {selectedStructure.site_web ? (
-                          <a 
-                            href={selectedStructure.site_web} 
-                            target="_blank" 
+                          <a
+                            href={selectedStructure.site_web}
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-600 hover:underline"
                           >
@@ -1234,7 +1311,8 @@ export default function StructuresPage() {
                   <div className="space-y-2">
                     <h3 className="text-lg font-semibold">Description</h3>
                     <p className="whitespace-pre-line">
-                      {selectedStructure.description || "Aucune description disponible"}
+                      {selectedStructure.description ||
+                        "Aucune description disponible"}
                     </p>
                   </div>
                 </div>
@@ -1257,9 +1335,9 @@ export default function StructuresPage() {
                     <h3 className="text-lg font-semibold">Réseaux sociaux</h3>
                     <div className="flex gap-4">
                       {selectedStructure.rs_1 && (
-                        <a 
-                          href={selectedStructure.rs_1} 
-                          target="_blank" 
+                        <a
+                          href={selectedStructure.rs_1}
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-600 hover:underline"
                         >
@@ -1267,9 +1345,9 @@ export default function StructuresPage() {
                         </a>
                       )}
                       {selectedStructure.rs_2 && (
-                        <a 
-                          href={selectedStructure.rs_2} 
-                          target="_blank" 
+                        <a
+                          href={selectedStructure.rs_2}
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-600 hover:underline"
                         >
