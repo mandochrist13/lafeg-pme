@@ -109,7 +109,6 @@ export default function NewText() {
                   {/* Utilisez le titre de l'objet */}
                 </CardHeader>
                 <CardContent>
-                
                   <p className="font-medium">
                     {text.description || "Aucune description disponible"}
                   </p>{" "}

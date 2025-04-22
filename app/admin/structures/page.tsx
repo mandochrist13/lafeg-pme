@@ -729,6 +729,7 @@ export default function StructuresPage() {
                               width={50}
                               height={50}
                               className="rounded-md"
+                              
                             />
                           )}
                           <span>{structure.nom}</span>

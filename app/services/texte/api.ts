@@ -16,7 +16,7 @@ export interface TexteJuridique {
   
   export async function fetchTextesJuridiques(
     page = 1,
-    limit = 100,
+    limit = 10,
     categorie?: string,
     type?: string,
     titre?: string
