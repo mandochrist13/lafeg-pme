@@ -1175,7 +1175,7 @@ export default function StructuresPage() {
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="grid gap-6">
+              <div className="grid grid-cols-2 gap-6">
                 <div className="flex items-start gap-6">
                   {selectedStructure.logo ? (
                     <Image
