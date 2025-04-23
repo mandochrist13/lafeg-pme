@@ -12,7 +12,7 @@ import {
   LogOut,
   Menu,
   Home,
-  FileEdit,
+  Briefcase,
   Newspaper,
   LucideIcon,
 } from "lucide-react";
@@ -60,8 +60,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: "Tableau de bord", href: "/admin/dashboard", icon: BarChart3 },
     { name: "Textes juridiques", href: "/admin/textes", icon: FileText },
     { name: "Institution", href: "/admin/institutions", icon: Newspaper },
-    { name: "SEA", href: "/admin/structures", icon: Newspaper },
-    { name: "Contenu du site", href: "/admin/contenu", icon: FileEdit },
+    { name: "SEA", href: "/admin/structures", icon: Briefcase },
+    // { name: "Contenu du site", href: "/admin/contenu", icon: FileEdit },
   ];
 
   return (

@@ -24,49 +24,26 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState, useEffect } from "react";
+import {
+  fetchAllSEAs,
+  SEA,
+} from "@/app/services/sea/api";
 
 export default function InstitutionsFinancieres() {
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("incubateurs");
-  const [institutions, setInstitutions] = useState({
-    incubateurs: [],
-    centresFormation: [],
-    cabinetsConseil: [],
-    structuresPubliques: []
-  });
+  const [sea, setSea] = useState<SEA[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fonction intégrée directement dans le composant
-  const fetchInstitutions = async (type: string) => {
-    try {
-      const response = await fetch(`/api/sea?type=${type}`);
-      if (!response.ok) {
-        throw new Error('Échec de la récupération des institutions');
-      }
-      return await response.json();
-    } catch (error) {
-      console.error('Erreur:', error);
-      return [];
-    }
-  };
+ 
 
   useEffect(() => {
-    const chargerDonnees = async () => {
+    const loadData = async () => {
       try {
         setLoading(true);
-        const [incubateurs, centresFormation, cabinetsConseil, structuresPubliques] = await Promise.all([
-          fetchInstitutions("incubateur"),
-          fetchInstitutions("formation"),
-          fetchInstitutions("conseil"),
-          fetchInstitutions("publique")
-        ]);
-        
-        setInstitutions({
-          incubateurs,
-          centresFormation,
-          cabinetsConseil,
-          structuresPubliques
-        });
+        const data = await fetchAllSEAs();
+        setSea(data);
+       
       } catch (error) {
         console.error("Erreur lors du chargement des données:", error);
       } finally {
@@ -74,19 +51,20 @@ export default function InstitutionsFinancieres() {
       }
     };
 
-    chargerDonnees();
+    loadData();
   }, []);
 
-  const filtrerInstitutions = (data: any[]) => {
-    return data.filter((item) => 
+  const filtrerSeas = (category: string) => {
+    return sea.filter((item) => 
+      item.categorie === category &&
       item.nom.toLowerCase().includes(search.toLowerCase())
     );
   };
 
-  const incubateursFiltres = filtrerInstitutions(institutions.incubateurs);
-  const centresFormationFiltres = filtrerInstitutions(institutions.centresFormation);
-  const cabinetsConseilFiltres = filtrerInstitutions(institutions.cabinetsConseil);
-  const structuresPubliquesFiltrees = filtrerInstitutions(institutions.structuresPubliques);
+  const incubateursFiltres = filtrerSeas("incubateurs");
+  const centresFormationFiltres = filtrerSeas("centresFormation");
+  const cabinetsConseilFiltres = filtrerSeas("cabinetsConseil");
+  const structuresPubliquesFiltrees = filtrerSeas("structuresPubliques");
 
   const obtenirResultatsAutresSections = () => {
     const resultats = [];

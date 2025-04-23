@@ -21,6 +21,7 @@ import {
   fetchTextesJuridiques,
   TexteJuridique,
 } from "@/app/services/texte/api";
+import { fetchAllSEAs, SEA } from "@/app/services/sea/api";
 
 type ProgressProps = {
   value: number;
@@ -32,7 +33,9 @@ export default function AdminDashboard() {
   const [institutions, setInstitutions] = useState<FinancialInstitution[]>([]);
   const [loading, setLoading] = useState(true);
   const [textes, setTextes] = useState<TexteJuridique[]>([]);
+  const [sea, setSea] = useState<SEA[]>([]);
   const [loadingTextes, setLoadingTextes] = useState(true);
+  const [loadingSea, setLoadingSea] = useState(true);
 
   useEffect(() => {
     const fetchTextesData = async () => {
@@ -50,6 +53,21 @@ export default function AdminDashboard() {
   }, []);
 
   useEffect(() => {
+    const fetchSeaData = async () => {
+      try {
+        const  data  = await fetchAllSEAs();
+        setSea(data);
+      } catch (error) {
+        console.error("Erreur lors du chargement des SEA :", error);
+      } finally {
+        setLoadingSea(false);
+      }
+    };
+
+    fetchSeaData();
+  }, []);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await fetchFinancialInstitutions();
@@ -64,6 +82,8 @@ export default function AdminDashboard() {
     fetchData();
   }, []);
 
+
+  //institutions
   const getCategorieCounts = () => {
     const counts: Record<string, number> = {};
 
@@ -74,13 +94,35 @@ export default function AdminDashboard() {
 
     return counts;
   };
-
   const categorieCounts = getCategorieCounts();
   const total = institutions.length;
 
   const getPercentage = (count: number) =>
     total ? Math.round((count / total) * 100) : 0;
 
+
+
+
+  //SEA
+  const getCategorieSeaCounts = () => {
+    const counts: Record<string, number> = {};
+
+    sea.forEach((sea) => {
+      const categorieSea = sea.categorie || "Autre";
+      counts[categorieSea] = (counts[categorieSea] || 0) + 1;
+    });
+
+    return counts;
+  };
+  const seaCategorieCounts = getCategorieSeaCounts();
+  const totalSea = sea.length;
+
+  const getPercentageSea = (count: number) =>
+    totalSea ? Math.round((count / totalSea) * 100) : 0;
+
+
+ 
+//textes
   const getTextCategorieCounts = () => {
     const counts: Record<string, number> = {};
 
@@ -97,6 +139,9 @@ export default function AdminDashboard() {
 
   const getTextPercentage = (count: number) =>
     totalTextes ? Math.round((count / totalTextes) * 100) : 0;
+
+
+
 
   return (
     <div className="space-y-6">
@@ -127,7 +172,7 @@ export default function AdminDashboard() {
             <Building className="h-8 w-8 text-[#063a1e]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{total}</div>
+            <div className="text-2xl font-bold">{loading ? "..." :total}</div>
           </CardContent>
         </Card>
         <Card>
@@ -138,7 +183,7 @@ export default function AdminDashboard() {
             <Briefcase className="h-8 w-8 text-[#063a1e]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">42</div>
+            <div className="text-2xl font-bold">{loadingSea ? "..." :totalSea}</div>
           </CardContent>
         </Card>
       </div>
@@ -252,46 +297,39 @@ export default function AdminDashboard() {
             <CardDescription>Répartition par type de structure</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-[#063a1e]"></div>
-                  <span className="text-sm">Incubateurs</span>
-                </div>
-                <span className="text-sm font-medium">9</span>
-              </div>
-              <Progress value={25} className="h-2 bg-gray-200" />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-[#dcdaa4]"></div>
-                  <span className="text-sm">Centres de formation</span>
-                </div>
-                <span className="text-sm font-medium">12</span>
-              </div>
-              <Progress value={33} className="h-2 bg-gray-200" />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-[#bdbd95]"></div>
-                  <span className="text-sm">Cabinets conseil</span>
-                </div>
-                <span className="text-sm font-medium">10</span>
-              </div>
-              <Progress value={28} className="h-2 bg-gray-200" />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-gray-400"></div>
-                  <span className="text-sm">Structures publiques</span>
-                </div>
-                <span className="text-sm font-medium">5</span>
-              </div>
-              <Progress value={14} className="h-2 bg-gray-200" />
-            </div>
+          {loadingSea ? (
+              <p className="text-sm text-gray-500">Chargement...</p>
+            ) : totalSea === 0 ? (
+              <p className="text-sm text-gray-500">Aucun texte enregistré</p>
+            ) : (
+              Object.entries(seaCategorieCounts).map(
+                ([categorie, count], i) => (
+                  <div className="space-y-2" key={i}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{
+                            backgroundColor: [
+                              "#063a1e",
+                              "#dcdaa4",
+                              "#bdbd95",
+                              "#888",
+                            ][i % 4],
+                          }}
+                        ></div>
+                        <span className="text-sm capitalize">{categorie}</span>
+                      </div>
+                      <span className="text-sm font-medium">{count}</span>
+                    </div>
+                    <Progress
+                      value={getTextPercentage(count)}
+                      className="h-2 bg-gray-200"
+                    />
+                  </div>
+                )
+              )
+            )}
           </CardContent>
           <CardFooter>
             <Button variant="outline" className="w-full" asChild>
