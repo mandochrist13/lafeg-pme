@@ -729,6 +729,7 @@ export default function StructuresPage() {
                               width={50}
                               height={50}
                               className="rounded-md"
+                              
                             />
                           )}
                           <span>{structure.nom}</span>
@@ -1174,7 +1175,7 @@ export default function StructuresPage() {
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="grid gap-6">
+              <div className="grid grid-cols-2 gap-6">
                 <div className="flex items-start gap-6">
                   {selectedStructure.logo ? (
                     <Image

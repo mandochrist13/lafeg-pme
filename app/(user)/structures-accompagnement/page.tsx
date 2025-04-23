@@ -24,49 +24,20 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState, useEffect } from "react";
+import { fetchAllSEAs, SEA } from "@/app/services/sea/api";
 
 export default function InstitutionsFinancieres() {
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("incubateurs");
-  const [institutions, setInstitutions] = useState({
-    incubateurs: [],
-    centresFormation: [],
-    cabinetsConseil: [],
-    structuresPubliques: []
-  });
+  const [sea, setSea] = useState<SEA[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fonction intégrée directement dans le composant
-  const fetchInstitutions = async (type: string) => {
-    try {
-      const response = await fetch(`/api/sea?type=${type}`);
-      if (!response.ok) {
-        throw new Error('Échec de la récupération des institutions');
-      }
-      return await response.json();
-    } catch (error) {
-      console.error('Erreur:', error);
-      return [];
-    }
-  };
-
   useEffect(() => {
-    const chargerDonnees = async () => {
+    const loadData = async () => {
       try {
         setLoading(true);
-        const [incubateurs, centresFormation, cabinetsConseil, structuresPubliques] = await Promise.all([
-          fetchInstitutions("incubateur"),
-          fetchInstitutions("formation"),
-          fetchInstitutions("conseil"),
-          fetchInstitutions("publique")
-        ]);
-        
-        setInstitutions({
-          incubateurs,
-          centresFormation,
-          cabinetsConseil,
-          structuresPubliques
-        });
+        const data = await fetchAllSEAs();
+        setSea(data);
       } catch (error) {
         console.error("Erreur lors du chargement des données:", error);
       } finally {
@@ -74,50 +45,68 @@ export default function InstitutionsFinancieres() {
       }
     };
 
-    chargerDonnees();
+    loadData();
   }, []);
 
-  const filtrerInstitutions = (data: any[]) => {
-    return data.filter((item) => 
-      item.nom.toLowerCase().includes(search.toLowerCase())
+  const filtrerSeas = (category: string) => {
+    return sea.filter(
+      (item) =>
+        item.categorie === category &&
+        item.nom.toLowerCase().includes(search.toLowerCase())
     );
   };
 
-  const incubateursFiltres = filtrerInstitutions(institutions.incubateurs);
-  const centresFormationFiltres = filtrerInstitutions(institutions.centresFormation);
-  const cabinetsConseilFiltres = filtrerInstitutions(institutions.cabinetsConseil);
-  const structuresPubliquesFiltrees = filtrerInstitutions(institutions.structuresPubliques);
+  const incubateursFiltres = filtrerSeas("incubateurs");
+  const centresFormationFiltres = filtrerSeas("centresFormation");
+  const cabinetsConseilFiltres = filtrerSeas("cabinetsConseil");
+  const structuresPubliquesFiltrees = filtrerSeas("structuresPubliques");
 
   const obtenirResultatsAutresSections = () => {
     const resultats = [];
 
     if (activeTab !== "incubateurs" && incubateursFiltres.length > 0) {
-      resultats.push({ tab: "incubateurs", count: incubateursFiltres.length, label: "Incubateurs" });
+      resultats.push({
+        tab: "incubateurs",
+        count: incubateursFiltres.length,
+        label: "Incubateurs",
+      });
     }
 
-    if (activeTab !== "centresFormation" && centresFormationFiltres.length > 0) {
-      resultats.push({ tab: "centresFormation", count: centresFormationFiltres.length, label: "Centres de formation" });
+    if (
+      activeTab !== "centresFormation" &&
+      centresFormationFiltres.length > 0
+    ) {
+      resultats.push({
+        tab: "centresFormation",
+        count: centresFormationFiltres.length,
+        label: "Centres de formation",
+      });
     }
 
     if (activeTab !== "cabinetsConseil" && cabinetsConseilFiltres.length > 0) {
-      resultats.push({ tab: "cabinetsConseil", count: cabinetsConseilFiltres.length, label: "Cabinets conseil" });
+      resultats.push({
+        tab: "cabinetsConseil",
+        count: cabinetsConseilFiltres.length,
+        label: "Cabinets conseil",
+      });
     }
-    if (activeTab !== "structuresPubliques" && structuresPubliquesFiltrees.length > 0) {
-      resultats.push({ tab: "structuresPubliques", count: structuresPubliquesFiltrees.length, label: "Structures publiques" });
+    if (
+      activeTab !== "structuresPubliques" &&
+      structuresPubliquesFiltrees.length > 0
+    ) {
+      resultats.push({
+        tab: "structuresPubliques",
+        count: structuresPubliquesFiltrees.length,
+        label: "Structures publiques",
+      });
     }
 
     return resultats;
   };
 
-  const resultatsAutresSections = search ? obtenirResultatsAutresSections() : [];
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p>Chargement des données...</p>
-      </div>
-    );
-  }
+  const resultatsAutresSections = search
+    ? obtenirResultatsAutresSections()
+    : [];
 
   const renderCarteInstitution = (item: any) => (
     <Card key={item.id} className="hover:shadow-md transition-shadow">
@@ -140,7 +129,9 @@ export default function InstitutionsFinancieres() {
               <CardDescription>{item.type_sea}</CardDescription>
             </div>
           </div>
-          {item.partenaire_feg && <Badge variant="secondary">Partenaire FEG</Badge>}
+          {item.partenaire_feg && (
+            <Badge variant="secondary">Partenaire FEG</Badge>
+          )}
         </div>
       </CardHeader>
       <CardContent>
@@ -183,9 +174,13 @@ export default function InstitutionsFinancieres() {
                 href={item.rs_1}
                 className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
               >
-                {item.rs_1.includes('facebook') ? 'Facebook' : 
-                 item.rs_1.includes('linkedin') ? 'LinkedIn' : 
-                 item.rs_1.includes('twitter') ? 'Twitter' : 'Réseau social'}
+                {item.rs_1.includes("facebook")
+                  ? "Facebook"
+                  : item.rs_1.includes("linkedin")
+                  ? "LinkedIn"
+                  : item.rs_1.includes("twitter")
+                  ? "Twitter"
+                  : "Réseau social"}
               </Link>
             )}
             {item.rs_2 && (
@@ -194,9 +189,13 @@ export default function InstitutionsFinancieres() {
                 href={item.rs_2}
                 className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
               >
-                {item.rs_2.includes('facebook') ? 'Facebook' : 
-                 item.rs_2.includes('linkedin') ? 'LinkedIn' : 
-                 item.rs_2.includes('twitter') ? 'Twitter' : 'Réseau social'}
+                {item.rs_2.includes("facebook")
+                  ? "Facebook"
+                  : item.rs_2.includes("linkedin")
+                  ? "LinkedIn"
+                  : item.rs_2.includes("twitter")
+                  ? "Twitter"
+                  : "Réseau social"}
               </Link>
             )}
           </div>
@@ -244,8 +243,9 @@ export default function InstitutionsFinancieres() {
               Structures d'Accompagnement pour les PME Gabonaises
             </h1>
             <p className="text-white/90 text-lg mb-6">
-              Découvrez les incubateurs, centres de formation, cabinets conseil et structures publiques
-              qui peuvent accompagner votre entreprise au Gabon.
+              Découvrez les incubateurs, centres de formation, cabinets conseil
+              et structures publiques qui peuvent accompagner votre entreprise
+              au Gabon.
             </p>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -266,18 +266,32 @@ export default function InstitutionsFinancieres() {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-8">
             <TabsTrigger value="incubateurs">Incubateurs</TabsTrigger>
-            <TabsTrigger value="centresFormation">Centres de formation</TabsTrigger>
+            <TabsTrigger value="centresFormation">
+              Centres de formation
+            </TabsTrigger>
             <TabsTrigger value="cabinetsConseil">Cabinets conseil</TabsTrigger>
-            <TabsTrigger value="structuresPubliques">Structures publiques</TabsTrigger>
+            <TabsTrigger value="structuresPubliques">
+              Structures publiques
+            </TabsTrigger>
           </TabsList>
 
           {/* Incubateurs */}
           <TabsContent value="incubateurs" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {incubateursFiltres.map(renderCarteInstitution)}
-            </div>
-            {incubateursFiltres.length === 0 && (
-              <p className="text-red-700 text-center font-bold italic">Aucun résultat trouvé dans la section Incubateurs.</p>
+            {loading ? (
+              <div className="text-center py-10 text-muted-foreground">
+                Chargement...
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {incubateursFiltres.map(renderCarteInstitution)}
+                </div>
+                {incubateursFiltres.length === 0 && (
+                  <p className="text-red-700 text-center font-bold italic">
+                    Aucun résultat trouvé dans la section Incubateurs.
+                  </p>
+                )}
+              </>
             )}
           </TabsContent>
 
@@ -287,7 +301,9 @@ export default function InstitutionsFinancieres() {
               {centresFormationFiltres.map(renderCarteInstitution)}
             </div>
             {centresFormationFiltres.length === 0 && (
-              <p className="text-red-700 text-center font-bold italic">Aucun résultat trouvé dans la section Centres de formation.</p>
+              <p className="text-red-700 text-center font-bold italic">
+                Aucun résultat trouvé dans la section Centres de formation.
+              </p>
             )}
           </TabsContent>
 
@@ -297,7 +313,9 @@ export default function InstitutionsFinancieres() {
               {cabinetsConseilFiltres.map(renderCarteInstitution)}
             </div>
             {cabinetsConseilFiltres.length === 0 && (
-              <p className="text-red-700 text-center font-bold italic">Aucun résultat trouvé dans la section Cabinets conseil.</p>
+              <p className="text-red-700 text-center font-bold italic">
+                Aucun résultat trouvé dans la section Cabinets conseil.
+              </p>
             )}
           </TabsContent>
 
@@ -307,14 +325,18 @@ export default function InstitutionsFinancieres() {
               {structuresPubliquesFiltrees.map(renderCarteInstitution)}
             </div>
             {structuresPubliquesFiltrees.length === 0 && (
-              <p className="text-red-700 text-center font-bold italic">Aucun résultat trouvé dans la section Structures publiques.</p>
+              <p className="text-red-700 text-center font-bold italic">
+                Aucun résultat trouvé dans la section Structures publiques.
+              </p>
             )}
           </TabsContent>
 
           {/* Notification pour les résultats dans d'autres sections */}
           {search && resultatsAutresSections.length > 0 && (
             <div className="my-6 p-4 bg-[#063a1e]/5 rounded-lg border border-[#063a1e]/10">
-              <p className="text-[#063a1e] font-medium mb-2">Résultats trouvés dans d'autres sections :</p>
+              <p className="text-[#063a1e] font-medium mb-2">
+                Résultats trouvés dans d'autres sections :
+              </p>
               <div className="flex flex-wrap gap-2">
                 {resultatsAutresSections.map((result) => (
                   <Button
@@ -324,25 +346,28 @@ export default function InstitutionsFinancieres() {
                     className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
                     onClick={() => setActiveTab(result.tab)}
                   >
-                    {result.label} ({result.count}) <ArrowRight className="h-3 w-3" />
+                    {result.label} ({result.count}){" "}
+                    <ArrowRight className="h-3 w-3" />
                   </Button>
                 ))}
               </div>
             </div>
           )}
         </Tabs>
-        
+
         {/* Section CTA */}
         <div className="mt-12 bg-[#063a1e]/10 p-6 rounded-lg">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
               <h3 className="text-xl font-bold text-[#063a1e] mb-2">
-                Trouvez rapidement le bon contact pour vos besoins en accompagnement.
+                Trouvez rapidement le bon contact pour vos besoins en
+                accompagnement.
               </h3>
               <p className="text-muted-foreground">
-                Abonnez-vous à notre newsletter pour connaître les structures utiles aux PME,
-                avec leurs coordonnées et une description de leurs services.
-                Accédez facilement à toutes ces informations depuis notre site.
+                Abonnez-vous à notre newsletter pour connaître les structures
+                utiles aux PME, avec leurs coordonnées et une description de
+                leurs services. Accédez facilement à toutes ces informations
+                depuis notre site.
               </p>
             </div>
             <Link href="/#subscription">
