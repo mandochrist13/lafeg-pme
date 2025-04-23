@@ -115,7 +115,7 @@ export default function NewText() {
                   {/* Utilisez la description de l'objet */}
                 </CardContent>
                 <CardFooter>
-                  <Link href={text.fichier_url}>
+                  <Link target="_blank" href={text.fichier_url}>
                     <Button variant="default" className="w-full gap-1">
                       Lire le texte complet <ArrowRight className="h-4 w-4" />
                     </Button>
