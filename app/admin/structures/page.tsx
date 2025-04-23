@@ -12,6 +12,7 @@ import {
   XCircle,
   Upload,
 } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -65,32 +66,25 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+  deleteSEA,
+  patchSEA,
+  updateSEA,
+  fetchAllSEAs,
+  fetchSEAById,
+  createSEA,
+  SEA,
+} from "@/app/services/sea/api";
+
 import { cn } from "@/lib/utils";
 import { toast } from "@/components/ui/use-toast";
 
-interface Structure {
-  id_sea: string;
-  nom: string;
-  type_sea: string;
-  categorie: string;
-  adresse: string;
-  contact: string | null;
-  mail: string | null;
-  site_web: string | null;
-  description: string;
-  services: string[];
-  rs_1: string | null;
-  rs_2: string | null;
-  logo: string | null;
-  partenaire_feg: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export default function StructuresPage() {
   const { theme, systemTheme } = useTheme();
+
+  const [currentPage, setCurrentPage] = useState(1);
   const [mounted, setMounted] = useState(false);
-  const [structures, setStructures] = useState<Structure[]>([]);
+  const [structures, setStructures] = useState<SEA[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [typeFilter, setTypeFilter] = useState<string>("");
@@ -98,11 +92,16 @@ export default function StructuresPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState<boolean>(false);
-  const [selectedStructure, setSelectedStructure] = useState<Structure | null>(null);
-  const [logoUploading, setLogoUploading] = useState(false);
+  const [selectedStructure, setSelectedStructure] = useState<SEA | null>(null);
+  const [logoUploading, setLogoUploading] = useState<File | null>(null);
+    const [filteredTextes, setFilteredTextes] = useState<SEA[]>([]);
 
   // Structure par défaut pour la création
-  const defaultStructure: Omit<Structure, 'id_sea' | 'createdAt' | 'updatedAt'> & { id_sea: string, createdAt: string, updatedAt: string } = {
+  const defaultStructure: Omit<SEA, "id_sea" | "createdAt" | "updatedAt"> & {
+    id_sea: string;
+    createdAt: string;
+    updatedAt: string;
+  } = {
     id_sea: "",
     nom: "",
     type_sea: "",
@@ -121,7 +120,17 @@ export default function StructuresPage() {
     updatedAt: new Date().toISOString(),
   };
 
-  const [newStructure, setNewStructure] = useState<Structure>(defaultStructure);
+  const itemsPerPage = 5;
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedTexte = filteredTextes.slice(
+    startIndex,
+    endIndex
+  );
+
+  const totalPages = Math.ceil(filteredTextes.length / itemsPerPage);
+  const [newStructure, setNewStructure] = useState<SEA>(defaultStructure);
 
   useEffect(() => {
     setMounted(true);
@@ -163,44 +172,6 @@ export default function StructuresPage() {
     const matchesType = typeFilter === "" || structure.type_sea === typeFilter;
     return matchesSearch && matchesType;
   });
-
-  // Uploader un logo
-  const handleLogoUpload = async (file: File, isNew: boolean = true) => {
-    try {
-      setLogoUploading(true);
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) throw new Error('Upload failed');
-
-      const data = await response.json();
-      
-      if (isNew) {
-        setNewStructure(prev => ({ ...prev, logo: data.url }));
-      } else if (selectedStructure) {
-        setSelectedStructure(prev => ({ ...prev!, logo: data.url }));
-      }
-
-      toast({
-        title: "Succès",
-        description: "Logo téléchargé avec succès",
-      });
-    } catch (error) {
-      console.error('Upload error:', error);
-      toast({
-        title: "Erreur",
-        description: "Échec du téléchargement du logo",
-        variant: "destructive",
-      });
-    } finally {
-      setLogoUploading(false);
-    }
-  };
 
   // Créer une nouvelle structure
   const handleAddStructure = async () => {
@@ -309,14 +280,14 @@ export default function StructuresPage() {
   };
 
   // Gérer les changements dans les formulaires
-  const handleNewStructureChange = (field: keyof Structure, value: any) => {
+  const handleNewStructureChange = (field: keyof SEA, value: any) => {
     setNewStructure((prev) => ({
       ...prev,
       [field]: value,
     }));
   };
 
-  const handleEditStructureChange = (field: keyof Structure, value: any) => {
+  const handleEditStructureChange = (field: keyof SEA, value: any) => {
     if (!selectedStructure) return;
     setSelectedStructure((prev) => ({
       ...prev!,
@@ -412,7 +383,7 @@ export default function StructuresPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label htmlFor="nom" className="text-sm font-medium">
-                      Nom de la structure*
+                      Nom de la structure<span className="text-red-600">*</span>
                     </label>
                     <Input
                       id="nom"
@@ -425,7 +396,7 @@ export default function StructuresPage() {
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="type_sea" className="text-sm font-medium">
-                      Type de structure*
+                      Type de structure<span className="text-red-600">*</span>
                     </label>
                     <Input
                       id="type_sea"
@@ -440,53 +411,56 @@ export default function StructuresPage() {
 
                 <div className="space-y-2">
                   <label htmlFor="categorie" className="text-sm font-medium">
-                    Catégorie*
+                    Catégorie <span className="text-red-600">*</span>
                   </label>
-                  <Input
-                    id="categorie"
+                  <Select
                     value={newStructure.categorie}
-                    onChange={(e) =>
-                      handleNewStructureChange("categorie", e.target.value)
+                    onValueChange={(value) =>
+                      setNewStructure({
+                        ...newStructure,
+                        categorie: value, // ✅ ceci manquait
+                      })
                     }
-                    placeholder="Ex: Technologie, Agriculture, etc."
-                  />
+                  >
+                    <SelectTrigger id="categorie">
+                      <SelectValue placeholder="Sélectionner une catégorie" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="incubateurs">Incubateurs</SelectItem>
+                      <SelectItem value="centresFormation">
+                        Centre Formation
+                      </SelectItem>
+                      <SelectItem value="cabinetsConseil">
+                        Cabinets Conseil
+                      </SelectItem>
+                      <SelectItem value="structuresPubliques">
+                        Structures Publiques
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Logo</label>
                   <div className="flex items-center gap-4">
-                    {newStructure.logo ? (
-                      <img
-                        src={newStructure.logo}
-                        alt="Logo preview"
-                        className="h-16 w-16 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center">
-                        <span className="text-xs text-gray-500">Pas de logo</span>
-                      </div>
-                    )}
-                    <label className="cursor-pointer">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                          if (e.target.files?.[0]) {
-                            handleLogoUpload(e.target.files[0], true);
-                          }
-                        }}
-                        disabled={logoUploading}
-                      />
-                      <Button
-                        variant="outline"
-                        type="button"
-                        disabled={logoUploading}
-                      >
-                        <Upload className="mr-2 h-4 w-4" />
-                        {logoUploading ? "Téléchargement..." : "Choisir un logo"}
-                      </Button>
-                    </label>
+                    <Input
+                      id="logo"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setNewStructure({
+                              ...newStructure,
+                              logo: reader.result as string, // Stocke l'URL base64 dans le state
+                            });
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
                   </div>
                 </div>
 
@@ -737,16 +711,15 @@ export default function StructuresPage() {
                     <TableRow key={structure.id_sea}>
                       <TableCell className="font-medium">
                         <div className="flex items-center gap-3">
-                          {structure.logo ? (
-                            <img 
-                              src={structure.logo} 
-                              alt={`Logo de ${structure.nom}`}
-                              className="h-10 w-10 rounded-full object-cover"
+                          {structure.logo && (
+                            <Image
+                              src={structure.logo}
+                              alt={structure.nom}
+                              width={50}
+                              height={50}
+                              className="rounded-md"
+                              
                             />
-                          ) : (
-                            <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                              <span className="text-xs text-gray-500">Pas de logo</span>
-                            </div>
                           )}
                           <span>{structure.nom}</span>
                         </div>
@@ -816,30 +789,55 @@ export default function StructuresPage() {
               Affichage de {filteredStructures.length} sur {structures.length}{" "}
               structures
             </div>
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious href="#" />
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#" isActive>
-                    1
-                  </PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#">2</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#">3</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationNext href="#" />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+           <Pagination>
+                                   <PaginationContent>
+                                     <PaginationItem>
+                                       <PaginationPrevious
+                                         href="#"
+                                         onClick={(e) => {
+                                           e.preventDefault();
+                                           setCurrentPage((prev) => Math.max(prev - 1, 1));
+                                         }}
+                                         className={
+                                           currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                                         }
+                                       />
+                                     </PaginationItem>
+                       
+                                     {[...Array(totalPages)].map((_, index) => {
+                                       const page = index + 1;
+                                       return (
+                                         <PaginationItem key={page}>
+                                           <PaginationLink
+                                             href="#"
+                                             isActive={currentPage === page}
+                                             onClick={(e) => {
+                                               e.preventDefault();
+                                               setCurrentPage(page);
+                                             }}
+                                           >
+                                             {page}
+                                           </PaginationLink>
+                                         </PaginationItem>
+                                       );
+                                     })}
+                       
+                                     <PaginationItem>
+                                       <PaginationNext
+                                         href="#"
+                                         onClick={(e) => {
+                                           e.preventDefault();
+                                           setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+                                         }}
+                                         className={
+                                           currentPage === totalPages
+                                             ? "pointer-events-none opacity-50"
+                                             : ""
+                                         }
+                                       />
+                                     </PaginationItem>
+                                   </PaginationContent>
+                                 </Pagination>
           </CardFooter>
         </Card>
 
@@ -859,7 +857,7 @@ export default function StructuresPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label htmlFor="edit-nom" className="text-sm font-medium">
-                      Nom de la structure*
+                      Nom de la structure<span className="text-red-600">*</span>
                     </label>
                     <Input
                       id="edit-nom"
@@ -870,8 +868,11 @@ export default function StructuresPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label htmlFor="edit-type_sea" className="text-sm font-medium">
-                      Type de structure*
+                    <label
+                      htmlFor="edit-type_sea"
+                      className="text-sm font-medium"
+                    >
+                      Type de structure<span className="text-red-600">*</span>
                     </label>
                     <Input
                       id="edit-type_sea"
@@ -888,53 +889,54 @@ export default function StructuresPage() {
                     htmlFor="edit-categorie"
                     className="text-sm font-medium"
                   >
-                    Catégorie*
+                    Catégorie <span className="text-red-600">*</span>
                   </label>
-                  <Input
-                    id="edit-categorie"
+                  <Select
                     value={selectedStructure.categorie}
-                    onChange={(e) =>
-                      handleEditStructureChange("categorie", e.target.value)
+                    onValueChange={(value) =>
+                      setSelectedStructure({
+                        ...selectedStructure,
+                        categorie: value,
+                      })
                     }
-                  />
+                  >
+                    <SelectTrigger id="categorie">
+                      <SelectValue placeholder="Sélectionner une catégorie" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="incubateurs">Incubateurs</SelectItem>
+                      <SelectItem value="centresFormation">
+                        Centre Formation
+                      </SelectItem>
+                      <SelectItem value="cabinetsConseil">
+                        Cabinets Conseil
+                      </SelectItem>
+                      <SelectItem value="structuresPubliques">
+                        Structures Publiques
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Logo</label>
-                  <div className="flex items-center gap-4">
-                    {selectedStructure.logo ? (
-                      <img
-                        src={selectedStructure.logo}
-                        alt="Logo preview"
-                        className="h-16 w-16 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center">
-                        <span className="text-xs text-gray-500">Pas de logo</span>
-                      </div>
-                    )}
-                    <label className="cursor-pointer">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                          if (e.target.files?.[0]) {
-                            handleLogoUpload(e.target.files[0], false);
-                          }
-                        }}
-                        disabled={logoUploading}
-                      />
-                      <Button
-                        variant="outline"
-                        type="button"
-                        disabled={logoUploading}
-                      >
-                        <Upload className="mr-2 h-4 w-4" />
-                        {logoUploading ? "Téléchargement..." : "Changer de logo"}
-                      </Button>
-                    </label>
-                  </div>
+                  <Input
+                    id="logo"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          const base64String = reader.result as string;
+
+                          handleEditStructureChange("logo", base64String); // utilise ton setter
+                        };
+                        reader.readAsDataURL(file); // convertit en base64
+                      }
+                    }}
+                  />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -1153,14 +1155,16 @@ export default function StructuresPage() {
                   Détails de la structure d'accompagnement
                 </DialogDescription>
               </DialogHeader>
-              
-              <div className="grid gap-6">
+
+              <div className="grid grid-cols-2 gap-6">
                 <div className="flex items-start gap-6">
                   {selectedStructure.logo ? (
-                    <img 
-                      src={selectedStructure.logo} 
+                    <Image
+                      src={selectedStructure.logo}
                       alt={`Logo de ${selectedStructure.nom}`}
-                      className="h-24 w-24 rounded-lg object-cover"
+                      width={50}
+                      height={50}
+                      className="rounded-md"
                     />
                   ) : (
                     <div className="h-24 w-24 rounded-lg bg-gray-200 flex items-center justify-center">
