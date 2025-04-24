@@ -146,7 +146,7 @@ export default function StructuresPage() {
         const response = await fetch("/api/sea");
         if (!response.ok) throw new Error("Erreur lors de la récupération");
         const data = await response.json();
-
+        
         setStructures(data);
       } catch (error) {
         console.error("Error:", error);
@@ -262,9 +262,7 @@ export default function StructuresPage() {
         throw new Error(errorData.error || "Erreur lors de la suppression");
       }
 
-      setStructures(
-        structures.filter((s) => s.id_sea !== selectedStructure.id_sea)
-      );
+      setStructures(structures.filter((s) => s.id_sea !== selectedStructure.id_sea));
       setIsDeleteDialogOpen(false);
 
       toast({
@@ -320,10 +318,7 @@ export default function StructuresPage() {
       handleNewStructureChange("services", [...newStructure.services, ""]);
     } else {
       if (!selectedStructure) return;
-      handleEditStructureChange("services", [
-        ...selectedStructure.services,
-        "",
-      ]);
+      handleEditStructureChange("services", [...selectedStructure.services, ""]);
     }
   };
 
@@ -478,10 +473,7 @@ export default function StructuresPage() {
                       id="contact"
                       value={newStructure.contact || ""}
                       onChange={(e) =>
-                        handleNewStructureChange(
-                          "contact",
-                          e.target.value || null
-                        )
+                        handleNewStructureChange("contact", e.target.value || null)
                       }
                       placeholder="Ex: +241 77 12 34 56"
                     />
@@ -524,10 +516,7 @@ export default function StructuresPage() {
                     id="site_web"
                     value={newStructure.site_web || ""}
                     onChange={(e) =>
-                      handleNewStructureChange(
-                        "site_web",
-                        e.target.value || null
-                      )
+                      handleNewStructureChange("site_web", e.target.value || null)
                     }
                     placeholder="Ex: https://www.structure.ga"
                   />
@@ -667,7 +656,7 @@ export default function StructuresPage() {
                   />
                 </div>
               </div>
-
+             
               <div className="flex items-end">
                 <Button
                   variant="outline"
@@ -962,10 +951,7 @@ export default function StructuresPage() {
                       id="edit-contact"
                       value={selectedStructure.contact || ""}
                       onChange={(e) =>
-                        handleEditStructureChange(
-                          "contact",
-                          e.target.value || null
-                        )
+                        handleEditStructureChange("contact", e.target.value || null)
                       }
                     />
                   </div>
@@ -978,10 +964,7 @@ export default function StructuresPage() {
                       type="email"
                       value={selectedStructure.mail || ""}
                       onChange={(e) =>
-                        handleEditStructureChange(
-                          "mail",
-                          e.target.value || null
-                        )
+                        handleEditStructureChange("mail", e.target.value || null)
                       }
                     />
                   </div>
@@ -1011,10 +994,7 @@ export default function StructuresPage() {
                     id="edit-site_web"
                     value={selectedStructure.site_web || ""}
                     onChange={(e) =>
-                      handleEditStructureChange(
-                        "site_web",
-                        e.target.value || null
-                      )
+                      handleEditStructureChange("site_web", e.target.value || null)
                     }
                   />
                 </div>
@@ -1164,6 +1144,7 @@ export default function StructuresPage() {
             </DialogContent>
           </Dialog>
         )}
+
         {/* Vue détaillée */}
         {selectedStructure && (
           <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
@@ -1190,50 +1171,30 @@ export default function StructuresPage() {
                       <span className="text-sm text-gray-500">Pas de logo</span>
                     </div>
                   )}
-
+                  
                   <div className="grid gap-1.5">
                     <div>
-                      <h3 className="text-lg font-semibold">
-                        Informations générales
-                      </h3>
+                      <h3 className="text-lg font-semibold">Informations générales</h3>
                       <div className="grid grid-cols-2 gap-4 mt-2">
                         <div>
                           <p className="text-sm text-muted-foreground">Type</p>
                           <p>{selectedStructure.type_sea}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground">
-                            Catégorie
-                          </p>
+                          <p className="text-sm text-muted-foreground">Catégorie</p>
                           <p>{selectedStructure.categorie}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground">
-                            Partenaire FEG
-                          </p>
-                          <p>
-                            {selectedStructure.partenaire_feg ? "Oui" : "Non"}
-                          </p>
+                          <p className="text-sm text-muted-foreground">Partenaire FEG</p>
+                          <p>{selectedStructure.partenaire_feg ? "Oui" : "Non"}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground">
-                            Date de création
-                          </p>
-                          <p>
-                            {new Date(
-                              selectedStructure.createdAt
-                            ).toLocaleDateString()}
-                          </p>
+                          <p className="text-sm text-muted-foreground">Date de création</p>
+                          <p>{new Date(selectedStructure.createdAt).toLocaleDateString()}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground">
-                            Dernière mise à jour
-                          </p>
-                          <p>
-                            {new Date(
-                              selectedStructure.updatedAt
-                            ).toLocaleDateString()}
-                          </p>
+                          <p className="text-sm text-muted-foreground">Dernière mise à jour</p>
+                          <p>{new Date(selectedStructure.updatedAt).toLocaleDateString()}</p>
                         </div>
                       </div>
                     </div>
@@ -1259,9 +1220,9 @@ export default function StructuresPage() {
                       <p className="text-sm text-muted-foreground">Site web</p>
                       <p>
                         {selectedStructure.site_web ? (
-                          <a
-                            href={selectedStructure.site_web}
-                            target="_blank"
+                          <a 
+                            href={selectedStructure.site_web} 
+                            target="_blank" 
                             rel="noopener noreferrer"
                             className="text-blue-600 hover:underline"
                           >
@@ -1277,8 +1238,7 @@ export default function StructuresPage() {
                   <div className="space-y-2">
                     <h3 className="text-lg font-semibold">Description</h3>
                     <p className="whitespace-pre-line">
-                      {selectedStructure.description ||
-                        "Aucune description disponible"}
+                      {selectedStructure.description || "Aucune description disponible"}
                     </p>
                   </div>
                 </div>
@@ -1301,9 +1261,9 @@ export default function StructuresPage() {
                     <h3 className="text-lg font-semibold">Réseaux sociaux</h3>
                     <div className="flex gap-4">
                       {selectedStructure.rs_1 && (
-                        <a
-                          href={selectedStructure.rs_1}
-                          target="_blank"
+                        <a 
+                          href={selectedStructure.rs_1} 
+                          target="_blank" 
                           rel="noopener noreferrer"
                           className="text-blue-600 hover:underline"
                         >
@@ -1311,9 +1271,9 @@ export default function StructuresPage() {
                         </a>
                       )}
                       {selectedStructure.rs_2 && (
-                        <a
-                          href={selectedStructure.rs_2}
-                          target="_blank"
+                        <a 
+                          href={selectedStructure.rs_2} 
+                          target="_blank" 
                           rel="noopener noreferrer"
                           className="text-blue-600 hover:underline"
                         >
