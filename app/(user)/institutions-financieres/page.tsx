@@ -67,7 +67,6 @@ export default function InstitutionsFinancieres() {
   const filteredBanque = filterInstitutions("banque");
   const filteredMicro = filterInstitutions("microfinance");
   const filteredFond = filterInstitutions("fonds");
-  const filteredInstP = filterInstitutions("institution_publique");
 
   const getOtherSectionResults = () => {
     const results = [];
@@ -93,13 +92,6 @@ export default function InstitutionsFinancieres() {
         tab: "fonds",
         count: filteredFond.length,
         label: "Fonds d'investissement",
-      });
-    }
-    if (activeTab !== "institution_publique" && filteredInstP.length > 0) {
-      results.push({
-        tab: "institution_publique",
-        count: filteredInstP.length,
-        label: "Institutions publiques",
       });
     }
 
@@ -151,13 +143,10 @@ export default function InstitutionsFinancieres() {
       {/* Main Content */}
       <div className="container py-12">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-8">
+          <TabsList className="grid grid-cols-2 md:grid-cols-3 mb-8">
             <TabsTrigger value="banque">Banque</TabsTrigger>
             <TabsTrigger value="microfinance">Microfinance</TabsTrigger>
             <TabsTrigger value="fonds">Fonds d'investissement</TabsTrigger>
-            <TabsTrigger value="institution_publique">
-              Institutions publiques
-            </TabsTrigger>
           </TabsList>
 
           {/* Banques */}
@@ -476,107 +465,6 @@ export default function InstitutionsFinancieres() {
             )}
           </TabsContent>
 
-          {/* Institutions publiques */}
-          <TabsContent value="institution_publique" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredInstP.map((item) => (
-                <Card
-                  key={item.id_institutionFinanciere}
-                  className="hover:shadow-md transition-shadow"
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-[#063a1e]/10 rounded-md flex items-center justify-center">
-                          <Image
-                            src={item.logo}
-                            alt="Logo banque"
-                            width={1000}
-                            height={1000}
-                            className="rounded bg-cover bg-center w-full h-full"
-                          />
-                        </div>
-                        <div>
-                          <CardTitle>{item.nom}</CardTitle>
-                          <CardDescription>
-                            {item.type_institution}
-                          </CardDescription>
-                        </div>
-                      </div>
-                      <div>{item.partenaire_feg}</div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <p className="text-sm text-muted-foreground">
-                        {item.description}{" "}
-                      </p>
-                      <div className="space-y-2">
-                        <div className="flex items-start gap-2">
-                          <MapPin className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                          <span className="text-sm"> {item.adresse} </span>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <Phone className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                          <a
-                            href={`tel:${item.contact}`}
-                            className="text-sm hover:underline underline-offset-4"
-                          >
-                            {item.contact}
-                          </a>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <Mail className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                          <a
-                            href={`mailto:${item.mail}`}
-                            className="text-sm hover:underline underline-offset-4"
-                          >
-                            {" "}
-                            {item.mail}{" "}
-                          </a>
-                        </div>
-                        <Link
-                          target="_blank"
-                          href={item.rs_1 || "#"}
-                          className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
-                        >
-                          <Facebook className="h-4 w-4 text-[rgb(6,58,30)] mt-0.5" />
-                          <span className="text-sm">Visiter la page</span>
-                        </Link>
-                        <Link
-                          target="_blank"
-                          href={item.rs_2 || "#"}
-                          className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
-                        >
-                          <Linkedin className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                          <span className="text-sm">Visiter la page</span>
-                        </Link>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      {item.service}
-                    </Badge>
-                    <Link target="_blank" href={item.site_web}>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
-                      >
-                        Visiter le site <ExternalLink className="h-3 w-3" />
-                      </Button>
-                    </Link>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
-            {filteredInstP.length === 0 && (
-              <p className="text-red-700 text-center font-bold italic">
-                Aucun résultat trouvé dans la section Institutions Publiques.
-              </p>
-            )}
-          </TabsContent>
           {/* Notification pour les résultats dans d'autres sections */}
           {search && otherSectionResults.length > 0 && (
             <div className="my-6 p-4 bg-[#063a1e]/5 rounded-lg border border-[#063a1e]/10">
