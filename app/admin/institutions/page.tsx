@@ -93,7 +93,7 @@ export default function InstitutionsPage({}: {
   const [selectedInstitution, setSelectedInstitution] =
     useState<FinancialInstitution | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5; // Tu peux ajuster ce chiffre
+  const itemsPerPage = 5;
 
   const [selectedInstitutionId, setSelectedInstitutionId] = useState<
     string | null
@@ -189,8 +189,8 @@ export default function InstitutionsPage({}: {
   if (error) return <p>Erreur : {error}</p>;
 
   const openEditDialog = (institution: FinancialInstitution) => {
-    setSelectedInstitutionId(institution.id_institutionFinanciere); // nombre
-    setEditedInstitution(institution); // ici pas besoin de changement
+    setSelectedInstitutionId(institution.id_institutionFinanciere);
+    setEditedInstitution(institution);
     setIsEditDialogOpen(true);
   };
 
@@ -229,9 +229,9 @@ export default function InstitutionsPage({}: {
       console.log("Institution envoyée :", newInstitution);
 
       await createFinancialInstitution(newInstitution);
-      await refreshInstitutions(); // rafraîchit la liste
-      resetNewInstitutionForm(); // reset du formulaire
-      setIsAddDialogOpen(false); // ferme le dialog
+      await refreshInstitutions();
+      resetNewInstitutionForm();
+      setIsAddDialogOpen(false);
     } catch (error) {
       console.error("Erreur création:", error);
     } finally {
@@ -250,7 +250,7 @@ export default function InstitutionsPage({}: {
   const handleEditInstitution = async (institution: FinancialInstitution) => {
     try {
       setLoading(true);
-      setSelectedInstitutionId(institution.id_institutionFinanciere); // Ajoute l'ID de l'institution sélectionnée
+      setSelectedInstitutionId(institution.id_institutionFinanciere);
       setEditedInstitution({
         nom: institution.nom,
         categorie: institution.categorie,
@@ -267,10 +267,8 @@ export default function InstitutionsPage({}: {
         partenaire_feg: institution.partenaire_feg,
       });
 
-      // Vérifier que l'ID est bien défini avant de procéder
       if (institution.id_institutionFinanciere) {
-        console.log("ID Institution:", institution.id_institutionFinanciere); // Vérification de l'ID
-
+        console.log("ID Institution:", institution.id_institutionFinanciere);
         await updateFinancialInstitution(
           institution.id_institutionFinanciere,
           editedInstitution
@@ -301,7 +299,6 @@ export default function InstitutionsPage({}: {
 
   return (
     <div className="space-y-6 relative">
-      {/* Overlay de fond flouté */}
       {(isAddDialogOpen ||
         isEditDialogOpen ||
         isDeleteDialogOpen ||
@@ -317,7 +314,6 @@ export default function InstitutionsPage({}: {
         />
       )}
 
-      {/* En-tête */}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">
@@ -380,7 +376,7 @@ export default function InstitutionsPage({}: {
                         reader.onloadend = () => {
                           setNewInstitution({
                             ...newInstitution,
-                            logo: reader.result as string, // Stocke l'URL base64 dans le state
+                            logo: reader.result as string,
                           });
                         };
                         reader.readAsDataURL(file);
@@ -397,7 +393,7 @@ export default function InstitutionsPage({}: {
                     onValueChange={(value) =>
                       setNewInstitution({
                         ...newInstitution,
-                        categorie: value, // ✅ ceci manquait
+                        categorie: value,
                       })
                     }
                   >
@@ -409,9 +405,6 @@ export default function InstitutionsPage({}: {
                       <SelectItem value="microfinance">Microfinance</SelectItem>
                       <SelectItem value="fonds">
                         Fonds d'investissement
-                      </SelectItem>
-                      <SelectItem value="institution_publique">
-                        Institution publique
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -447,9 +440,6 @@ export default function InstitutionsPage({}: {
                       </SelectItem>
                       <SelectItem value="fonds souverain">
                         Fonds souverain
-                      </SelectItem>
-                      <SelectItem value="établissement public">
-                        Établissement public
                       </SelectItem>
                       <SelectItem value="autre">Autre</SelectItem>
                     </SelectContent>
@@ -640,7 +630,6 @@ export default function InstitutionsPage({}: {
         </Dialog>
       </div>
 
-      {/* Filtres et recherche */}
       <Card>
         <CardContent className="p-6">
           <div className="grid gap-4 md:grid-cols-4">
@@ -673,9 +662,6 @@ export default function InstitutionsPage({}: {
                   <SelectItem value="banque">Banque</SelectItem>
                   <SelectItem value="microfinance">Microfinance</SelectItem>
                   <SelectItem value="fonds">Fonds d'investissement</SelectItem>
-                  <SelectItem value="institution_publique">
-                    Institution publique
-                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -696,7 +682,6 @@ export default function InstitutionsPage({}: {
         </CardContent>
       </Card>
 
-      {/* Liste des institutions */}
       <Card>
         <CardHeader>
           <CardTitle>Liste des institutions financières</CardTitle>
@@ -833,7 +818,6 @@ export default function InstitutionsPage({}: {
         </CardFooter>
       </Card>
 
-      {/* Dialogue de modification */}
       {selectedInstitutionId && (
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
           <DialogContent className="sm:max-w-[600px] sm:max-h-[500px] overflow-y-auto z-50">
@@ -876,7 +860,7 @@ export default function InstitutionsPage({}: {
                         reader.onloadend = () => {
                           setEditedInstitution({
                             ...editedInstitution,
-                            logo: reader.result as string, // Stocke l'URL base64 dans le state
+                            logo: reader.result as string,
                           });
                         };
                         reader.readAsDataURL(file);
@@ -916,9 +900,6 @@ export default function InstitutionsPage({}: {
                       <SelectItem value="fonds souverain">
                         Fonds souverain
                       </SelectItem>
-                      <SelectItem value="établissement public">
-                        Établissement public
-                      </SelectItem>
                       <SelectItem value="autre">Autre</SelectItem>
                     </SelectContent>
                   </Select>
@@ -947,9 +928,6 @@ export default function InstitutionsPage({}: {
                       <SelectItem value="microfinance">Microfinance</SelectItem>
                       <SelectItem value="fonds">
                         Fonds d'investissement
-                      </SelectItem>
-                      <SelectItem value="institution_publique">
-                        Institution publique
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -1142,7 +1120,6 @@ export default function InstitutionsPage({}: {
         </Dialog>
       )}
 
-      {/* Dialogue de suppression */}
       {selectedInstitutionId && (
         <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
           <DialogContent className="sm:max-w-[425px] z-50">
@@ -1178,7 +1155,6 @@ export default function InstitutionsPage({}: {
         </Dialog>
       )}
 
-      {/* Carte de détails de l'institution - NOUVELLE VERSION */}
       {isDetailsCardVisible && selectedInstitutionDetails && (
         <Card
           onClick={(e) => e.stopPropagation()}
