@@ -405,25 +405,10 @@ const filteredTextes = textes.filter((texte: TexteJuridique) => {
                 value={activeTab}
                 onValueChange={handleTabChange}
               >
-                <TabsList className="bg-gray-200 w-auto h-full flex flex-col md:flex-row justify-evenly items-center ">
-                  <TabsTrigger
-                    value="pmes"
-                    className="w-full md:w-auto text-center px-4 py-2"
-                  >
-                    Textes pour les PME
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="internationaux"
-                    className="w-full md:w-auto text-center px-4 py-2"
-                  >
-                    Textes régionaux et internationaux
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="administrations"
-                    className="w-full md:w-auto text-center px-4 py-2"
-                  >
-                    Textes des administrations
-                  </TabsTrigger>
+                <TabsList className="grid grid-cols-2 md:grid-cols-3 mb-8">
+                  <TabsTrigger value="pmes" className="w-full md:w-auto text-center  py-2">Textes pour les PME </TabsTrigger>
+                  <TabsTrigger value="internationaux" className="w-full md:w-auto text-center px-4 py-2">Textes régionaux et internationaux</TabsTrigger>
+                  <TabsTrigger value="administrations"className="w-full md:w-auto text-center px-4 py-2"> Textes des administrations</TabsTrigger>
                 </TabsList>
 
                 {["pmes", "internationaux", "administrations"].map((tab) => (
