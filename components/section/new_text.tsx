@@ -30,6 +30,10 @@ export default function NewText() {
     totalPages: 1,
   });
 
+  const truncateText = (text: string, maxLength: number) =>
+    text.length > maxLength ? text.slice(0, maxLength) + "…" : text;
+  
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -79,17 +83,17 @@ export default function NewText() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {textes.slice(0, 4).map(
             (
-              text // Afficher les 4 premiers objets
+              text // Afficher les 4 derniers objets
             ) => (
               <Card key={text.id_texteJuridique} className="hover:shadow-md transition-shadow">
                 {" "}
                 {/* Assurez-vous que 'id' est une propriété unique */}
-                <CardHeader className="pb-3">
+                <CardHeader className="pb-3 flex flex-col gap-2">
                   <div className="flex items-center justify-between">
                     <Badge className="bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] text-[#063a1e] font-medium">
                       Nouveau
                     </Badge>
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-sm ">
                       {new Date(text.date_parution).toLocaleDateString(
                         "fr-FR",
                         {
@@ -101,18 +105,18 @@ export default function NewText() {
                     </span>{" "}
                     {/* Utilisez la date de l'objet */}
                   </div>
-                  <CardTitle className="mt-2">{text.titre}</CardTitle>{" "}
+                  <CardTitle className="mt-2">{truncateText(text.titre, 90)}</CardTitle>{" "}
                   {/* Utilisez le titre de l'objet */}
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">
+                  <p className="font-medium">
                     {text.description || "Aucune description disponible"}
                   </p>{" "}
                   {/* Utilisez la description de l'objet */}
                 </CardContent>
                 <CardFooter>
-                  <Link href={text.fichier_url}>
-                    <Button variant="ghost" className="w-full gap-1">
+                  <Link target="_blank" href={text.fichier_url}>
+                    <Button variant="default" className="w-full gap-1">
                       Lire le texte complet <ArrowRight className="h-4 w-4" />
                     </Button>
                   </Link>

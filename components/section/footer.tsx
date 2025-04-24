@@ -323,9 +323,9 @@ export default function Footer() {
                     ></path>
                   </svg>
                 </Link>
-                <Link target="_blank" href="https://www.youtube.com/@lafeg">
+                {/* <Link target="_blank" href="https://www.youtube.com/@lafeg">
                   <Youtube className="hover:scale-125 duration-200 hover:text-[#dcdaa4] transition animate-in " />
-                </Link>
+                </Link> */}
               </div>
             </li>
           </div>
