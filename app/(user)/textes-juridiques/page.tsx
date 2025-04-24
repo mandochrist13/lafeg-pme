@@ -515,7 +515,7 @@ const filteredTextes = textes.filter((texte: TexteJuridique) => {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
+                      className="gap-1 border-[#063a1e] text-white bg-[#063a1e] hover:bg-[#063a1e] hover:bg-[#063a1e]/10"
                     >
                       <Download className="h-4 w-4" />
                       <span>Télécharger</span>

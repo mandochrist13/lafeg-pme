@@ -183,7 +183,7 @@ export default function Footer() {
                     {" "}
                     <Linkedin className="hover:scale-125 duration-200 hover:text-[#dcdaa4] transition animate-in " />
                   </Link>
-                  <Link target="_blank" href="https://x.com/la_feg">
+                  {/* <Link target="_blank" href="https://x.com/la_feg">
                     {" "}
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -198,10 +198,10 @@ export default function Footer() {
                         fill="currentColor"
                       ></path>
                     </svg>
-                  </Link>
-                  <Link target="_blank" href="https://www.youtube.com/@lafeg">
+                  </Link> */}
+                  {/* <Link target="_blank" href="https://www.youtube.com/@lafeg">
                     <Youtube className="hover:scale-125 duration-200 hover:text-[#dcdaa4] transition animate-in " />
-                  </Link>
+                  </Link> */}
                 </div>
               </li>
             </ul>
@@ -236,24 +236,24 @@ export default function Footer() {
                 <li>
                   <Link
                     target="_blank"
-                    href="https://www.cnamgs.ga/"
+                    href="https://journal-officiel.ga/"
                     className="text-[#b0b08b] underline underline-offset-8 hover:text-white flex items-center"
                   >
-                    <ChevronLeft /> CNAMGS
+                    <ChevronLeft /> Le journal officiel
                   </Link>
                 </li>
                 <li>
-                  <Link
+                  {/* <Link
                     target="_blank"
                     href="https://cnss.ga/"
                     className="text-[#b0b08b] underline underline-offset-8 hover:text-white flex items-center"
                   >
                     <ChevronLeft /> CNSS
-                  </Link>
+                  </Link> */}
                 </li>
               </div>
               <div className="flex flex-col gap-2">
-                <li>
+                {/* <li>
                   <Link
                     target="_blank"
                     href="https://www.dgi.ga"
@@ -261,7 +261,7 @@ export default function Footer() {
                   >
                     <ChevronLeft /> DGI
                   </Link>
-                </li>
+                </li> */}
                 <li>
                   <Link
                     target="_blank"
@@ -280,7 +280,7 @@ export default function Footer() {
                     <ChevronLeft /> Ministère des PME
                   </Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link
                     target="_blank"
                     href="http://www.oapi.int/index.php/fr/"
@@ -288,7 +288,7 @@ export default function Footer() {
                   >
                     <ChevronLeft /> OAPI
                   </Link>
-                </li>
+                </li> */}
               </div>
             </ul>
             <li className="md:hidden flex flex-col items-center">
