@@ -1,13 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { fetchTextesJuridiques } from "@/app/services/texte/api";
+import { fetchTextesJuridiques, TexteJuridique } from "@/app/services/texte/api";
 
-interface TexteJuridique {
-  id: string;
-  titre: string;
-  [key: string]: any;
-}
 
 const TickerTextes = () => {
   const [textes, setTextes] = useState<TexteJuridique[]>([]);
