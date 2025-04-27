@@ -1,12 +1,12 @@
-import type React from "react"
-import type { Metadata } from "next"
+import type React from "react";
+import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 // import Nav from "@/components/section/nav";
 // import Footer from "@/components/section/footer";
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Guide numérique des PME",
@@ -15,27 +15,23 @@ export const metadata: Metadata = {
   icons: {
     icon: "/images/logo-feg.png",
   },
-    generator: 'La Fédération des Entreprises du Gabon'
-}
+  generator: 'La Fédération des Entreprises du Gabon',
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
-      <body className={inter.className } >
+    <html lang="fr" className="light" style={{ colorScheme: "light" }}>
+      <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-        {/* <Nav /> */}
+          {/* <Nav /> */}
           {children}
         </ThemeProvider>
         {/* <Footer /> */}
       </body>
     </html>
-  )
+  );
 }
-
-
-
-import './globals.css'
