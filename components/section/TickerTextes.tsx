@@ -1,13 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { fetchTextesJuridiques } from "@/app/services/texte/api";
+import { fetchTextesJuridiques, TexteJuridique } from "@/app/services/texte/api";
 
-interface TexteJuridique {
-  id: string;
-  titre: string;
-  [key: string]: any;
-}
 
 const TickerTextes = () => {
   const [textes, setTextes] = useState<TexteJuridique[]>([]);
@@ -66,7 +61,7 @@ const TickerTextes = () => {
                 {" "}
                 {textes.map((texte) => (
                   <div
-                    key={texte.id}
+                    key={texte.id_texteJuridique}
                     className=" text-sm uppercase  whitespace-nowrap"
                   >
                     {texte.titre} <span className="px-4 text-lg">&nbsp;&nbsp;•&nbsp;&nbsp;</span>
