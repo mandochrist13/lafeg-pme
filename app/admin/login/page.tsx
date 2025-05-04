@@ -1,5 +1,7 @@
 "use client"
 
+
+import { signIn, getSession } from "next-auth/react"
 import { useState, FormEvent, ChangeEvent } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
@@ -24,22 +26,50 @@ export default function AdminLogin() {
   const [error, setError] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(false)
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setError("")
-    setLoading(true)
+  // const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault()
+  //   setError("")
+  //   setLoading(true)
 
-    setTimeout(() => {
-      if (username === "admin" && password === "admin123") {
-        sessionStorage.setItem("adminAuthenticated", "true")
-        router.push("/admin/dashboard")
-      } else {
-        setError("Identifiants incorrects. Veuillez réessayer.")
-        setLoading(false)
-      }
-    }, 1000)
-  }
+  //   setTimeout(() => {
+  //     if (username === "admin" && password === "admin123") {
+  //       sessionStorage.setItem("adminAuthenticated", "true")
+  //       router.push("/admin/dashboard")
+  //     } else {
+  //       setError("Identifiants incorrects. Veuillez réessayer.")
+  //       setLoading(false)
+  //     }
+  //   }, 1000)
+  // }
 
+
+
+
+  
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+  
+    const res = await signIn("credentials", {
+      redirect: false, // Important pour gérer manuellement la redirection
+      username,
+      password,
+    });
+  
+    console.log("SignIn Result:", res); // 👈 Ic
+
+    if (res?.error) {
+      setError("Identifiants incorrects. Veuillez réessayer.");
+      setLoading(false);
+    } else {
+      await getSession();
+      router.push("/admin/dashboard"); // Rediriger si connexion OK
+      setLoading(false);
+    }
+  };
+  
+  
   const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value)
   }
