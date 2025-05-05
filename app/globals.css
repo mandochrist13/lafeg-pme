@@ -91,7 +91,7 @@
   white-space: nowrap;
   display: inline-block;
   padding-left: 100%;
-  animation: ticker 80s linear infinite;
+  animation: ticker 100s linear infinite;
 }
 
 @keyframes ticker {

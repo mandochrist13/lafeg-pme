@@ -1,3 +1,9 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -36,7 +42,6 @@ model InstitutionFinanciere {
   partenaire_feg           Boolean?
   description              String?
   logo                     String?
-  logo_nom                 String? // Nom du fichier dans Supabase Storage
   adresse                  String?
   contact                  String?
   mail                     String?
@@ -64,7 +69,6 @@ model SEA {
   rs_1           String? // réseau social 1
   rs_2           String? // réseau social 2
   logo           String?
-  logo_nom       String? // Nom du fichier dans Supabase Storage
   partenaire_feg Boolean?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -93,4 +97,3 @@ enum Role {
   EDITEUR
   UTILISATEUR
 }
-

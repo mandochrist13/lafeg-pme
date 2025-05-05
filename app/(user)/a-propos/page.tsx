@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 export default function APropos() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Breadcrumb */}
+      {/* Breadcrumb teste */}
       <div className="bg-white border-b shadow-sm">
         <div className="container px-4 py-3 md:py-4">
           <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
