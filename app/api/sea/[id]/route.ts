@@ -2,14 +2,72 @@ import prisma from "@/lib/prisma";
 import { supabase } from "@/lib/supabase";
 import { NextResponse } from "next/server";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-}
+// export const config = {
+//   api: {
+//     bodyParser: false,
+//   },
+// }
 
-// Lecture par id (GET)
-// (GET) http://localhost:3000/api/sea/id
+/**
+ * @swagger
+ * /api/sea/{id}:
+ *   get:
+ *     summary: Récupère un SEA par son ID
+ *     description: Renvoie les détails d'un Système Économique Alternatif (SEA) spécifique
+ *     tags: [SEA]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Identifiant unique du SEA
+ *     responses:
+ *       200:
+ *         description: Détails du SEA récupérés avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SEA'
+ *         headers:
+ *           Access-Control-Allow-Origin:
+ *             schema:
+ *               type: string
+ *               example: "*"
+ *             description: Permet l'accès depuis n'importe quelle origine (CORS)
+ *       404:
+ *         description: SEA non trouvé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "SEA introuvable"
+ *         headers:
+ *           Access-Control-Allow-Origin:
+ *             schema:
+ *               type: string
+ *               example: "*"
+ *             description: Permet l'accès depuis n'importe quelle origine (CORS)
+ *       500:
+ *         description: Erreur serveur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Erreur serveur"
+ *         headers:
+ *           Access-Control-Allow-Origin:
+ *             schema:
+ *               type: string
+ *               example: "*"
+ *             description: Permet l'accès depuis n'importe quelle origine (CORS)
+ */
 
 export async function GET(request: Request,
   { params }: { params: { id: string } }) {
@@ -48,8 +106,97 @@ export async function GET(request: Request,
 
 
 
-// Modification partielle (PATCH)
-// (PATCH) http://localhost:3000/api/sea/[id]
+/**
+ * @swagger
+ * /api/sea/{id}:
+ *   patch:
+ *     summary: Met à jour partiellement un SEA
+ *     description: Permet de modifier certains champs d'un Système Économique Alternatif existant
+ *     tags: [SEA]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Identifiant unique du SEA à mettre à jour
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nom:
+ *                 type: string
+ *                 description: Nom du SEA
+ *               type_sea:
+ *                 type: string
+ *                 description: Type de SEA
+ *               categorie:
+ *                 type: string
+ *                 description: Catégorie du SEA
+ *               description:
+ *                 type: string
+ *                 description: Description détaillée du SEA
+ *               services:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Liste des services offerts par le SEA
+ *               adresse:
+ *                 type: string
+ *                 description: Adresse physique du SEA
+ *               contact:
+ *                 type: string
+ *                 description: Numéro de contact du SEA
+ *               mail:
+ *                 type: string
+ *                 description: Adresse email du SEA
+ *               site_web:
+ *                 type: string
+ *                 description: Site web du SEA
+ *               rs_1:
+ *                 type: string
+ *                 description: Lien vers le premier réseau social
+ *               rs_2:
+ *                 type: string
+ *                 description: Lien vers le deuxième réseau social
+ *               partenaire_feg:
+ *                 type: boolean
+ *                 description: Indique si le SEA est partenaire FEG
+ *             example:
+ *               nom: "Nom modifié du SEA"
+ *               description: "Nouvelle description du SEA"
+ *               contact: "+123456789"
+ *     responses:
+ *       200:
+ *         description: SEA mis à jour avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SEA'
+ *       404:
+ *         description: SEA non trouvé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "SEA introuvable"
+ *       500:
+ *         description: Erreur serveur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Erreur lors de la mise à jour"
+ */
 
 
 export async function PATCH(
@@ -89,9 +236,48 @@ export async function PATCH(
 }
 
 
-
-// Suppression (DELETE)
-// (DELETE) http://localhost:3000/api/sea/id
+/**
+ * @swagger
+ * /api/sea/{id}:
+ *   delete:
+ *     summary: Supprime un SEA et son logo
+ *     description: Supprime un Système Économique Alternatif par son ID et retire également son logo du stockage Supabase si présent
+ *     tags: [SEA]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Identifiant unique du SEA à supprimer
+ *     responses:
+ *       200:
+ *         description: SEA supprimé avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SEA'
+ *       404:
+ *         description: SEA non trouvé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "SEA introuvable"
+ *       500:
+ *         description: Erreur serveur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Erreur lors de la suppression"
+ */
 
 export async function DELETE(
   request: Request,
@@ -135,8 +321,119 @@ export async function DELETE(
   }
 }
 
-// Suppression (PUT)
-// (PUT) http://localhost:3000/api/sea/id
+
+/**
+ * @swagger
+ * /api/sea/{id}:
+ *   put:
+ *     summary: Met à jour complètement un SEA
+ *     description: Remplace toutes les informations d'un Système Économique Alternatif existant, y compris possibilité de remplacer son logo
+ *     tags: [SEA]
+ *     consumes:
+ *       - multipart/form-data
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Identifiant unique du SEA à mettre à jour
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nom:
+ *                 type: string
+ *                 description: Nom du SEA
+ *               type_sea:
+ *                 type: string
+ *                 description: Type de SEA
+ *               categorie:
+ *                 type: string
+ *                 description: Catégorie du SEA
+ *               description:
+ *                 type: string
+ *                 description: Description détaillée du SEA
+ *               services:
+ *                 type: string
+ *                 description: Liste des services au format JSON string (sera parsé en array)
+ *                 example: '["Service 1", "Service 2"]'
+ *               adresse:
+ *                 type: string
+ *                 description: Adresse physique du SEA
+ *               contact:
+ *                 type: string
+ *                 description: Numéro de contact du SEA
+ *               mail:
+ *                 type: string
+ *                 description: Adresse email du SEA
+ *               site_web:
+ *                 type: string
+ *                 description: Site web du SEA
+ *               rs_1:
+ *                 type: string
+ *                 description: Lien vers le premier réseau social
+ *               rs_2:
+ *                 type: string
+ *                 description: Lien vers le deuxième réseau social
+ *               partenaire_feg:
+ *                 type: string
+ *                 enum: ['true', 'false']
+ *                 description: Indique si le SEA est partenaire FEG (envoyé comme "true" ou "false")
+ *               logo:
+ *                 type: string
+ *                 format: binary
+ *                 description: Nouveau fichier image du logo du SEA (JPEG ou PNG uniquement)
+ *     responses:
+ *       200:
+ *         description: SEA mis à jour avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SEA'
+ *       400:
+ *         description: Données invalides
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   examples:
+ *                     formatInvalide:
+ *                       value: "Le logo doit être au format JPEG ou PNG"
+ *                     contentType:
+ *                       value: "Le contenu doit être de type multipart/form-data"
+ *       404:
+ *         description: SEA non trouvé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "SEA introuvable"
+ *       500:
+ *         description: Erreur serveur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   examples:
+ *                     uploadError:
+ *                       value: "Erreur lors de l'upload du logo"
+ *                     serverError:
+ *                       value: "Erreur lors de la mise à jour"
+ */
+
 export async function PUT(
   request: Request,
   { params }: { params: { id: string } }

@@ -8,8 +8,33 @@ export const config = {
   },
 }
 
-// Lecture (GET)
-// (GET) http://localhost:3000/api/sea
+/**
+ * @swagger
+ * /api/sea:
+ *   get:
+ *     summary: Récupère toute les Structures d'Encadrement et d'Accompagnement
+ *     description: Renvoie la liste complète des entrées SEA dans la base de données
+ *     tags: [SEA]
+ *     responses:
+ *       200:
+ *         description: Liste des SEA récupérée avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/SEA'
+ *       500:
+ *         description: Erreur serveur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to fetch sea"
+ */
 
 export async function GET(request: Request) {
   try {
@@ -21,8 +46,107 @@ export async function GET(request: Request) {
   }
 }
 
-// Création (POST)
-// (POST) http://localhost:3000/api/sea
+
+/**
+ * @swagger
+ * /api/sea:
+ *   post:
+ *     summary: Crée un nouveau SEA
+ *     description: Ajoute un nouveau Système Economique Alternatif (SEA) avec possibilité d'uploader un logo
+ *     tags: [SEA]
+ *     consumes:
+ *       - multipart/form-data
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - nom
+ *               - type_sea
+ *               - categorie
+ *             properties:
+ *               nom:
+ *                 type: string
+ *                 description: Nom du SEA
+ *               type_sea:
+ *                 type: string
+ *                 description: Type de SEA
+ *               categorie:
+ *                 type: string
+ *                 description: Catégorie du SEA
+ *               description:
+ *                 type: string
+ *                 description: Description détaillée du SEA
+ *               services:
+ *                 type: string
+ *                 description: Liste des services au format JSON string (sera parsé en array)
+ *                 example: '["Service 1", "Service 2"]'
+ *               adresse:
+ *                 type: string
+ *                 description: Adresse physique du SEA
+ *               contact:
+ *                 type: string
+ *                 description: Numéro de contact du SEA
+ *               mail:
+ *                 type: string
+ *                 description: Adresse email du SEA
+ *               site_web:
+ *                 type: string
+ *                 description: Site web du SEA
+ *               rs_1:
+ *                 type: string
+ *                 description: Lien vers le premier réseau social
+ *               rs_2:
+ *                 type: string
+ *                 description: Lien vers le deuxième réseau social
+ *               partenaire_feg:
+ *                 type: string
+ *                 enum: ['true', 'false']
+ *                 description: Indique si le SEA est partenaire FEG (envoyé comme "true" ou "false")
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Fichier image du logo du SEA (JPEG ou PNG uniquement)
+ *     responses:
+ *       201:
+ *         description: SEA créé avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SEAS'
+ *       400:
+ *         description: Données invalides
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   examples:
+ *                     champsManquants:
+ *                       value: "Les champs nom, type_sea et categorie sont requis."
+ *                     formatInvalide:
+ *                       value: "Le logo doit être au format JPEG ou PNG"
+ *                     contentType:
+ *                       value: "Le contenu doit être de type multipart/form-data"
+ *       500:
+ *         description: Erreur serveur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   examples:
+ *                     uploadError:
+ *                       value: "Erreur lors de l'upload du logo"
+ *                     serverError:
+ *                       value: "Erreur lors de la création"
+ */
 
 export async function POST(request: Request) {
   try {
@@ -64,7 +188,7 @@ export async function POST(request: Request) {
     let logo_nom = null;
 
     // Traitement du logo s'il est fourni
-    const logo = formData.get('logo') as File;
+    const logo = formData.get('image') as File;
     if (logo) {
       // Vérification du type de fichier
       if (!logo.type.match(/^image\/(jpeg|png)$/)) {
@@ -101,7 +225,7 @@ export async function POST(request: Request) {
         .getPublicUrl(filePath);
 
       logo_url = urlData.publicUrl;
-      logo_nom = fileName;
+      logo_nom = logo.name;
     }
 
     // Création dans la base de données
@@ -118,7 +242,7 @@ export async function POST(request: Request) {
         site_web,
         rs_1,
         rs_2,
-        logo: logo_url,
+        logo_url,
         logo_nom,
         partenaire_feg,
         createdAt: new Date(),
