@@ -12,20 +12,73 @@ export const config = {
  * @swagger
  * /api/sea:
  *   get:
- *     summary: Récupère toute les Structures d'Encadrement et d'Accompagnement
- *     description: Renvoie la liste complète des entrées SEA dans la base de données
- *     tags: [SEA]
+ *     summary: Récupère une liste paginée des données SEA
+ *     description: Retourne une liste paginée des enregistrements SEA avec options de filtrage et de tri
+ *     tags:
+ *       - SEA
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *           minimum: 1
+ *         description: Numéro de page pour la pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *           minimum: 1
+ *           maximum: 100
+ *         description: Nombre d'éléments par page
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: string
+ *           default: createdAt
+ *         description: Champ sur lequel effectuer le tri
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Ordre de tri (ascendant ou descendant)
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *         description: Filtre par type de SEA
  *     responses:
  *       200:
- *         description: Liste des SEA récupérée avec succès
+ *         description: Liste des données SEA récupérée avec succès
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/SEA'
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/SEAt'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     page:
+ *                       type: integer
+ *                       example: 1
+ *                     limit:
+ *                       type: integer
+ *                       example: 10
+ *                     total:
+ *                       type: integer
+ *                       example: 42
+ *                     totalPages:
+ *                       type: integer
+ *                       example: 5
  *       500:
- *         description: Erreur serveur
+ *         description: Erreur lors de la récupération des données
  *         content:
  *           application/json:
  *             schema:
@@ -33,16 +86,56 @@ export const config = {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Failed to fetch sea"
+ *                   example: Erreur lors de la récupération des données SEA
  */
-
 export async function GET(request: Request) {
   try {
-    const sea =  await prisma.sEA.findMany()
-    return NextResponse.json(sea, { status: 200 });
-
+    // Récupération des paramètres de l'URL
+    const url = new URL(request.url);
+    const searchParams = url.searchParams;
+    
+    // Paramètres de pagination avec valeurs par défaut
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
+    const limit = Math.max(1, Math.min(100, parseInt(searchParams.get('limit') || '10')));
+    const skip = (page - 1) * limit;
+    
+    // Paramètres de tri avec valeurs par défaut
+    const sortField = searchParams.get('sort') || 'createdAt'; // Ajustez selon votre schéma
+    const sortOrder = searchParams.get('order') === 'asc' ? 'asc' : 'desc';
+    
+    // Construction du filtre (exemple avec un champ 'type')
+    const where: any = {};
+    const type = searchParams.get('type');
+    if (type) where.type = type;
+    
+    // Exécution des requêtes en parallèle
+    const [data, total] = await Promise.all([
+      prisma.sEA.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { [sortField]: sortOrder }
+      }),
+      prisma.sEA.count({ where })
+    ]);
+    
+    // Réponse structurée avec données et pagination
+    return NextResponse.json({
+      data,
+      pagination: { 
+        page, 
+        limit, 
+        total, 
+        totalPages: Math.ceil(total / limit) 
+      }
+    }, { status: 200 });
+    
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch sea' }, { status: 500 });
+    console.error('Erreur lors de la récupération des données SEA:', error);
+    return NextResponse.json(
+      { error: 'Erreur lors de la récupération des données SEA' }, 
+      { status: 500 }
+    );
   }
 }
 

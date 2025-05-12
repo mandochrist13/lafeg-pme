@@ -2,24 +2,92 @@ import prisma from "@/lib/prisma";
 import { supabase } from "@/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
 
+
+
+
 /**
  * @swagger
  * /api/publicites:
  *   get:
- *     summary: Récupère toutes les publicités
- *     description: Renvoie la liste de toutes les publicités, triées par date de création (les plus récentes d'abord)
- *     tags: [Publicités]
+ *     summary: Récupère une liste paginée des publicités
+ *     description: Retourne une liste paginée des publicités avec options de filtrage et de tri
+ *     tags:
+ *       - Publicités
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *           minimum: 1
+ *         description: Numéro de page pour la pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *           minimum: 1
+ *           maximum: 100
+ *         description: Nombre d'éléments par page
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: string
+ *           default: createdAt
+ *         description: Champ sur lequel effectuer le tri
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Ordre de tri (ascendant ou descendant)
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *         description: Filtre par statut de la publicité (actif, inactif, etc.)
+ *       - in: query
+ *         name: dateDebut
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filtre les publicités débutant après cette date
+ *       - in: query
+ *         name: dateFin
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filtre les publicités se terminant avant cette date
  *     responses:
  *       200:
  *         description: Liste des publicités récupérée avec succès
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Publicite'
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Publicitee'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     page:
+ *                       type: integer
+ *                       example: 1
+ *                     limit:
+ *                       type: integer
+ *                       example: 10
+ *                     total:
+ *                       type: integer
+ *                       example: 42
+ *                     totalPages:
+ *                       type: integer
+ *                       example: 5
  *       500:
- *         description: Erreur serveur
+ *         description: Erreur lors de la récupération des publicités
  *         content:
  *           application/json:
  *             schema:
@@ -27,30 +95,86 @@ import { NextRequest, NextResponse } from "next/server";
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Erreur lors de la récupération des publicités"
+ *                   example: Erreur lors de la récupération des publicités
  */
-export async function GET() {
-
+export async function GET(request: Request) {
   try {
-    const publicites = await prisma.publicite.findMany({
-      orderBy: {
-        createdAt: 'desc'
+    // Récupération des paramètres de l'URL
+    const url = new URL(request.url);
+    const searchParams = url.searchParams;
+    
+    // Paramètres de pagination avec valeurs par défaut
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
+    const limit = Math.max(1, Math.min(100, parseInt(searchParams.get('limit') || '10')));
+    const skip = (page - 1) * limit;
+    
+    // Paramètres de tri avec valeurs par défaut
+    const sortField = searchParams.get('sort') || 'createdAt';
+    const sortOrder = searchParams.get('order') === 'asc' ? 'asc' : 'desc';
+    
+    // Construction du filtre
+    const where: any = {};
+    
+    // Filtrage par statut
+    const status = searchParams.get('status');
+    if (status) where.status = status;
+    
+    // Filtrage par date de début
+    const dateDebut = searchParams.get('dateDebut');
+    if (dateDebut) {
+      where.dateDebut = {
+        gte: new Date(dateDebut)
+      };
+    }
+    
+    // Filtrage par date de fin
+    const dateFin = searchParams.get('dateFin');
+    if (dateFin) {
+      where.dateFin = {
+        lte: new Date(dateFin)
+      };
+    }
+    
+    // Recherche par mot-clé (exemple sur le titre et la description)
+    const keyword = searchParams.get('keyword');
+    if (keyword) {
+      where.OR = [
+        { titre: { contains: keyword, mode: 'insensitive' } },
+        { description: { contains: keyword, mode: 'insensitive' } }
+      ];
+    }
+    
+    // Exécution des requêtes en parallèle
+    const [data, total] = await Promise.all([
+      prisma.publicite.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { [sortField]: sortOrder }
+      }),
+      prisma.publicite.count({ where })
+    ]);
+    
+    // Réponse structurée avec données et pagination
+    return NextResponse.json({
+      data,
+      pagination: { 
+        page, 
+        limit, 
+        total, 
+        totalPages: Math.ceil(total / limit) 
       }
-    });
-
-    return NextResponse.json(publicites);
-
+    }, { status: 200 });
+    
   } catch (error) {
-
     console.error('Erreur lors de la récupération des publicités:', error);
-
     return NextResponse.json(
-      { error: 'Erreur lors de la récupération des publicités' },
+      { error: 'Erreur lors de la récupération des publicités' }, 
       { status: 500 }
     );
-
   }
 }
+
 
 
 /**

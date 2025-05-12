@@ -8,53 +8,159 @@ import { NextRequest, NextResponse } from 'next/server';
 //   },
 // }
 
+
 /**
  * @swagger
  * /api/institutions:
  *   get:
- *     summary: Récupère la liste de toutes les institutions
- *     description: Renvoie toutes les institutions financières
- *     tags: [Institutions]
+ *     summary: Récupère une liste paginée des institutions
+ *     description: Retourne une liste paginée des institutions avec options de filtrage et de tri
+ *     tags:
+ *       - Institutions
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *           minimum: 1
+ *         description: Numéro de page pour la pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *           minimum: 1
+ *           maximum: 100
+ *         description: Nombre d'éléments par page
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: string
+ *           default: createdAt
+ *         description: Champ sur lequel effectuer le tri
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Ordre de tri (ascendant ou descendant)
+ *       - in: query
+ *         name: nom
+ *         schema:
+ *           type: string
+ *         description: Filtre par nom d'institution (recherche partielle)
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *         description: Filtre par type d'institution
  *     responses:
  *       200:
  *         description: Liste des institutions récupérée avec succès
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Institution'
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Liste des institutions récupérée avec succès
+ *                 content:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Institutionfinanciere'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     page:
+ *                       type: integer
+ *                       example: 1
+ *                     limit:
+ *                       type: integer
+ *                       example: 10
+ *                     total:
+ *                       type: integer
+ *                       example: 42
+ *                     totalPages:
+ *                       type: integer
+ *                       example: 5
  *       500:
  *         description: Erreur lors de la récupération des institutions
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Erreur lors de la récupération des institutions
  */
 
-export async function GET() {
-
+export async function GET(request: Request) {
   try {
-
-    const institutions = await prisma.institutions.findMany({
-      orderBy: { createdAt: 'desc' }
-    });
-
-    return NextResponse.json(
-
-      { message: "Liste des institutions récupérée avec succès", content: institutions },
-      { status: 200 }
-
-    );
-
+    // Récupération des paramètres de l'URL
+    const url = new URL(request.url);
+    const searchParams = url.searchParams;
+    
+    // Paramètres de pagination avec valeurs par défaut
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
+    const limit = Math.max(1, Math.min(100, parseInt(searchParams.get('limit') || '10')));
+    const skip = (page - 1) * limit;
+    
+    // Paramètres de tri avec valeurs par défaut
+    const sortField = searchParams.get('sort') || 'createdAt';
+    const sortOrder = searchParams.get('order') === 'asc' ? 'asc' : 'desc';
+    
+    // Construction du filtre
+    const where: any = {};
+    
+    // Filtrage par nom (recherche partielle)
+    const nom = searchParams.get('nom');
+    if (nom) {
+      where.nom = {
+        contains: nom,
+        mode: 'insensitive'
+      };
+    }
+    
+    // Filtrage par type d'institution
+    const type = searchParams.get('type');
+    if (type) where.type = type;
+    
+    // Exécution des requêtes en parallèle
+    const [institutions, total] = await Promise.all([
+      prisma.institutions.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { [sortField]: sortOrder }
+      }),
+      prisma.institutions.count({ where })
+    ]);
+    
+    // Réponse structurée avec message, contenu et pagination
+    return NextResponse.json({
+      message: "Liste des institutions récupérée avec succès",
+      content: institutions,
+      pagination: { 
+        page, 
+        limit, 
+        total, 
+        totalPages: Math.ceil(total / limit) 
+      }
+    }, { status: 200 });
+    
   } catch (error) {
-
     console.error('Erreur lors de la récupération des institutions:', error);
-
     return NextResponse.json(
-
       { error: 'Erreur lors de la récupération des institutions' },
       { status: 500 }
-
     );
   }
 }
+
 
 
 /**

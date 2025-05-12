@@ -215,3 +215,139 @@
  *           format: date-time
  *           description: Date de dernière mise à jour
  */
+
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     SEAt:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *           description: L'identifiant unique de l'enregistrement SEA
+ *         type:
+ *           type: string
+ *           description: Le type de l'enregistrement SEA
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Date de création de l'enregistrement
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: Date de dernière mise à jour
+ *         # Ajoutez d'autres propriétés en fonction de votre modèle de données
+ *       required:
+ *         - id
+ *         - type
+ */
+
+
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Publicitee:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *           description: Identifiant unique de la publicité
+ *         titre:
+ *           type: string
+ *           description: Titre de la publicité
+ *         description:
+ *           type: string
+ *           description: Description détaillée de la publicité
+ *         status:
+ *           type: string
+ *           enum: [actif, inactif, programmé, terminé]
+ *           description: Statut actuel de la publicité
+ *         dateDebut:
+ *           type: string
+ *           format: date-time
+ *           description: Date de début de la campagne publicitaire
+ *         dateFin:
+ *           type: string
+ *           format: date-time
+ *           description: Date de fin de la campagne publicitaire
+ *         url:
+ *           type: string
+ *           format: uri
+ *           description: URL de redirection
+ *         imageUrl:
+ *           type: string
+ *           format: uri
+ *           description: URL de l'image publicitaire
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Date de création de l'enregistrement
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: Date de dernière mise à jour
+ *       required:
+ *         - id
+ *         - titre
+ *         - status
+ */
+
+
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Institutionfinanciere:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *           description: Identifiant unique de l'institution
+ *         nom:
+ *           type: string
+ *           description: Nom de l'institution
+ *         type:
+ *           type: string
+ *           description: Type d'institution (ministère, agence, établissement public, etc.)
+ *         description:
+ *           type: string
+ *           description: Description de l'institution
+ *         adresse:
+ *           type: string
+ *           description: Adresse physique de l'institution
+ *         telephone:
+ *           type: string
+ *           description: Numéro de téléphone de contact
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: Adresse email de contact
+ *         siteWeb:
+ *           type: string
+ *           format: uri
+ *           description: Site web officiel de l'institution
+ *         logo:
+ *           type: string
+ *           format: uri
+ *           description: URL du logo de l'institution
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Date de création de l'enregistrement
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: Date de dernière mise à jour
+ *       required:
+ *         - id
+ *         - nom
+ *         - type
+ */
