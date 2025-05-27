@@ -16,7 +16,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     console.log("Session:", session);
     if (status === "loading") return; // On attend que NextAuth vérifie
     if (!session) {
-      router.push("/admin/login"); // Redirige si pas connecté
+      router.push("/auth/login"); // Redirige si pas connecté
     }
   }, [session, status, router]);
 

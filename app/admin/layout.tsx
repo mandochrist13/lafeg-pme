@@ -39,8 +39,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   // Redirige si non authentifié
   useEffect(() => {
-    if (status === "unauthenticated" && pathname !== "/admin/login") {
-      router.push("/admin/login");
+    if (status === "unauthenticated" && pathname !== "/auth/login") {
+      router.push("/auth/login");
     }
   }, [status, pathname, router]);
 
@@ -56,7 +56,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   if (session) {
     // Exemple d'un handleLogout pour NextAuth:
     const handleLogout = async () => {
-      await signOut({ callbackUrl: "/admin/login" });
+      await signOut({ callbackUrl: "/auth/login" });
     };
 
 

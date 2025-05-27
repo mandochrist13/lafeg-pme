@@ -1,6 +1,5 @@
 "use client";
 
-import ProtectedRoute from "@/components/ProtectedRoute";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FileText, Building, Briefcase } from "lucide-react";
@@ -136,7 +135,7 @@ export default function AdminDashboard() {
     totalTextes ? Math.round((count / totalTextes) * 100) : 0;
 
   return (
-    <ProtectedRoute>
+    
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold tracking-tight">Tableau de bord</h1>
@@ -344,6 +343,6 @@ export default function AdminDashboard() {
           </Card>
         </div>
       </div>
-    </ProtectedRoute>
+    
   );
 }

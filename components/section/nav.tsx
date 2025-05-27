@@ -9,13 +9,27 @@ import {
 } from "@/components/ui/tooltip";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import HamburgerMenu from "./burgermenu";
 import { usePathname } from "next/navigation";
 
 export default function Nav() {
+
+
+
+  // const toggleSubmenu = (key: number) => {
+  //   setSubmenuOpen((prev) => ({
+  //     ...prev,
+  //     [key]: !prev[key],
+  //   }));
+  // };
   const pathname = usePathname();
 
   const isActive = (path: string): boolean => pathname === path;
+
+ 
+
+
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -37,7 +51,9 @@ export default function Nav() {
             </h1>
           </div>
         </div>
-        <HamburgerMenu />
+         <HamburgerMenu />
+        {/* Burger button */}
+        
         <nav className="hidden md:flex gap-6">
           <ul className="hidden text-sm font-medium lg:flex flex-col p-4 md:p-0 mt-4 rounded-lg md:flex-row md:space-x-5 rtl:space-x-reverse md:mt-0 md:border-0">
             {[
@@ -50,7 +66,12 @@ export default function Nav() {
               {
                 name: "SEA",
                 path: "/structures-accompagnement",
-                hover: <TooltipContent> <p>Structure d'Encadrement et d'Accompagnement</p></TooltipContent>,
+                hover: (
+                  <TooltipContent>
+                    {" "}
+                    <p>Structure d'Encadrement et d'Accompagnement</p>
+                  </TooltipContent>
+                ),
               },
               { name: "À propos", path: "/a-propos" },
               {

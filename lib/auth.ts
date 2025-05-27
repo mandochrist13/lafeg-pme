@@ -21,8 +21,8 @@ export const authOptions = {
     }),
   ],
   pages: {
-    signIn: "/admin/login", // ici on pointe correctement
-    error: "/admin/login",   // et ici aussi
+    signIn: "/auth/login", // ici on pointe correctement
+    error: "/auth/login",   // et ici aussi
   },
   secret: process.env.NEXTAUTH_SECRET,
 };

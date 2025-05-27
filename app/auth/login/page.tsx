@@ -26,22 +26,6 @@ export default function AdminLogin() {
   const [error, setError] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(false)
 
-  // const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault()
-  //   setError("")
-  //   setLoading(true)
-
-  //   setTimeout(() => {
-  //     if (username === "admin" && password === "admin123") {
-  //       sessionStorage.setItem("adminAuthenticated", "true")
-  //       router.push("/admin/dashboard")
-  //     } else {
-  //       setError("Identifiants incorrects. Veuillez réessayer.")
-  //       setLoading(false)
-  //     }
-  //   }, 1000)
-  // }
-
 
 
 
