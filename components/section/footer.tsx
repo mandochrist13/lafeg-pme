@@ -28,9 +28,7 @@ export default function Footer() {
   return (
     <footer className="bg-[#063a1e] text-gray-300 py-10">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row gap-10 ml-20">
-          
-        
+      <div className="flex flex-col md:flex-row gap-10 md:ml-20 ml-4">
           <div className="w-full md:w-1/6 flex justify-center md:justify-start">
             <div className="p-4 ">
               <Image
