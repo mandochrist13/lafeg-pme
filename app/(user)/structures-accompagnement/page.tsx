@@ -21,6 +21,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Advert } from "@/components/ads/Advert";
+import  AutoCarousel  from "@/components/section/AutoCarousel";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState, useEffect } from "react";
@@ -262,122 +264,179 @@ export default function InstitutionsFinancieres() {
       </section>
 
       {/* Contenu Principal */}
-      <div className="container py-12">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-8">
-            <TabsTrigger value="incubateurs">Incubateurs</TabsTrigger>
-            <TabsTrigger value="centresFormation">
-              Centres de formation
-            </TabsTrigger>
-            <TabsTrigger value="cabinetsConseil">Cabinets conseil</TabsTrigger>
-            <TabsTrigger value="structuresPubliques">
-              Structures publiques
-            </TabsTrigger>
-          </TabsList>
+      <section className="container py-12">
+        <div className="flex justify-between gap-5 flex-col lg:flex-row">
+          <div className="w-full max-w-5xl">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-8">
+                <TabsTrigger value="incubateurs">Incubateurs</TabsTrigger>
+                <TabsTrigger value="centresFormation">
+                  Centres de formation
+                </TabsTrigger>
+                <TabsTrigger value="cabinetsConseil">
+                  Cabinets conseil
+                </TabsTrigger>
+                <TabsTrigger value="structuresPubliques">
+                  Structures publiques
+                </TabsTrigger>
+              </TabsList>
 
-          {/* Incubateurs */}
-          <TabsContent value="incubateurs" className="space-y-6">
-            {loading ? (
-              <div className="text-center py-10 text-muted-foreground">
-                Chargement...
-              </div>
-            ) : (
-              <>
+              {/* Incubateurs */}
+              <TabsContent value="incubateurs" className="space-y-6">
+                {loading ? (
+                  <div className="text-center py-10 text-muted-foreground">
+                    Chargement...
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {incubateursFiltres.map(renderCarteInstitution)}
+                    </div>
+                    {incubateursFiltres.length === 0 && (
+                      <p className="text-red-700 text-center font-bold italic">
+                        Aucun résultat trouvé dans la section Incubateurs.
+                      </p>
+                    )}
+                  </>
+                )}
+              </TabsContent>
+
+              {/* Centres de formation */}
+              <TabsContent value="centresFormation" className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {incubateursFiltres.map(renderCarteInstitution)}
+                  {centresFormationFiltres.map(renderCarteInstitution)}
                 </div>
-                {incubateursFiltres.length === 0 && (
+                {centresFormationFiltres.length === 0 && (
                   <p className="text-red-700 text-center font-bold italic">
-                    Aucun résultat trouvé dans la section Incubateurs.
+                    Aucun résultat trouvé dans la section Centres de formation.
                   </p>
                 )}
-              </>
-            )}
-          </TabsContent>
+              </TabsContent>
 
-          {/* Centres de formation */}
-          <TabsContent value="centresFormation" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {centresFormationFiltres.map(renderCarteInstitution)}
-            </div>
-            {centresFormationFiltres.length === 0 && (
-              <p className="text-red-700 text-center font-bold italic">
-                Aucun résultat trouvé dans la section Centres de formation.
-              </p>
-            )}
-          </TabsContent>
+              {/* Cabinets conseil */}
+              <TabsContent value="cabinetsConseil" className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {cabinetsConseilFiltres.map(renderCarteInstitution)}
+                </div>
+                {cabinetsConseilFiltres.length === 0 && (
+                  <p className="text-red-700 text-center font-bold italic">
+                    Aucun résultat trouvé dans la section Cabinets conseil.
+                  </p>
+                )}
+              </TabsContent>
 
-          {/* Cabinets conseil */}
-          <TabsContent value="cabinetsConseil" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {cabinetsConseilFiltres.map(renderCarteInstitution)}
-            </div>
-            {cabinetsConseilFiltres.length === 0 && (
-              <p className="text-red-700 text-center font-bold italic">
-                Aucun résultat trouvé dans la section Cabinets conseil.
-              </p>
-            )}
-          </TabsContent>
+              {/* Structures publiques */}
+              <TabsContent value="structuresPubliques" className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {structuresPubliquesFiltrees.map(renderCarteInstitution)}
+                </div>
+                {structuresPubliquesFiltrees.length === 0 && (
+                  <p className="text-red-700 text-center font-bold italic">
+                    Aucun résultat trouvé dans la section Structures publiques.
+                  </p>
+                )}
+              </TabsContent>
 
-          {/* Structures publiques */}
-          <TabsContent value="structuresPubliques" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {structuresPubliquesFiltrees.map(renderCarteInstitution)}
-            </div>
-            {structuresPubliquesFiltrees.length === 0 && (
-              <p className="text-red-700 text-center font-bold italic">
-                Aucun résultat trouvé dans la section Structures publiques.
-              </p>
-            )}
-          </TabsContent>
+              {/* Notification pour les résultats dans d'autres sections */}
+              {search && resultatsAutresSections.length > 0 && (
+                <div className="my-6 p-4 bg-[#063a1e]/5 rounded-lg border border-[#063a1e]/10">
+                  <p className="text-[#063a1e] font-medium mb-2">
+                    Résultats trouvés dans d'autres sections :
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {resultatsAutresSections.map((result) => (
+                      <Button
+                        key={result.tab}
+                        variant="outline"
+                        size="sm"
+                        className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
+                        onClick={() => setActiveTab(result.tab)}
+                      >
+                        {result.label} ({result.count}){" "}
+                        <ArrowRight className="h-3 w-3" />
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </Tabs>
+          </div>
 
-          {/* Notification pour les résultats dans d'autres sections */}
-          {search && resultatsAutresSections.length > 0 && (
-            <div className="my-6 p-4 bg-[#063a1e]/5 rounded-lg border border-[#063a1e]/10">
-              <p className="text-[#063a1e] font-medium mb-2">
-                Résultats trouvés dans d'autres sections :
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {resultatsAutresSections.map((result) => (
-                  <Button
-                    key={result.tab}
-                    variant="outline"
-                    size="sm"
-                    className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
-                    onClick={() => setActiveTab(result.tab)}
-                  >
-                    {result.label} ({result.count}){" "}
-                    <ArrowRight className="h-3 w-3" />
-                  </Button>
-                ))}
-              </div>
-            </div>
-          )}
-        </Tabs>
+          {/* Sidebar avec publicités */}
+          <div className="w-80 hidden lg:block  space-y-6">
+            <Advert
+              type="image"
+              size="medium"
+              position="sidebar"
+              content={{
+                title: "Masterclass Business Plan",
+                imageUrl: "/placeholder.svg?height=200&width=300",
+                advertiser: "Business School Gabon",
+              }}
+            />
+
+            <Advert
+              type="image"
+              size="medium"
+              position="sidebar"
+              content={{
+                title: "Concours Jeunes Entrepreneurs",
+                imageUrl: "/placeholder.svg?height=200&width=300",
+                ctaText: "Participer",
+                advertiser: "Ministère de l'Entrepreneuriat",
+              }}
+            />
+          </div>
+          <div className="flex lg:hidden w-full">
+            <AutoCarousel interval={3000}>
+              <Advert
+                type="image"
+                size="medium"
+                position="sidebar"
+                content={{
+                  title: "Masterclass Business Plan",
+                  imageUrl: "/placeholder.svg?height=200&width=300",
+                  advertiser: "Business School Gabon",
+                }}
+              />
+
+              <Advert
+                type="image"
+                size="medium"
+                position="sidebar"
+                content={{
+                  title: "Concours Jeunes Entrepreneurs",
+                  imageUrl: "/placeholder.svg?height=200&width=300",
+                  ctaText: "Participer",
+                  advertiser: "Ministère de l'Entrepreneuriat",
+                }}
+              />
+            </AutoCarousel>
+          </div>
+        </div>
 
         {/* Section CTA */}
-        <div className="mt-12 bg-[#063a1e]/10 p-6 rounded-lg">
+        <div className="mt-12 bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] p-6 rounded-lg">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
               <h3 className="text-xl font-bold text-[#063a1e] mb-2">
                 Trouvez rapidement le bon contact pour vos besoins en
                 accompagnement.
               </h3>
-              <p className="text-muted-foreground">
-                Abonnez-vous à notre newsletter pour connaître les structures
-                utiles aux PME, avec leurs coordonnées et une description de
-                leurs services. Accédez facilement à toutes ces informations
-                depuis notre site.
+              <p className="text-[#063a1e] mb-4">
+                Abonnez-vous pour connaître les structures utiles aux PME, avec
+                leurs coordonnées et une description de leurs services. Accédez
+                facilement à toutes ces informations depuis notre site.
               </p>
             </div>
             <Link href="/#subscription">
               <Button className="bg-[#063a1e] hover:bg-[#063a1e]/90 whitespace-nowrap">
-                S'abonner à la newsletter
+                S'abonner
               </Button>
             </Link>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

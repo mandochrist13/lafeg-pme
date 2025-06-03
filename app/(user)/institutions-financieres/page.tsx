@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Advert } from "@/components/ads/Advert";
+import  AutoCarousel  from "@/components/section/AutoCarousel";
 import {
   Card,
   CardContent,
@@ -141,25 +143,140 @@ export default function InstitutionsFinancieres() {
       </section>
 
       {/* Main Content */}
-      <div className="container py-12">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-2 md:grid-cols-3 mb-8">
-            <TabsTrigger value="banque">Banque</TabsTrigger>
-            <TabsTrigger value="microfinance">Microfinance</TabsTrigger>
-            <TabsTrigger value="fonds">Fonds d'investissement</TabsTrigger>
-          </TabsList>
+      <section className="container  py-12">
+        <div className="flex justify-between gap-5 flex-col lg:flex-row">
+          <div className="w-full max-w-5xl">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="grid grid-cols-2 md:grid-cols-3 mb-8">
+                <TabsTrigger value="banque">Banque</TabsTrigger>
+                <TabsTrigger value="microfinance">Microfinance</TabsTrigger>
+                <TabsTrigger value="fonds">Fonds d'investissement</TabsTrigger>
+              </TabsList>
 
-          {/* Banques */}
-          <TabsContent value="banque" className="space-y-6">
-            {loading ? (
-              <div className="text-center py-10 text-muted-foreground">
-                Chargement...
-              </div>
-            ) : (
-              <>
+              {/* Banques */}
+              <TabsContent value="banque" className="space-y-6">
+                {loading ? (
+                  <div className="text-center py-10 text-muted-foreground">
+                    Chargement...
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Banque 1 */}
+                      {filteredBanque.map((item) => (
+                        <Card
+                          key={item.id_institutionFinanciere}
+                          className="hover:shadow-md transition-shadow"
+                        >
+                          <CardHeader className="pb-3">
+                            <div className="flex justify-between items-start">
+                              <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 bg-[#063a1e]/10 rounded-md flex items-center justify-center">
+                                  <Image
+                                    src={item.logo}
+                                    alt="Logo banque"
+                                    width={1000}
+                                    height={1000}
+                                    className="rounded bg-cover bg-center w-full h-full"
+                                  />
+                                </div>
+                                <div>
+                                  <CardTitle>{item.nom}</CardTitle>
+                                  <CardDescription>
+                                    {item.type_institution}
+                                  </CardDescription>
+                                </div>
+                              </div>
+                              <div>{item.partenaire_feg}</div>
+                            </div>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-4">
+                              <p className="text-sm text-muted-foreground">
+                                {item.description}{" "}
+                              </p>
+                              <div className="space-y-2">
+                                <div className="flex items-start gap-2">
+                                  <MapPin className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                                  <span className="text-sm">
+                                    {" "}
+                                    {item.adresse}{" "}
+                                  </span>
+                                </div>
+                                <div className="flex items-start gap-2">
+                                  <Phone className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                                  <a
+                                    href={`tel:${item.contact}`}
+                                    className="text-sm hover:underline underline-offset-4"
+                                  >
+                                    {item.contact}
+                                  </a>
+                                </div>
+                                <div className="flex items-start gap-2">
+                                  <Mail className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                                  <a
+                                    href={`mailto:${item.mail}`}
+                                    className="text-sm hover:underline underline-offset-4"
+                                  >
+                                    {" "}
+                                    {item.mail}{" "}
+                                  </a>
+                                </div>
+                                <Link
+                                  target="_blank"
+                                  href={item.rs_1 || "#"}
+                                  className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
+                                >
+                                  <Facebook className="h-4 w-4 text-[rgb(6,58,30)] mt-0.5" />
+                                  <span className="text-sm">
+                                    Visiter la page
+                                  </span>
+                                </Link>
+                                <Link
+                                  target="_blank"
+                                  href={item.rs_2 || "#"}
+                                  className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
+                                >
+                                  <Linkedin className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                                  <span className="text-sm">
+                                    Visiter la page
+                                  </span>
+                                </Link>
+                              </div>
+                            </div>
+                          </CardContent>
+                          <CardFooter className="flex justify-between">
+                            <Badge variant="outline" className="text-[#063a1e]">
+                              {item.service}
+                            </Badge>
+                            <Link target="_blank" href={item.site_web}>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
+                              >
+                                Visiter le site{" "}
+                                <ExternalLink className="h-3 w-3" />
+                              </Button>
+                            </Link>
+                          </CardFooter>
+                        </Card>
+                      ))}
+                    </div>
+                    {filteredBanque.length === 0 && (
+                      <p className="text-red-700 text-center font-bold italic">
+                        Aucun résultat trouvé dans la section BANQUE.
+                      </p>
+                    )}
+                  </>
+                )}
+              </TabsContent>
+
+              {/* Microfinance */}
+              <TabsContent value="microfinance" className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Banque 1 */}
-                  {filteredBanque.map((item) => (
+                  {/* Microfinance 1 */}
+                  {filteredMicro.map((item) => (
                     <Card
                       key={item.id_institutionFinanciere}
                       className="hover:shadow-md transition-shadow"
@@ -251,267 +368,216 @@ export default function InstitutionsFinancieres() {
                     </Card>
                   ))}
                 </div>
-                {filteredBanque.length === 0 && (
+                {filteredMicro.length === 0 && (
                   <p className="text-red-700 text-center font-bold italic">
-                    Aucun résultat trouvé dans la section BANQUE.
+                    Aucun résultat trouvé dans la section Microfinance.
                   </p>
                 )}
-              </>
-            )}
-          </TabsContent>
+              </TabsContent>
 
-          {/* Microfinance */}
-          <TabsContent value="microfinance" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Microfinance 1 */}
-              {filteredMicro.map((item) => (
-                <Card
-                  key={item.id_institutionFinanciere}
-                  className="hover:shadow-md transition-shadow"
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-[#063a1e]/10 rounded-md flex items-center justify-center">
-                          <Image
-                            src={item.logo}
-                            alt="Logo banque"
-                            width={1000}
-                            height={1000}
-                            className="rounded bg-cover bg-center w-full h-full"
-                          />
+              {/* Fonds d'investissement */}
+              <TabsContent value="fonds" className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {filteredFond.map((item) => (
+                    <Card
+                      key={item.id_institutionFinanciere}
+                      className="hover:shadow-md transition-shadow"
+                    >
+                      <CardHeader className="pb-3">
+                        <div className="flex justify-between items-start">
+                          <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 bg-[#063a1e]/10 rounded-md flex items-center justify-center">
+                              <Image
+                                src={item.logo}
+                                alt="Logo banque"
+                                width={1000}
+                                height={1000}
+                                className="rounded bg-cover bg-center w-full h-full"
+                              />
+                            </div>
+                            <div>
+                              <CardTitle>{item.nom}</CardTitle>
+                              <CardDescription>
+                                {item.type_institution}
+                              </CardDescription>
+                            </div>
+                          </div>
+                          <div>{item.partenaire_feg}</div>
                         </div>
-                        <div>
-                          <CardTitle>{item.nom}</CardTitle>
-                          <CardDescription>
-                            {item.type_institution}
-                          </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <p className="text-sm text-muted-foreground">
+                            {item.description}{" "}
+                          </p>
+                          <div className="space-y-2">
+                            <div className="flex items-start gap-2">
+                              <MapPin className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                              <span className="text-sm"> {item.adresse} </span>
+                            </div>
+                            <div className="flex items-start gap-2">
+                              <Phone className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                              <a
+                                href={`tel:${item.contact}`}
+                                className="text-sm hover:underline underline-offset-4"
+                              >
+                                {item.contact}
+                              </a>
+                            </div>
+                            <div className="flex items-start gap-2">
+                              <Mail className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                              <a
+                                href={`mailto:${item.mail}`}
+                                className="text-sm hover:underline underline-offset-4"
+                              >
+                                {" "}
+                                {item.mail}{" "}
+                              </a>
+                            </div>
+                            <Link
+                              target="_blank"
+                              href={item.rs_1 || "#"}
+                              className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
+                            >
+                              <Facebook className="h-4 w-4 text-[rgb(6,58,30)] mt-0.5" />
+                              <span className="text-sm">Visiter la page</span>
+                            </Link>
+                            <Link
+                              target="_blank"
+                              href={item.rs_2 || "#"}
+                              className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
+                            >
+                              <Linkedin className="h-4 w-4 text-[#063a1e] mt-0.5" />
+                              <span className="text-sm">Visiter la page</span>
+                            </Link>
+                          </div>
                         </div>
-                      </div>
-                      <div>{item.partenaire_feg}</div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <p className="text-sm text-muted-foreground">
-                        {item.description}{" "}
-                      </p>
-                      <div className="space-y-2">
-                        <div className="flex items-start gap-2">
-                          <MapPin className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                          <span className="text-sm"> {item.adresse} </span>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <Phone className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                          <a
-                            href={`tel:${item.contact}`}
-                            className="text-sm hover:underline underline-offset-4"
+                      </CardContent>
+                      <CardFooter className="flex justify-between">
+                        <Badge variant="outline" className="text-[#063a1e]">
+                          {item.service}
+                        </Badge>
+                        <Link target="_blank" href={item.site_web}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
                           >
-                            {item.contact}
-                          </a>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <Mail className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                          <a
-                            href={`mailto:${item.mail}`}
-                            className="text-sm hover:underline underline-offset-4"
-                          >
-                            {" "}
-                            {item.mail}{" "}
-                          </a>
-                        </div>
-                        <Link
-                          target="_blank"
-                          href={item.rs_1 || "#"}
-                          className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
-                        >
-                          <Facebook className="h-4 w-4 text-[rgb(6,58,30)] mt-0.5" />
-                          <span className="text-sm">Visiter la page</span>
+                            Visiter le site <ExternalLink className="h-3 w-3" />
+                          </Button>
                         </Link>
-                        <Link
-                          target="_blank"
-                          href={item.rs_2 || "#"}
-                          className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
-                        >
-                          <Linkedin className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                          <span className="text-sm">Visiter la page</span>
-                        </Link>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      {item.service}
-                    </Badge>
-                    <Link target="_blank" href={item.site_web}>
+                      </CardFooter>
+                    </Card>
+                  ))}
+                </div>
+                {filteredFond.length === 0 && (
+                  <p className="text-red-700 text-center font-bold italic">
+                    Aucun résultat trouvé dans la section Fond d'Investissement.
+                  </p>
+                )}
+              </TabsContent>
+
+              {/* Notification pour les résultats dans d'autres sections */}
+              {search && otherSectionResults.length > 0 && (
+                <div className="my-6 p-4 bg-[#063a1e]/5 rounded-lg border border-[#063a1e]/10">
+                  <p className="text-[#063a1e] font-medium mb-2">
+                    Résultats trouvés dans d'autres sections :
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {otherSectionResults.map((result) => (
                       <Button
+                        key={result.tab}
                         variant="outline"
                         size="sm"
                         className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
+                        onClick={() => setActiveTab(result.tab)}
                       >
-                        Visiter le site <ExternalLink className="h-3 w-3" />
+                        {result.label} ({result.count}){" "}
+                        <ArrowRight className="h-3 w-3" />
                       </Button>
-                    </Link>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
-            {filteredMicro.length === 0 && (
-              <p className="text-red-700 text-center font-bold italic">
-                Aucun résultat trouvé dans la section Microfinance.
-              </p>
-            )}
-          </TabsContent>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </Tabs>
+          </div>
 
-          {/* Fonds d'investissement */}
-          <TabsContent value="fonds" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredFond.map((item) => (
-                <Card
-                  key={item.id_institutionFinanciere}
-                  className="hover:shadow-md transition-shadow"
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-[#063a1e]/10 rounded-md flex items-center justify-center">
-                          <Image
-                            src={item.logo}
-                            alt="Logo banque"
-                            width={1000}
-                            height={1000}
-                            className="rounded bg-cover bg-center w-full h-full"
-                          />
-                        </div>
-                        <div>
-                          <CardTitle>{item.nom}</CardTitle>
-                          <CardDescription>
-                            {item.type_institution}
-                          </CardDescription>
-                        </div>
-                      </div>
-                      <div>{item.partenaire_feg}</div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <p className="text-sm text-muted-foreground">
-                        {item.description}{" "}
-                      </p>
-                      <div className="space-y-2">
-                        <div className="flex items-start gap-2">
-                          <MapPin className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                          <span className="text-sm"> {item.adresse} </span>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <Phone className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                          <a
-                            href={`tel:${item.contact}`}
-                            className="text-sm hover:underline underline-offset-4"
-                          >
-                            {item.contact}
-                          </a>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <Mail className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                          <a
-                            href={`mailto:${item.mail}`}
-                            className="text-sm hover:underline underline-offset-4"
-                          >
-                            {" "}
-                            {item.mail}{" "}
-                          </a>
-                        </div>
-                        <Link
-                          target="_blank"
-                          href={item.rs_1 || "#"}
-                          className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
-                        >
-                          <Facebook className="h-4 w-4 text-[rgb(6,58,30)] mt-0.5" />
-                          <span className="text-sm">Visiter la page</span>
-                        </Link>
-                        <Link
-                          target="_blank"
-                          href={item.rs_2 || "#"}
-                          className="flex text-[rgb(6,58,30)] hover:underline underline-offset-4 items-start gap-2"
-                        >
-                          <Linkedin className="h-4 w-4 text-[#063a1e] mt-0.5" />
-                          <span className="text-sm">Visiter la page</span>
-                        </Link>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <Badge variant="outline" className="text-[#063a1e]">
-                      {item.service}
-                    </Badge>
-                    <Link target="_blank" href={item.site_web}>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
-                      >
-                        Visiter le site <ExternalLink className="h-3 w-3" />
-                      </Button>
-                    </Link>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
-            {filteredFond.length === 0 && (
-              <p className="text-red-700 text-center font-bold italic">
-                Aucun résultat trouvé dans la section Fond d'Investissement.
-              </p>
-            )}
-          </TabsContent>
+          {/* Sidebar avec publicités */}
+          <div className="w-80 hidden lg:block  space-y-6">
+            <Advert
+              type="image"
+              size="medium"
+              position="sidebar"
+              content={{
+                title: "Masterclass Business Plan",
+                imageUrl: "/placeholder.svg?height=200&width=300",
+                advertiser: "Business School Gabon",
+              }}
+            />
 
-          {/* Notification pour les résultats dans d'autres sections */}
-          {search && otherSectionResults.length > 0 && (
-            <div className="my-6 p-4 bg-[#063a1e]/5 rounded-lg border border-[#063a1e]/10">
-              <p className="text-[#063a1e] font-medium mb-2">
-                Résultats trouvés dans d'autres sections :
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {otherSectionResults.map((result) => (
-                  <Button
-                    key={result.tab}
-                    variant="outline"
-                    size="sm"
-                    className="gap-1 border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
-                    onClick={() => setActiveTab(result.tab)}
-                  >
-                    {result.label} ({result.count}){" "}
-                    <ArrowRight className="h-3 w-3" />
-                  </Button>
-                ))}
-              </div>
-            </div>
-          )}
-        </Tabs>
+            <Advert
+              type="image"
+              size="medium"
+              position="sidebar"
+              content={{
+                title: "Concours Jeunes Entrepreneurs",
+                imageUrl: "/placeholder.svg?height=200&width=300",
+                ctaText: "Participer",
+                advertiser: "Ministère de l'Entrepreneuriat",
+              }}
+            />
+          </div>
+          <div className="flex lg:hidden w-full">
+            <AutoCarousel interval={3000}>
+              <Advert
+                type="image"
+                size="medium"
+                position="sidebar"
+                content={{
+                  title: "Masterclass Business Plan",
+                  imageUrl: "/placeholder.svg?height=200&width=300",
+                  advertiser: "Business School Gabon",
+                }}
+              />
+
+              <Advert
+                type="image"
+                size="medium"
+                position="sidebar"
+                content={{
+                  title: "Concours Jeunes Entrepreneurs",
+                  imageUrl: "/placeholder.svg?height=200&width=300",
+                  ctaText: "Participer",
+                  advertiser: "Ministère de l'Entrepreneuriat",
+                }}
+              />
+            </AutoCarousel>
+          </div>
+        </div>
 
         {/* CTA Section */}
-        <div className="mt-12 bg-[#063a1e]/10 p-6 rounded-lg">
+        <div className="mt-12 bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] p-6 rounded-lg">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
               <h3 className="text-xl font-bold text-[#063a1e] mb-2">
                 Trouvez rapidement le bon contact pour vos besoins en
                 financement.
               </h3>
-              <p className="text-muted-foreground">
-                Abonnez-vous à notre newsletter pour connaître quels sont les
-                institutions utiles aux PME, avec leurs coordonnées et une
-                description de leurs services. Accédez facilement à toutes ces
-                informations depuis notre site.
+              <p className="text-[#063a1e]">
+                Abonnez-vous pour connaître quels sont les institutions utiles
+                aux PME, avec leurs coordonnées et une description de leurs
+                services. Accédez facilement à toutes ces informations depuis
+                notre site.
               </p>
             </div>
             <Link href="/#subscription">
               <Button className="bg-[#063a1e] hover:bg-[#063a1e]/90 whitespace-nowrap">
-                S'abonner à la newsletter
+                S'abonner
               </Button>
             </Link>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }
