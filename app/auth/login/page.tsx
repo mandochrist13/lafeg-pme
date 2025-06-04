@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-
-import { signIn, getSession } from "next-auth/react"
-import { useState, FormEvent, ChangeEvent } from "react"
-import { useRouter } from "next/navigation"
-import Image from "next/image"
-import { Eye, EyeOff, Lock, User } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { toast } from "sonner";
+import { signIn, getSession } from "next-auth/react";
+import { useState, FormEvent, ChangeEvent } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { Eye, EyeOff, Lock, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -15,52 +15,53 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+} from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function AdminLogin() {
-  const router = useRouter()
-  const [email, setEmail] = useState<string>("")
-  const [password, setPassword] = useState<string>("")
-  const [showPassword, setShowPassword] = useState<boolean>(false)
-  const [error, setError] = useState<string>("")
-  const [loading, setLoading] = useState<boolean>(false)
+  const router = useRouter();
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
-
-
-
-  
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-  
+
     const res = await signIn("credentials", {
       redirect: false, // Important pour gérer manuellement la redirection
       email,
       password,
     });
-  
+
     console.log("SignIn Result:", res); // 👈 Ic
 
     if (res?.error) {
       setError("Identifiants incorrects. Veuillez réessayer.");
+      toast.error("Échec de la connexion", {
+        description: "Identifiants incorrects. Veuillez réessayer.",
+      });
       setLoading(false);
     } else {
+      toast.success("Connexion réussie", {
+        description: "Bienvenue dans le tableau de bord administratif.",
+      });
       await getSession();
       router.push("/admin/dashboard"); // Rediriger si connexion OK
       setLoading(false);
     }
   };
-  
-  
+
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value)
-  }
+    setEmail(e.target.value);
+  };
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value)
-  }
+    setPassword(e.target.value);
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -76,7 +77,9 @@ export default function AdminLogin() {
                 className="h-16 w-auto"
               />
             </div>
-            <CardTitle className="text-2xl font-bold text-[#063a1e]">Administration</CardTitle>
+            <CardTitle className="text-2xl font-bold text-[#063a1e]">
+              Administration
+            </CardTitle>
             <CardDescription>
               Connectez-vous pour accéder au tableau de bord administratif
             </CardDescription>
@@ -118,7 +121,11 @@ export default function AdminLogin() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-3 text-muted-foreground"
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -132,10 +139,12 @@ export default function AdminLogin() {
             </form>
           </CardContent>
           <CardFooter className="text-center text-sm text-muted-foreground">
-            <p className="w-full">Réservé au personnel administratif autorisé</p>
+            <p className="w-full">
+              Réservé au personnel administratif autorisé
+            </p>
           </CardFooter>
         </Card>
       </div>
     </div>
-  )
+  );
 }

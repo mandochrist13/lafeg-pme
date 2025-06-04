@@ -1,5 +1,5 @@
 "use client";
-
+import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import {
   Search,
@@ -207,6 +207,9 @@ export default function TextesJuridiquesAdmin() {
         fichier: newTexte.fichier,
       });
       console.log("Texte créé :", createdTexte);
+      toast.success("Texte ajouté avec succès", {
+        description: "Le texte juridique a été ajouté avec succès.",
+      });
 
       setTextesJuridiques([...textesJuridiques, createdTexte]);
       setShowAddForm(false);
@@ -227,6 +230,9 @@ export default function TextesJuridiquesAdmin() {
     } catch (error) {
       alert("Erreur lors de l’ajout du texte.");
       console.error("Erreur lors de l’ajout du texte :", error);
+      toast.error("Échec de l'ajout du texte", {
+        description: "Une erreur est survenue lors de l'ajout du texte.",
+      });
     }
   };
 
@@ -243,11 +249,13 @@ export default function TextesJuridiquesAdmin() {
     setSelectedTexteId(String(texte.id_texteJuridique));
     setEditedTexte(texte); // ici pas besoin de changement
     setIsEditDialogOpen(true);
+   
   };
   const openDeleteDialog = (texte: TexteJuridique) => {
     setSelectedTexteId(texte.id_texteJuridique);
     setSelectedTexte(texte);
     setIsDeleteDialogOpen(true);
+
   };
 
   const handleEditTexte = async (texteData: TexteJuridique) => {
@@ -295,9 +303,16 @@ export default function TextesJuridiquesAdmin() {
 
       setIsEditDialogOpen(false);
       setSelectedTexteId("");
+
+      toast.success("Texte modifié avec succès", {
+        description: "Le texte juridique a été modifié avec succès.",
+      });
     } catch (error) {
       console.error("Erreur lors de la modification du texte :", error);
       alert("Une erreur est survenue lors de la modification du texte.");
+      toast.error("Échec de la modification du texte", {
+        description: "Une erreur est survenue lors de la modification du texte.",
+      });
     } finally {
       setLoading(false);
     }
@@ -308,8 +323,16 @@ export default function TextesJuridiquesAdmin() {
         setLoading(true);
         await deleteTexteJuridique(id);
         await refreshTextes();
+
+        toast.success("Texte supprimé avec succès", {
+          description: "Le texte juridique a été supprimé avec succès.",
+        });
+        setIsDeleteDialogOpen(false);
       } catch (error) {
         console.error("Erreur suppression :", error);
+        toast.error("Échec de la suppression du texte", {
+          description: "Une erreur est survenue lors de la suppression du texte.",
+        });
       } finally {
         setLoading(false);
       }
