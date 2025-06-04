@@ -20,7 +20,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export default function AdminLogin() {
   const router = useRouter()
-  const [username, setUsername] = useState<string>("")
+  const [email, setEmail] = useState<string>("")
   const [password, setPassword] = useState<string>("")
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [error, setError] = useState<string>("")
@@ -37,7 +37,7 @@ export default function AdminLogin() {
   
     const res = await signIn("credentials", {
       redirect: false, // Important pour gérer manuellement la redirection
-      username,
+      email,
       password,
     });
   
@@ -54,8 +54,8 @@ export default function AdminLogin() {
   };
   
   
-  const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setUsername(e.target.value)
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value)
   }
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -92,11 +92,11 @@ export default function AdminLogin() {
                 <div className="relative">
                   <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
-                    id="username"
+                    id="email"
                     placeholder="Nom d'utilisateur"
                     className="pl-9"
-                    value={username}
-                    onChange={handleUsernameChange}
+                    value={email}
+                    onChange={handleEmailChange}
                     required
                   />
                 </div>
