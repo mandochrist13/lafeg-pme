@@ -5,79 +5,84 @@ import { usePathname } from "next/navigation";
 
 import Link from "next/link";
 
+
+
 const HamburgerMenu = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
   
     const pathname = usePathname();
   
     const isActive = (path: string): boolean => pathname === path;
+     const mobileMenuItems = [
+      { 
+        label: "Accueil", 
+        href: "/" 
+      },
+      {
+        label: "Textes Juridiques",
+        href: "/textes-juridiques" 
+      },
+      {
+        label: "Institutions Financières",
+        href: "/institutions-financieres" 
+      },
+      {
+        label: "Structure d'Ecadremente et d'Accompagnement",
+        href: "/structures-accompagnement" 
+      },
+    ];
 
   return (
     <div className="flex lg:hidden">
-      {/* Checkbox pour activer/désactiver le menu */}
-      <input
-        type="checkbox"
-        id="hamburger"
-        className="absolute -left-full"
-        checked={isOpen}
-        onChange={() => setIsOpen(!isOpen)}
-      />
-
-      {/* Label pour afficher l'icône hamburger */}
-      <label
-        htmlFor="hamburger"
-        className="fixed top-4 right-4 z-20 flex items-center justify-center w-14 h-14 bg-[#bdbd95] rounded-full shadow-xl cursor-pointer"
-        aria-label="Menu"
-      >
-        <span
-          className={`block w-8 h-1 bg-[#063a1e] relative transition-all duration-300 ${
-            isOpen ? " top-[-1px] rotate-45" : ""
-          }`}
+      <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="lg:hidden flex flex-col justify-center items-center w-8 h-8 space-y-1 focus:outline-none"
+          aria-label="Toggle menu"
+          aria-expanded={menuOpen}
         >
           <span
-            className={`absolute w-full h-full bg-[#063a1e] top-[-10px] transition-transform duration-300 ${
-              isOpen ? "top-[-1px] hidden" : ""
+            className={`block h-1 w-8 bg-[#063a1e] rounded transform transition duration-300 ease-in-out ${
+              menuOpen ? "rotate-45 translate-y-2" : ""
             }`}
-          ></span>
+          />
           <span
-            className={`absolute w-full h-full bg-[#063a1e] top-[10px] transition-transform duration-300 ${
-              isOpen ? "right-[-3px] top-[1px] rotate-90" : ""
+            className={`block h-1 w-8 bg-[#063a1e] rounded transition duration-300 ease-in-out ${
+              menuOpen ? "opacity-0" : ""
             }`}
-          ></span>
-        </span>
-      </label>
+          />
+          <span
+            className={`block h-1 w-8 bg-[#063a1e] rounded transform transition duration-300 ease-in-out ${
+              menuOpen ? "-rotate-45 -translate-y-2" : ""
+            }`}
+          />
+        </button>
 
-      {/* Menu de navigation */}
-      <nav
-        className={`fixed z-10 top-0 right-0 w-3/4 max-w-xs bg-[#063a1e] text-[#fff] font-semibold transform ${
-          isOpen ? "translate-x-0 flex" : "translate-x-full hidden"
-        } transition-transform duration-500`}
-      >
-       
-        <ul className="mt-24 space-y-6 px-6 block lg:hidden text-sm font-medium flex-col p-4  rounded-lg rtl:space-x-reverse">
-              {[
-                { name: "Accueil", path: "/" },
-                { name: "Textes Juridiques", path: "/textes-juridiques" },
-                { name: "Institutions Financières", path: "/institutions-financieres" },
-                { name: "SEA", path: "/structures-accompagnement" },
-                { name: "À propos", path: "/a-propos" },
-                { name: "Contact", path: "/contact" },
-              ].map((link) => (
-                <li key={link.path}>
+        {/* Mobile menu */}
+        <div
+          className={`lg:hidden fixed top-20 left-0 bg-[#063a1e]/90 w-full max-h-[calc(100vh-64px)] overflow-auto transform transition-transform duration-300 ${
+            menuOpen ? "translate-x-0" : "-translate-x-full"
+          } z-30 shadow-xl`}
+          aria-hidden={!menuOpen}
+        >
+          <ul className="flex flex-col divide-y divide-gray-200">
+            {mobileMenuItems.map((item) =>
+                <li key={item.href}>
                   <Link
-                    href={link.path}
-                    className={`pb-1 text-lg block   font-bold  ${
-                isActive(link.path)
-                  ? "text-white border-b border-white "
-                  : "text-gray-400"
-              }`}
+                    href={item.href || "/"}
+                    className={`block px-6 py-3 text-[16px]  ${
+                    isActive(item.href)
+                      ? "text-[#063a1e] font-bold bg-white border-y border-[#063a1e]"
+                      : "text-[#bdbd95] font-medium"
+                  }`}
+                    onClick={() => setMenuOpen(false)}
                   >
-                    {link.name}
+                    {item.label}
                   </Link>
                 </li>
-              ))}
-            </ul>
-      </nav>
+              
+            )}
+          </ul>
+        </div>
     </div>
   );
 };

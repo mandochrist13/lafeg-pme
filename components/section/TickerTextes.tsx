@@ -61,7 +61,7 @@ const TickerTextes = () => {
                 {" "}
                 {textes.map((texte) => (
                   <div
-                    key={texte.id}
+                    key={texte.id_texteJuridique}
                     className=" text-sm uppercase  whitespace-nowrap"
                   >
                     {texte.titre} <span className="px-4 text-lg">&nbsp;&nbsp;•&nbsp;&nbsp;</span>
