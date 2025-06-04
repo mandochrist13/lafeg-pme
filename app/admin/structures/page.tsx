@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import {
@@ -77,7 +78,7 @@ import {
 } from "@/app/services/sea/api";
 
 import { cn } from "@/lib/utils";
-import { toast } from "@/components/ui/use-toast";
+// import { toast } from "@/components/ui/use-toast";
 
 export default function StructuresPage() {
   const { theme, systemTheme } = useTheme();
@@ -150,11 +151,14 @@ export default function StructuresPage() {
         setStructures(data);
       } catch (error) {
         console.error("Error:", error);
-        toast({
-          title: "Erreur",
-          description: "Impossible de charger les structures",
-          variant: "destructive",
+        toast.error("Erreur lors du chargement des structures", {
+          description: "Veuillez réessayer plus tard.",
         });
+        // toast({
+        //   title: "Erreur",
+        //   description: "Impossible de charger les structures",
+        //   variant: "destructive",
+        // });
       } finally {
         setLoading(false);
       }
@@ -194,17 +198,22 @@ export default function StructuresPage() {
       setIsAddDialogOpen(false);
       setNewStructure(defaultStructure);
 
-      toast({
-        title: "Succès",
-        description: "Structure créée avec succès",
-      });
+      toast.success("Structure créée avec succès", {
+        description: "La structure a été ajoutée à la liste.",});
+      // toast({
+      //   title: "Succès",
+      //   description: "Structure créée avec succès",
+      // });
     } catch (error: any) {
       console.error("Error:", error);
-      toast({
-        title: "Erreur",
-        description: error.message || "Erreur lors de la création",
-        variant: "destructive",
+      toast.error("Erreur lors de la création de la structure", {
+        description: error.message || "Veuillez réessayer plus tard.",
       });
+      // toast({
+      //   title: "Erreur",
+      //   description: error.message || "Erreur lors de la création",
+      //   variant: "destructive",
+      // });
     }
   };
 
@@ -234,17 +243,23 @@ export default function StructuresPage() {
       );
       setIsEditDialogOpen(false);
 
-      toast({
-        title: "Succès",
-        description: "Structure mise à jour avec succès",
+      toast.success("Structure mise à jour avec succès", {
+        description: "Les informations de la structure ont été mises à jour.",
       });
+      // toast({
+      //   title: "Succès",
+      //   description: "Structure mise à jour avec succès",
+      // });
     } catch (error: any) {
       console.error("Error:", error);
-      toast({
-        title: "Erreur",
-        description: error.message || "Erreur lors de la mise à jour",
-        variant: "destructive",
+      toast.error("Erreur lors de la mise à jour de la structure", {
+        description: error.message || "Veuillez réessayer plus tard.",
       });
+      // toast({
+      //   title: "Erreur",
+      //   description: error.message || "Erreur lors de la mise à jour",
+      //   variant: "destructive",
+      // });
     }
   };
 
@@ -265,17 +280,23 @@ export default function StructuresPage() {
       setStructures(structures.filter((s) => s.id_sea !== selectedStructure.id_sea));
       setIsDeleteDialogOpen(false);
 
-      toast({
-        title: "Succès",
-        description: "Structure supprimée avec succès",
+      toast.success("Structure supprimée avec succès", {
+        description: "La structure a été retirée de la liste.",
       });
+      // toast({
+      //   title: "Succès",
+      //   description: "Structure supprimée avec succès",
+      // });
     } catch (error: any) {
       console.error("Error:", error);
-      toast({
-        title: "Erreur",
-        description: error.message || "Erreur lors de la suppression",
-        variant: "destructive",
+      toast.error("Erreur lors de la suppression de la structure", {
+        description: error.message || "Veuillez réessayer plus tard.",
       });
+      // toast({
+      //   title: "Erreur",
+      //   description: error.message || "Erreur lors de la suppression",
+      //   variant: "destructive",
+      // });
     }
   };
 

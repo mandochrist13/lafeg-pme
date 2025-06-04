@@ -17,6 +17,7 @@ import {
   Facebook,
   Linkedin,
 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -232,8 +233,13 @@ export default function InstitutionsPage({}: {
       await refreshInstitutions(); // rafraîchit la liste
       resetNewInstitutionForm(); // reset du formulaire
       setIsAddDialogOpen(false); // ferme le dialog
+      toast.success("Institution créée avec succès", {
+        description: "L'institution a été ajoutée à la liste.",
+      });
     } catch (error) {
       console.error("Erreur création:", error);
+      toast.error("Erreur lors de la création de l'institution", {
+        description: "Veuillez vérifier les informations saisies.",});
     } finally {
       setLoading(false);
     }
@@ -280,8 +286,14 @@ export default function InstitutionsPage({}: {
       }
       await refreshInstitutions();
       setIsEditDialogOpen(false);
+      toast.success("Institution mise à jour avec succès", {
+        description: "Les informations de l'institution ont été modifiées.",
+      });
     } catch (error) {
       console.error("Erreur lors de la mise à jour :", error);
+      toast.error("Erreur lors de la mise à jour de l'institution", {
+        description: "Veuillez vérifier les informations saisies.",
+      });
     } finally {
       setLoading(false);
     }
@@ -292,8 +304,14 @@ export default function InstitutionsPage({}: {
       setLoading(true);
       await deleteFinancialInstitution(id);
       await refreshInstitutions();
+      setIsDeleteDialogOpen(false);
+      toast.success("Institution supprimée avec succès", {
+        description: "L'institution a été retirée de la liste.",
+      });
     } catch (error) {
       console.error("Erreur suppression :", error);
+      toast.error("Erreur lors de la suppression de l'institution", {
+        description: "Veuillez réessayer plus tard.",});
     } finally {
       setLoading(false);
     }
