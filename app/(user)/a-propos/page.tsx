@@ -189,7 +189,7 @@ export default function APropos() {
               </div>
             </div>
           </div>
-          {/* Newsletter Section */}
+          {/* Abonnement Section */}
           <div className="bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] p-6 sm:p-8 rounded-xl shadow-md overflow-hidden">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8">
               <div>
@@ -198,11 +198,11 @@ export default function APropos() {
                   Restez informé
                 </div>
                 <h2 className="text-xl sm:text-2xl font-bold text-[#063a1e] mb-3 sm:mb-4">
-                  S'abonner à la newsletter
+                  S'abonner
                 </h2>
-                <p className="text-sm sm:text-base text-[#063a1e]/90 max-w-xl">
+                <p className="text-base md:text-lg text-[#063a1e]/90 max-w-3xl">
                   Trouvez rapidement le bon contact pour vos besoins en
-                  financement. Abonnez-vous à notre newsletter pour connaître
+                  financement. Abonnez-vous pour connaître
                   quels sont les institutions utiles aux PME, avec leurs
                   coordonnées et une description de leurs services. Accédez
                   facilement à toutes ces informations depuis notre site.

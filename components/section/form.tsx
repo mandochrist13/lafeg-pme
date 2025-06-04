@@ -346,7 +346,7 @@ export default function Form() {
             disabled={loading}
                     variant="secondary"
 
-                    className="w-full bg-[#063a1e] relative hover:bg-white"
+                    className="w-full bg-[#063a1e] font-bold relative hover:bg-white"
                   >
                     <span className="absolute inset-0 w-full h-full bg-[#dcdaa4] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0"></span>
                     <span className="relative mr-3 z-10 transition-colors duration-500 ease-in-out group-hover:text-[#063a1e]">
@@ -359,7 +359,7 @@ export default function Form() {
                 Envoi en cours...
               </span>
             ) : (
-              "S'abonner à la newsletter"
+              "S'abonner"
             )}
                     </span>
                   </Button>
