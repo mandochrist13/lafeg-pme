@@ -2,6 +2,7 @@ import type React from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Providers } from "@/app/providers";
 import { ThemeProvider } from "@/components/theme-provider";
 // import Nav from "@/components/section/nav";
 // import Footer from "@/components/section/footer";
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
   icons: {
     icon: "/images/logo-feg.png",
   },
-  generator: 'La Fédération des Entreprises du Gabon',
+  generator: "La Fédération des Entreprises du Gabon",
 };
 
 export default function RootLayout({
@@ -26,11 +27,14 @@ export default function RootLayout({
   return (
     <html lang="fr" className="light" style={{ colorScheme: "light" }}>
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-          {/* <Nav /> */}
-          {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Providers>{children}</Providers>
         </ThemeProvider>
-        {/* <Footer /> */}
       </body>
     </html>
   );

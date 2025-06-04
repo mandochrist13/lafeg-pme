@@ -1,9 +1,10 @@
 "use client"
 
-import Link from "next/link"
+import Link from "next/link";
+import React, { useEffect, useState } from "react"
 import Image from "next/image"
 import Form from "@/components/section/form";
-
+import {AdBanvideo} from "@/components/ads/AdBanvideo"
 import { ArrowRight, FileText, BookOpen, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -18,6 +19,43 @@ import NewText from "@/components/section/new_text"
 
 
 export default function Home() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const hasVisited = sessionStorage.getItem("hasVisited");
+
+    if (hasVisited) {
+      setLoading(false);
+    } else {
+      const timer = setTimeout(() => {
+        setLoading(false);
+        sessionStorage.setItem("hasVisited", "true");
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  if (loading) {
+    return (
+        <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
+            <div className="flex flex-col items-center">
+              <div className="relative w-16 h-16 mb-4">
+                <div className="absolute inset-0 rounded-full border-4 border-[#063a1e]/20"></div>
+                <div className="absolute inset-0 rounded-full border-4 border-t-[#063a1e] animate-spin"></div>
+              </div>
+      
+              <div className="flex flex-col items-center">
+                <Image src="/images/logo-feg.png" alt="Logo FEG" width={60} height={60} className="h-12 w-auto mb-2" />
+                <h2 className="text-lg font-bold text-[#063a1e]">GUIDE NUMERIQUE DES PME</h2>
+              </div>
+              <div className="mt-4 h-1 w-48 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+    );
+  }
 
   return (
     <div className="">
@@ -193,6 +231,20 @@ export default function Home() {
 
       {/* Recent Updates */}
       <NewText />
+      {/* Sidebar Video Ad */}
+            <div className="hidden lg:flex justify-center items-center w-full bg-[#eaeeeb]">
+              <AdBanvideo
+                type="video"
+                size="skyscraper"
+                position="sidebar"
+                content={{
+                  title: "BGFI BANK Gabon",
+                  videoUrl: "/BGFIBank.mp4",
+                  imageUrl: "/BGFIBank Gabon COMPLETE LIBERTY - Spot.gif",
+                  advertiser: "Institut de Formation Juridique",
+                }}
+              />
+            </div>
       {/* Resources Section */}
       <section className="hidden py-12">
         <div className="container">
@@ -301,7 +353,7 @@ export default function Home() {
                   <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] bg-clip-text text-transparent">
                     Restez informé
                   </h2>
-                  <p className="mb-6">Abonnez-vous à notre newsletter pour recevoir des alertes :</p>
+                  <p className="mb-6">Abonnez-vous pour recevoir des alertes :</p>
                   <ul className="space-y-3">
                     <li className="flex items-start gap-2">
                       <span className="bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] text-[#063a1e] rounded-full h-5 w-5 flex items-center justify-center text-xs font-bold mt-0.5">
