@@ -43,7 +43,7 @@ export default function Home() {
       <section className="bg-gradient-to-r from-[#063a1e] to-[#063a1e]/50 text-white p-10 lg:p-16">
         <div className="lg:container">
           <div className="grid grid-cols-1 md:flex md:justify-between gap-8 lg:gap-12 items-center">
-            <div className="space-y-6 w-full md:max-w-[50%]">
+            <div className="space-y-6 w-full md:max-w-[50%] flex flex-col items-center text-center md:items-start md:text-left">
               <h2 className="text-3xl text-center md:text-left lg:text-4xl font-bold">
                 Les textes juridiques pour votre PME au Gabon
               </h2>
@@ -55,7 +55,7 @@ export default function Home() {
                   <Button
                     variant="secondary"
                     size="lg"
-                    className="bg-[#063a1e] relative hover:bg-white"
+                    className="bg-[#063a1e] relative hover:bg-white min-w-[200px] group"
                   >
                     <span className="absolute inset-0 w-full h-full bg-[#dcdaa4] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0"></span>
                     <span className="relative mr-3 z-10 transition-colors duration-500 ease-in-out group-hover:text-[#063a1e]">
@@ -66,7 +66,7 @@ export default function Home() {
                 <Link href="/a-propos">
                   <Button
                     size="lg"
-                    className=" hover:text-[#063a1e] duration-300 ease-in-out hover:bg-white  border-none font-medium"
+                     className="hover:text-[#063a1e] duration-300 ease-in-out hover:bg-white border-none font-medium min-w-[200px]"
                   >
                     En savoir plus
                   </Button>
