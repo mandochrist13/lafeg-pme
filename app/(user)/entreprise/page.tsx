@@ -264,14 +264,14 @@ export default function EntreprisesServices() {
                       <SelectValue placeholder="Secteur d'activité" />
                     </SelectTrigger>
                     <SelectContent>
-                      {entreprises.map((secteur) => (
-                        <SelectItem
-                          key={secteur.id_offre}
-                          value={secteur.id_offre}
-                        >
-                          {secteur.type_offre}
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="tous">Tous les secteurs</SelectItem>
+                      {[...new Set(entreprises.map((e) => e.type_offre))].map(
+                        (type) => (
+                          <SelectItem key={type} value={type}>
+                            {type}
+                          </SelectItem>
+                        )
+                      )}
                     </SelectContent>
                   </Select>
 
