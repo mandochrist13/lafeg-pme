@@ -32,25 +32,25 @@ export default function AdminLogin() {
     setLoading(true);
 
     const res = await signIn("credentials", {
-      redirect: false, // Important pour gérer manuellement la redirection
+      redirect: false,
       email,
       password,
     });
 
-    console.log("SignIn Result:", res); // 👈 Ic
-
     if (res?.error) {
-      setError("Identifiants incorrects. Veuillez réessayer.");
       toast.error("Échec de la connexion", {
         description: "Identifiants incorrects. Veuillez réessayer.",
       });
+      setError("Identifiants incorrects. Veuillez réessayer.");
       setLoading(false);
     } else {
       toast.success("Connexion réussie", {
         description: "Bienvenue dans le tableau de bord administratif.",
       });
-      await getSession();
-      router.push("/admin/dashboard"); // Rediriger si connexion OK
+
+      // Attendre la session avant redirection
+      await new Promise((r) => setTimeout(r, 500));
+      router.push("/admin/dashboard");
       setLoading(false);
     }
   };
