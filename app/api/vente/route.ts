@@ -146,13 +146,13 @@ export async function GET(request: Request) {
     
     // Exécution des requêtes en parallèle
     const [data, total] = await Promise.all([
-      prisma.annonce.findMany({
+      prisma.vente.findMany({
         where,
         skip,
         take: limit,
         orderBy: { [sortField]: sortOrder }
       }),
-      prisma.annonce.count({ where })
+      prisma.vente.count({ where })
     ]);
     
     // Réponse structurée avec données et pagination
@@ -282,7 +282,7 @@ export async function POST(request: NextRequest) {
     const nom_structure = formData.get('nom_structure') as string;
 
     // Créer la publicité dans la base de données
-    const annonce = await prisma.annonce.create(
+    const annonce = await prisma.vente.create(
       {
         data: {
           libelle,

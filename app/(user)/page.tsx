@@ -180,7 +180,7 @@ export default function Home() {
       <div className="flex justify-center items-center pb-12 container bg-[#eaeeeb]">
         <AdBanner
           emplacement="MIDDLE"
-          className="w-full h-full object-cover object-center max-h-52"
+          className="w-full max-w-[900px] h-full object-cover object-center"
         />
       </div>
       {/* Enhanced Business Services Section */}
@@ -201,34 +201,6 @@ export default function Home() {
               membre FEG.
             </p>
           </div>
-
-          {/* Statistics */}
-          {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-            <div className="text-center">
-              <div className="text-3xl font-bold bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] bg-clip-text text-transparent">
-                150+
-              </div>
-              <p className="text-white/80 text-sm">Entreprises inscrites</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] bg-clip-text text-transparent">
-                500+
-              </div>
-              <p className="text-white/80 text-sm">Services proposés</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] bg-clip-text text-transparent">
-                85%
-              </div>
-              <p className="text-white/80 text-sm">Membres FEG</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] bg-clip-text text-transparent">
-                50%
-              </div>
-              <p className="text-white/80 text-sm">Réduction membres</p>
-            </div>
-          </div> */}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Service Categories */}
