@@ -34,6 +34,7 @@ import TickerTextes from "@/components/section/TickerTextes";
 
 import TextSearch from "@/components/section/search";
 import NewText from "@/components/section/new_text";
+import DernieresActualites from "./actualite/ActuLast";
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
@@ -945,7 +946,7 @@ export default function Home() {
               </p>
             </div>
            
-            <Link href="/actualites">
+            <Link href="/actualite">
             <Button
               size="lg"
               className="hover:text-[#063a1e] duration-300 ease-in-out hover:bg-white border hover:border-[#063a1e] font-medium"
@@ -958,49 +959,7 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Featured Article */}
             <div className="lg:col-span-2">
-              <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="relative h-64 overflow-hidden">
-                  <Image
-                    src="/article.png?height=400&width=600"
-                    alt="Article principal"
-                    width={600}
-                    height={400}
-                    className="w-full h-full object-center object-cover"
-                  />
-                  <div className="absolute top-4 left-4">
-                    <Badge className="bg-red-500 text-white">À LA UNE</Badge>
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
-                    <h3 className="text-white text-xl font-bold mb-2">
-                      Nouveau dispositif de financement pour les PME gabonaises
-                    </h3>
-                    <p className="text-white/90 text-sm">
-                      Le gouvernement annonce un fonds de 50 milliards FCFA pour
-                      soutenir les PME...
-                    </p>
-                  </div>
-                </div>
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                    <span>22 Juin 2025</span>
-                    <span>•</span>
-                    <span>Économie</span>
-                  </div>
-                  <p className="text-muted-foreground mb-4">
-                    Cette initiative gouvernementale vise à faciliter l'accès au
-                    financement pour les petites et moyennes entreprises
-                    gabonaises dans les secteurs prioritaires de l'économie
-                    nationale...
-                  </p>
-                  <Button
-                    variant="ghost"
-                    className="text-[#063a1e] hover:bg-[#063a1e]/10 p-0"
-                  >
-                    Lire l'article complet{" "}
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </CardContent>
-              </Card>
+             <DernieresActualites />
             </div>
 
             {/* Side Articles */}
