@@ -34,6 +34,7 @@ import TickerTextes from "@/components/section/TickerTextes";
 
 import TextSearch from "@/components/section/search";
 import NewText from "@/components/section/new_text";
+import DernieresActualites from "./actualite/ActuLast";
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
@@ -180,7 +181,7 @@ export default function Home() {
       <div className="flex justify-center items-center pb-12 container bg-[#eaeeeb]">
         <AdBanner
           emplacement="MIDDLE"
-          className="w-full h-full object-cover object-center max-h-52"
+          className="w-full max-w-[900px] h-full object-cover object-center"
         />
       </div>
       {/* Enhanced Business Services Section */}
@@ -201,34 +202,6 @@ export default function Home() {
               membre FEG.
             </p>
           </div>
-
-          {/* Statistics */}
-          {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-            <div className="text-center">
-              <div className="text-3xl font-bold bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] bg-clip-text text-transparent">
-                150+
-              </div>
-              <p className="text-white/80 text-sm">Entreprises inscrites</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] bg-clip-text text-transparent">
-                500+
-              </div>
-              <p className="text-white/80 text-sm">Services proposés</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] bg-clip-text text-transparent">
-                85%
-              </div>
-              <p className="text-white/80 text-sm">Membres FEG</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] bg-clip-text text-transparent">
-                50%
-              </div>
-              <p className="text-white/80 text-sm">Réduction membres</p>
-            </div>
-          </div> */}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Service Categories */}
@@ -731,7 +704,7 @@ export default function Home() {
                       
                     </CardTitle>
                     <p className="text-sm text-muted-foreground">
-                      BICIG - Banque
+                      BCEG - Banque
                     </p>
                   </div>
                   <Badge className="bg-green-100 text-green-800">
@@ -743,20 +716,20 @@ export default function Home() {
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div>
                     <p className="text-xs text-muted-foreground">Montant</p>
-                    <p className="font-semibold">5M - 100M FCFA</p>
+                    <p className="font-semibold">À partir de 1 000 000 F CFA</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Taux</p>
-                    <p className="font-semibold text-green-600">8.5% - 12%</p>
+                    <p className="font-semibold text-green-600">Variable selon profil</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Durée</p>
-                    <p className="font-semibold">2 - 7 ans</p>
+                    <p className="font-semibold">3 à 12 mois</p>
                   </div>
-                  <div>
+                  {/* <div>
                     <p className="text-xs text-muted-foreground">Apport</p>
                     <p className="font-semibold">20% minimum</p>
-                  </div>
+                  </div> */}
                 </div>
                 <p className="text-sm text-muted-foreground mb-4">
                   Financement d'équipements professionnels avec conditions
@@ -772,11 +745,11 @@ export default function Home() {
                 <div className="flex justify-between items-start">
                   <div>
                     <CardTitle className="text-lg text-[#063a1e]">
-                                          <h1 className="text-base ">                 Crédit de Fonctionnement</h1>
+                                          <h1 className="text-base ">                 CRÉDIT D'INVESTISSEMENT</h1>
                     </CardTitle>
 
                     <p className="text-sm text-muted-foreground">
-                      BWMAC - Banque
+                      BCEG - Banque
                     </p>
                   </div>
                   <Badge className="bg-blue-100 text-blue-800">Flexible</Badge>
@@ -786,20 +759,20 @@ export default function Home() {
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div>
                     <p className="text-xs text-muted-foreground">Montant</p>
-                    <p className="font-semibold">10M - 500M FCFA</p>
+                    <p className="font-semibold">À partir de 3 000 000 F CFA</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Taux</p>
-                    <p className="font-semibold text-blue-600">9% - 14%</p>
+                    <p className="font-semibold text-blue-600">Variable selon profil</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Durée</p>
-                    <p className="font-semibold">6 mois - 3 ans</p>
+                    <p className="font-semibold">6 à 36 mois</p>
                   </div>
-                  <div>
+                  {/* <div>
                     <p className="text-xs text-muted-foreground">Garantie</p>
                     <p className="font-semibold">Selon contexte</p>
-                  </div>
+                  </div> */}
                 </div>
                 <p className="text-sm text-muted-foreground mb-4">
                   Ligne de crédit flexible pour financer le besoin en fonds de
@@ -815,10 +788,10 @@ export default function Home() {
                 <div className="flex justify-between items-start">
                   <div>
                     <CardTitle className=" text-[#063a1e]">
-                                           <h1 className="text-base ">                                Microcrédit Entrepreneur </h1>
+                                           <h1 className="text-base ">                                Crédit Investissement </h1>
                     </CardTitle>
                     <p className="text-sm text-muted-foreground">
-                      FINAFI - Microfinance
+                      FINAM - Microfinance
                     </p>
                   </div>
                   <Badge className="bg-orange-100 text-orange-800">
@@ -830,20 +803,20 @@ export default function Home() {
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div>
                     <p className="text-xs text-muted-foreground">Montant</p>
-                    <p className="font-semibold">500K - 10M FCFA</p>
+                    <p className="font-semibold">Variable</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Taux</p>
-                    <p className="font-semibold text-orange-600">12% - 18%</p>
+                    <p className="font-semibold text-orange-600">Variable</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Durée</p>
-                    <p className="font-semibold">6 mois - 2 ans</p>
+                    <p className="font-semibold">Selon contrat</p>
                   </div>
-                  <div>
+                  {/* <div>
                     <p className="text-xs text-muted-foreground">Garantie</p>
                     <p className="font-semibold">Solidaire</p>
-                  </div>
+                  </div> */}
                 </div>
                 <p className="text-sm text-muted-foreground mb-4">
                   Solution de financement adaptée aux petites entreprises et
@@ -859,10 +832,10 @@ export default function Home() {
                 <div className="flex justify-between items-start">
                   <div>
                     <CardTitle className=" text-[#063a1e]">
-                      <h1 className="text-base ">Crédit Immobilier Pro</h1>
+                      <h1 className="text-base ">INTRODUCTION EN BOURSE PME</h1>
                     </CardTitle>
                     <p className="text-sm text-muted-foreground">
-                      UGB - Banque
+                      BVMAC
                     </p>
                   </div>
                   <Badge className="bg-purple-100 text-purple-800">
@@ -874,20 +847,20 @@ export default function Home() {
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div>
                     <p className="text-xs text-muted-foreground">Montant</p>
-                    <p className="font-semibold">50M - 2Mds FCFA</p>
+                    <p className="font-semibold">200 000 000 - 10 000 000 000 F CFA</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Taux</p>
-                    <p className="font-semibold text-purple-600">7.5% - 10%</p>
+                    <p className="font-semibold text-purple-600">N/A</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Durée</p>
-                    <p className="font-semibold">5 - 20 ans</p>
+                    <p className="font-semibold">Aucun remboursement</p>
                   </div>
-                  <div>
+                  {/* <div>
                     <p className="text-xs text-muted-foreground">Apport</p>
                     <p className="font-semibold">30% minimum</p>
-                  </div>
+                  </div> */}
                 </div>
                 <p className="text-sm text-muted-foreground mb-4">
                   Financement pour l'acquisition de locaux commerciaux ou
@@ -973,7 +946,7 @@ export default function Home() {
               </p>
             </div>
            
-            <Link href="/actualites">
+            <Link href="/actualite">
             <Button
               size="lg"
               className="hover:text-[#063a1e] duration-300 ease-in-out hover:bg-white border hover:border-[#063a1e] font-medium"
@@ -986,49 +959,7 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Featured Article */}
             <div className="lg:col-span-2">
-              <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="relative h-64 overflow-hidden">
-                  <Image
-                    src="/article.png?height=400&width=600"
-                    alt="Article principal"
-                    width={600}
-                    height={400}
-                    className="w-full h-full object-center object-cover"
-                  />
-                  <div className="absolute top-4 left-4">
-                    <Badge className="bg-red-500 text-white">À LA UNE</Badge>
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
-                    <h3 className="text-white text-xl font-bold mb-2">
-                      Nouveau dispositif de financement pour les PME gabonaises
-                    </h3>
-                    <p className="text-white/90 text-sm">
-                      Le gouvernement annonce un fonds de 50 milliards FCFA pour
-                      soutenir les PME...
-                    </p>
-                  </div>
-                </div>
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                    <span>22 Juin 2025</span>
-                    <span>•</span>
-                    <span>Économie</span>
-                  </div>
-                  <p className="text-muted-foreground mb-4">
-                    Cette initiative gouvernementale vise à faciliter l'accès au
-                    financement pour les petites et moyennes entreprises
-                    gabonaises dans les secteurs prioritaires de l'économie
-                    nationale...
-                  </p>
-                  <Button
-                    variant="ghost"
-                    className="text-[#063a1e] hover:bg-[#063a1e]/10 p-0"
-                  >
-                    Lire l'article complet{" "}
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </CardContent>
-              </Card>
+             <DernieresActualites />
             </div>
 
             {/* Side Articles */}

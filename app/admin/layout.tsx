@@ -67,7 +67,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: "Institution", href: "/admin/institutions", icon: Newspaper },
     { name: "SEA", href: "/admin/structures", icon: Briefcase },
     { name: "Offre & Services", href: "/admin/entreprise", icon: Handshake},
-    { name: "Publicité", href: "/admin/publicites", icon: Megaphone },
+    { name: "Publicité", href: "/admin/vente", icon: Megaphone },
     { name: "Actualité", href: "/admin/actualite", icon: FileEdit },
   ];
 

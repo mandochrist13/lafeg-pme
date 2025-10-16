@@ -55,18 +55,18 @@ export async function GET(request:NextRequest, { params }:{ params: { id: string
   try {
     const { id } = params;
     
-    const publicite = await prisma.publicite.findUnique({
-      where: { id_publicite: id }
+    const vente = await prisma.vente.findUnique({
+      where: { id_vente: id }
     });
     
-    if (!publicite) {
+    if (!vente) {
       return NextResponse.json(
         { error: 'Publicité non trouvée' }, 
         { status: 404 }
       );
     }
     
-    return NextResponse.json(publicite);
+    return NextResponse.json(vente);
   } catch (error) {
     console.error('Erreur lors de la récupération de la publicité:', error);
     return NextResponse.json(
@@ -155,11 +155,11 @@ export async function PUT(request:NextRequest, { params }:{ params: { id: string
     }
     
     // Vérifier si la publicité existe
-    const existingPublicite = await prisma.publicite.findUnique({
-      where: { id_publicite: id }
+    const existingVente = await prisma.vente.findUnique({
+      where: { id_vente: id }
     });
     
-    if (!existingPublicite) {
+    if (!existingVente) {
       return NextResponse.json(
         { erreur: 'Publicité non trouvée' }, 
         { status: 404 }
@@ -183,7 +183,7 @@ export async function PUT(request:NextRequest, { params }:{ params: { id: string
       }
       
       // Extraire le nom du fichier de l'URL existante
-      const existingFileName = existingPublicite.image_url.split('/').pop();
+      const existingFileName = existingVente.image_url.split('/').pop();
       
       // Supprimer l'ancienne image si elle existe
       if (existingFileName) {
@@ -231,12 +231,12 @@ export async function PUT(request:NextRequest, { params }:{ params: { id: string
     }
     
     // Mettre à jour la publicité
-    const updatedPublicite = await prisma.publicite.update({
-      where: { id_publicite: id },
+    const updatedVente = await prisma.vente.update({
+      where: { id_vente: id },
       data: updateData
     });
     
-    return NextResponse.json(updatedPublicite);
+    return NextResponse.json(updatedVente);
   } catch (error) {
     console.error('Erreur lors de la mise à jour de la publicité:', error);
     return NextResponse.json(
@@ -275,8 +275,8 @@ export async function DELETE(request:NextRequest, { params }:{ params: { id: str
     const { id } = params;
     
     // Vérifier si la publicité existe
-    const publicite = await prisma.publicite.findUnique({
-      where: { id_publicite: id }
+    const publicite = await prisma.vente.findUnique({
+      where: { id_vente: id }
     });
     
     if (!publicite) {
@@ -302,8 +302,8 @@ export async function DELETE(request:NextRequest, { params }:{ params: { id: str
     }
     
     // Supprimer la publicité de la base de données
-    await prisma.publicite.delete({
-      where: { id_publicite: id }
+    await prisma.vente.delete({
+      where: { id_vente: id }
     });
     
     return NextResponse.json({ message: 'Publicité supprimée avec succès' });

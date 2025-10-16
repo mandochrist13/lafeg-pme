@@ -17,7 +17,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Image from "next/image";
-import { fetchAllPublicites, Annonce } from "@/app/services/annonce/api";
+import { fetchAllPublicites, Annonce } from "@/app/services/vente/api";
 import {
   Table,
   TableBody,

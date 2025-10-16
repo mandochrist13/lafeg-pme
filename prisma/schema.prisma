@@ -1,58 +1,51 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "mongodb"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model TexteJuridique {
-  id_texteJuridique String   @id @default(auto()) @map("_id") @db.ObjectId
+  id_texteJuridique String   @id @default(uuid())
   titre             String
   type_texte        String
-  fichier_url       String // URL ou chemin vers le fichier PDF stocké
-  fichier_nom       String // Nom original du fichier
-  taille_fichier    Int? // Taille du fichier en octets
+  fichier_url       String
+  fichier_nom       String
+  taille_fichier    Int?
   mime_type         String   @default("application/pdf")
   categorie         String
   description       String?
-  date_parution     DateTime // Mots-clés pour faciliter la recherche
-  version           String? // Pour gérer les versions des documents
+  date_parution     DateTime
+  version           String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
-
-  // Métadonnées d'extraction potentielles
 
   @@map("texte_juridique")
 }
 
 model Offre {
-  id_offre      String      @id @default(auto()) @map("_id") @db.ObjectId
+  id_offre      String      @id @default(uuid())
   titre_offre   String
   nom_structure String
   type_offre    String
   membre_feg    Boolean
   contact       String
   image_nom     String?
-  image_url     String? // URL ou chemin vers l'image stockée
-  bannier_nom   String? // Nom original de la banniere fichier image
-  bannier_url   String? // URL ou chemin vers l'image stockée
+  image_url     String?
+  bannier_nom   String?
+  bannier_url   String?
   description   String?
   email         String
   localisation  String
   site_web      String
-  fichier_url   String // URL ou chemin vers le fichier PDF stocké
-  fichier_nom   String // Nom original du fichier
-  date_debut    DateTime //@updatedAt
-  date_fin      DateTime //@updatedAt
+  fichier_url   String
+  fichier_nom   String
+  date_debut    DateTime
+  date_fin      DateTime
   statut        StatutOffre @default(INACTIF)
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
@@ -60,38 +53,52 @@ model Offre {
   @@map("offre")
 }
 
-model Annonce {
-  id_publicite  String   @id @default(auto()) @map("_id") @db.ObjectId
+model Vente {
+  id_vente      String   @id @default(uuid())
   libelle       String
-  image_url     String // URL ou chemin vers l'image stockée
-  image_nom     String // Nom original du fichier image
-  taille_image  Int? // Taille de l'image en octets
-  mime_type     String   @default("image/jpeg") // Type MIME par défaut pour les images
+  image_url     String
+  image_nom     String
+  taille_image  Int?
+  mime_type     String   @default("image/jpeg")
   nom_structure String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  @@map("publicite")
+  @@map("vente")
+}
+
+model Actualite {
+  id         String   @id @default(uuid())
+  titre      String
+  contenu    String
+  imageUrl   String?
+  datePub    DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  categorie  String?
+  source     String?
+  lienSource String?
+
+  @@map("actualite")
 }
 
 model Institutions {
-  id_institution   String   @id @default(auto()) @map("_id") @db.ObjectId
+  id_institution   String   @id @default(uuid())
   nom              String
   categorie        String
   type_institution String
   partenaire_feg   Boolean?
   description      String?
-  // Champs améliorés pour la gestion d'image
-  image_url        String? // URL ou chemin vers l'image du logo stockée
-  image_nom        String? // Nom original du fichier image
-  taille_image     Int? // Taille de l'image en octets
-  image_mime_type  String?  @default("image/jpeg") // Type MIME par défaut pour les images
+  image_url        String?
+  image_nom        String?
+  taille_image     Int?
+  image_mime_type  String?  @default("image/jpeg")
   adresse          String?
   contact          String?
   mail             String?
   site_web         String?
-  rs_1             String? // réseau social 1
-  rs_2             String? // réseau social 2
+  rs_1             String?
+  rs_2             String?
   service          String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
@@ -100,7 +107,7 @@ model Institutions {
 }
 
 model SEA {
-  id_sea         String   @id @default(auto()) @map("_id") @db.ObjectId
+  id_sea         String   @id @default(uuid())
   nom            String
   description    String?
   type_sea       String
@@ -110,14 +117,12 @@ model SEA {
   contact        String?
   mail           String?
   site_web       String?
-  rs_1           String? // réseau social 1
-  rs_2           String? // réseau social 2 
-  // Champs améliorés pour la gestion d'image
-  logo_url       String? // URL ou chemin vers l'image du logo stockée
-  logo_nom       String? // Nom original du fichier image
-  taille_logo    Int? // Taille de l'image en octets
-  logo_mime_type String?  @default("image/jpeg") // Type MIME par défaut pour les images
-
+  rs_1           String?
+  rs_2           String?
+  logo_url       String?
+  logo_nom       String?
+  taille_logo    Int?
+  logo_mime_type String?  @default("image/jpeg")
   partenaire_feg Boolean?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -126,7 +131,7 @@ model SEA {
 }
 
 model Utilisateur {
-  id_utilisateur     String    @id @default(auto()) @map("_id") @db.ObjectId
+  id_utilisateur     String    @id @default(uuid())
   nom                String
   prenom             String
   email              String    @unique
