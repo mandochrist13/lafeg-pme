@@ -23,7 +23,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { fetchActualites, type Actualite } from "@/app/services/public/actualite";
-import slugify from "slugify"
+// import slugify from "slugify"
 
 const categories = [
   "Toutes",
@@ -292,11 +292,11 @@ export default function ActualitesPage() {
                         <span>{formatDate(article.datePub)}</span>
                        
                       </div>
-                      <Link href={`/actualites/${slugify(article.titre, { lower: true, strict: true })}-${article.id}`}>
+                      {/* <Link href={`/actualites/${slugify(article.titre, { lower: true, strict: true })}-${article.id}`}>
   <Button variant="outline" size="sm" className="w-full">
     Lire la suite
   </Button>
-</Link>
+</Link> */}
 
                     </CardContent>
                   </Card>

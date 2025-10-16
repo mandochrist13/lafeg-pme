@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import { supabase } from "@/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
-import slugify from "slugify";
+// import slugify from "slugify";
 
 export const config = {
   api: { bodyParser: false },
@@ -30,13 +30,13 @@ export async function GET(request: NextRequest) {
     ]);
 
     // ✅ On ajoute un slug dynamique côté API, sans l’enregistrer
-    const actualitesAvecSlug = actualites.map((a) => ({
-      ...a,
-      slug: `${slugify(a.titre, { lower: true, strict: true })}-${a.id}`,
-    }));
+    // const actualitesAvecSlug = actualites.map((a) => ({
+    //   ...a,
+    //   slug: `${slugify(a.titre, { lower: true, strict: true })}-${a.id}`,
+    // }));
 
     return NextResponse.json({
-      data: actualitesAvecSlug,
+    //   data: actualitesAvecSlug,
       pagination: {
         page,
         limit,
@@ -108,9 +108,11 @@ export async function POST(request: NextRequest) {
     });
 
     // ✅ Retourne un slug dynamique pour le front
-    const slug = `${slugify(titre, { lower: true, strict: true })}-${actualite.id}`;
+    // const slug = `${slugify(titre, { lower: true, strict: true })}-${actualite.id}`;
 
-    return NextResponse.json({ ...actualite, slug }, { status: 201 });
+    return NextResponse.json({ ...actualite, 
+        // slug 
+    }, { status: 201 });
   } catch (error) {
     console.error("❌ Erreur POST /actualite:", error);
     return NextResponse.json(

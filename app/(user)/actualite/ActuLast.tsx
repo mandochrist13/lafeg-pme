@@ -7,7 +7,7 @@ import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import slugify from "slugify"
+// import slugify from "slugify"
 
 interface Actualite {
   id: string
@@ -56,7 +56,7 @@ export default function DernieresActualites() {
   return (
     <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
       {actus.map((article, index) => {
-        const slug = `${slugify(article.titre, { lower: true, strict: true })}-${article.id}`
+        // const slug = `${slugify(article.titre, { lower: true, strict: true })}-${article.id}`
         return (
           <Card key={article.id} className="overflow-hidden hover:shadow-lg transition-shadow">
             <div className="relative h-64 overflow-hidden">
@@ -96,7 +96,7 @@ export default function DernieresActualites() {
               <p className="text-muted-foreground mb-4 line-clamp-3">
                 {article.contenu.slice(0, 180)}...
               </p>
-              <Link href={`/actualites/${slug}`}>
+              {/* <Link href={`/actualites/${slug}`}>
                 <Button
                   variant="ghost"
                   className="text-[#063a1e] hover:bg-[#063a1e]/10 p-0"
@@ -104,7 +104,7 @@ export default function DernieresActualites() {
                   Lire l'article complet
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-              </Link>
+              </Link> */}
             </CardContent>
           </Card>
         )
