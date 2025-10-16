@@ -48,7 +48,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import ActualiteForm from "./ActualiteForm";
-import ActualitePreview from "./ActualitePreview";
+import ActualitePreview from "./ActualitePreview"
 
 import {
   listActualites,
@@ -77,8 +77,8 @@ export default function ActualitesAdmin() {
   const [error, setError] = useState<string | null>(null);
   const [openForm, setOpenForm] = useState(false);
   const [editing, setEditing] = useState<Actualite | null>(null);
-  const [openPreview, setOpenPreview] = useState(false);
-  const [viewing, setViewing] = useState<Actualite | null>(null);
+const [openPreview, setOpenPreview] = useState(false)
+const [viewing, setViewing] = useState<Actualite | null>(null)
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategorie, setSelectedCategorie] = useState<string>("");
@@ -315,13 +315,13 @@ export default function ActualitesAdmin() {
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
-                              onClick={() => {
-                                setViewing(a);
-                                setOpenPreview(true);
-                              }}
-                            >
-                              <Eye className="mr-2 h-4 w-4" /> Voir
-                            </DropdownMenuItem>
+  onClick={() => {
+    setViewing(a)
+    setOpenPreview(true)
+  }}
+>
+  <Eye className="mr-2 h-4 w-4" /> Voir
+</DropdownMenuItem>
 
                             <DropdownMenuItem
                               onClick={() => {
@@ -403,12 +403,6 @@ export default function ActualitesAdmin() {
         actualite={editing}
         onSaved={() => fetchData(page)}
       />
-      <ActualitePreview
-  open={openPreview}
-  onClose={() => setOpenPreview(false)}
-  actualite={viewing}
-/>
-
     </div>
   );
 }
