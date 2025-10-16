@@ -327,8 +327,18 @@ export async function POST(request: NextRequest) {
     // Création d'un nom de fichier unique
     const timestamp = Date.now();
     // const fileExtension = file.name.split('.').pop();
-    const fileName = `${timestamp}-${file.name.replace(/\s+/g, '-')}`;
-    const filePath = `texte-juridique/${fileName}`;
+const sanitizeFileName = (name: string) => {
+  return name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // retire accents
+    .replace(/[^a-zA-Z0-9._-]/g, "-") // garde lettres, chiffres, points, tirets
+    .replace(/-+/g, "-") // évite les tirets doublés
+    .replace(/^-|-$/g, ""); // retire tiret début/fin
+};
+
+const safeName = sanitizeFileName(file.name);
+const fileName = `${Date.now()}-${safeName}`;
+const filePath = `texte-juridique/${fileName}`;
     // Upload du fichier vers Supabase Storage
     const { data, error } = await supabase.storage
       .from('feg')

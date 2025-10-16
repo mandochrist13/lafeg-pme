@@ -5,6 +5,7 @@ import LegalChatBot from "@/components/LegalChatBot";
 import { Analytics } from "@vercel/analytics/next";
 import Image from "next/image";
 
+
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <body className="">

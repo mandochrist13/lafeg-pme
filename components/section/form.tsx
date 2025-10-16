@@ -108,27 +108,7 @@ export default function Form() {
   });
 
 
-      // Cases à cocher
-      // const interests = [];
-      // if (data.textes_legislatifs_et_reglementaires_des_administrations_publiques) {
-      //   interests.push("Textes administration");
-      // }
-      // if (data.textes_legislatifs_et_reglementaires_pour_les_pme) {
-      //   interests.push("Textes PME");
-      // }
-      // if (data.textes_juridiques_regionaux_et_internationaux) {
-      //   interests.push("Textes internationaux");
-      // }
-      // if (data.institutions_financieres) {
-      //   interests.push("Institutions financières");
-      // }
-      // if (data.sea) {
-      //   interests.push("sea");
-      // }
       
-      // if (interests.length > 0) {
-      //   formData.append("entry.1646452430", interests.join(", "));
-      // }
   
       // 3. URL corrigée pour Google Forms
       const googleFormsUrl = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSfuP1j6-cAoftKQNNLF5DRYIom445w0NtMKxPdptxqaVErcqQ/formResponse";
