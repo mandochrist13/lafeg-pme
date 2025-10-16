@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { fetchAllPublicites, Annonce } from "@/app/services/annonce/api";
+import { fetchAllPublicites, Annonce } from "@/app/services/vente/api";
 
 type DynamicAdBannerProps = {
   /** 

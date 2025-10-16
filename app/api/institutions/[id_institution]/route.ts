@@ -63,9 +63,9 @@ export async function GET(
   const { id_institution } = params;
 
   // Vérifie que l'ID est bien un ObjectId MongoDB
-  if (!/^[a-fA-F0-9]{24}$/.test(id_institution)) {
+  if (!/^[0-9a-fA-F-]{36}$/.test(id_institution)) {
     return NextResponse.json(
-      { error: "ID invalide (format MongoDB attendu)." },
+      { error: "ID invalide (format PostgreSQL attendu)." },
       { status: 400 }
     );
   }
@@ -385,13 +385,14 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id_institution: string } }
+  context: { params: Promise<{ id_institution: string }> }
 ) {
-  const { id_institution } = params;
+  const { id_institution } = await context.params; // ✅ attendre la promesse
 
-  if (!/^[a-fA-F0-9]{24}$/.test(id_institution)) {
+  // ✅ Vérification adaptée à PostgreSQL (UUID)
+  if (!/^[0-9a-fA-F-]{36}$/.test(id_institution)) {
     return NextResponse.json(
-      { error: "ID Mongo invalide (format)." },
+      { error: "ID invalide (format UUID attendu)." },
       { status: 400 }
     );
   }
@@ -401,14 +402,11 @@ export async function DELETE(
       where: { id_institution },
     });
 
-    return NextResponse.json(
-      { message: "Institution supprimée" },
-      { status: 200 }
-    );
+    return NextResponse.json({ message: "Institution supprimée" });
   } catch (error) {
-    console.error("Erreur DELETE:", error);
+    console.error("Erreur DELETE /api/institutions/[id_institution]:", error);
     return NextResponse.json(
-      { error: "Erreur serveur ou ID non trouvé" },
+      { error: "Erreur serveur ou institution non trouvée" },
       { status: 500 }
     );
   }
