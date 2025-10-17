@@ -2,18 +2,18 @@ import prisma from "@/lib/prisma";
 import { supabase } from "@/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
 
-// 📍 GET : Récupère une actualité via l’ID (extrait du slug)
+// 📍 GET : Récupère une actualité via son ID
 export async function GET(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await context.params;
-
-  // ✅ Si l’URL contient un slug (ex: "loi-commerce-1234"), on garde seulement la partie ID
+  const { id } = await context.params; // ✅ nouvelle syntaxe Next.js 15
   const cleanId = id.split("-").pop();
 
   try {
-    const actualite = await prisma.actualite.findUnique({ where: { id: cleanId } });
+    const actualite = await prisma.actualite.findUnique({
+      where: { id: cleanId },
+    });
 
     if (!actualite) {
       return NextResponse.json({ error: "Actualité non trouvée" }, { status: 404 });
@@ -46,7 +46,7 @@ export async function PUT(
     const formData = await request.formData();
     const file = formData.get("image") as File | null;
 
-    const updates: any = {};
+    const updates: Record<string, string> = {};
     ["titre", "contenu", "categorie", "source", "lienSource"].forEach((field) => {
       const value = formData.get(field);
       if (value) updates[field] = value.toString();
@@ -66,10 +66,7 @@ export async function PUT(
         return NextResponse.json({ error: "Erreur upload Supabase" }, { status: 500 });
       }
 
-      const { data: urlData } = supabase.storage
-        .from("feg")
-        .getPublicUrl(filePath);
-
+      const { data: urlData } = supabase.storage.from("feg").getPublicUrl(filePath);
       updates.imageUrl = urlData.publicUrl;
     }
 
