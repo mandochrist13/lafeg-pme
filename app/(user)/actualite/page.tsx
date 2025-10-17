@@ -63,26 +63,27 @@ export default function ActualitesPage() {
 
   // 🔍 Filtrage et tri
   const filteredActualites = useMemo(() => {
-    const filtered = actualites.filter((article) => {
-      const matchesSearch =
-        article.titre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        article.contenu.toLowerCase().includes(searchTerm.toLowerCase());
+  const list = Array.isArray(actualites) ? actualites : [];
 
-      const matchesCategory =
-        selectedCategory === "Toutes" || article.categorie === selectedCategory;
+  const filtered = list.filter((article) => {
+    const matchesSearch =
+      article.titre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      article.contenu?.toLowerCase().includes(searchTerm.toLowerCase());
 
-      return matchesSearch && matchesCategory;
-    });
+    const matchesCategory =
+      selectedCategory === "Toutes" || article.categorie === selectedCategory;
 
-    if (sortBy === "recent") {
-      filtered.sort(
-        (a, b) =>
-          new Date(b.datePub).getTime() - new Date(a.datePub).getTime()
-      );
-    }
+    return matchesSearch && matchesCategory;
+  });
 
-    return filtered;
-  }, [searchTerm, selectedCategory, sortBy, actualites]);
+  if (sortBy === "recent") {
+    filtered.sort(
+      (a, b) => new Date(b.datePub).getTime() - new Date(a.datePub).getTime()
+    );
+  }
+
+  return filtered;
+}, [searchTerm, selectedCategory, sortBy, actualites]);
 
   const featuredArticles = actualites
     .filter((a) => a.categorie === "Événements")
@@ -292,11 +293,11 @@ export default function ActualitesPage() {
                         <span>{formatDate(article.datePub)}</span>
                        
                       </div>
-                      {/* <Link href={`/actualites/${slugify(article.titre, { lower: true, strict: true })}-${article.id}`}>
-  <Button variant="outline" size="sm" className="w-full">
+                      <Link href={`/actualite/${article.id}`}>
+  <Button variant="default" size="sm" className="w-full">
     Lire la suite
   </Button>
-</Link> */}
+</Link>
 
                     </CardContent>
                   </Card>
@@ -337,7 +338,7 @@ export default function ActualitesPage() {
                               {/* <span>{article.tempsLecture}</span>
                               <span>{article.vues} vues</span> */}
                             </div>
-                            <Link href={`/actualites/${article.id}`}>
+                            <Link href={`/actualite${article.id}`}>
                               <Button variant="outline" size="sm">
                                 Lire
                                 <ArrowRight className="w-3 h-3 ml-1" />

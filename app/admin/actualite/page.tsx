@@ -350,7 +350,7 @@ const [viewing, setViewing] = useState<Actualite | null>(null)
 
           <div className="mt-4 flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              Affichage de {filtered.length} sur {meta.total} actualités
+              Affichage de {filtered.length} sur {meta?.total ?? 0 } actualités
             </p>
             <Pagination>
               <PaginationContent>
@@ -363,7 +363,7 @@ const [viewing, setViewing] = useState<Actualite | null>(null)
                     }}
                   />
                 </PaginationItem>
-                {Array.from({ length: meta.totalPages })
+                {Array.from({ length: meta?.totalPages ?? 0 })
                   .slice(0, 5)
                   .map((_, i) => {
                     const n = i + 1;
@@ -382,7 +382,7 @@ const [viewing, setViewing] = useState<Actualite | null>(null)
                       </PaginationItem>
                     );
                   })}
-                {meta.totalPages > 5 && <PaginationEllipsis />}
+                {meta?.totalPages > 5 && <PaginationEllipsis />}
                 <PaginationItem>
                   <PaginationNext
                     href="#"

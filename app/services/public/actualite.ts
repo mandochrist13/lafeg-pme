@@ -10,10 +10,12 @@ export type Actualite = {
 }
 
 export async function fetchActualites() {
-  const res = await fetch("/api/actualite?page=1&limit=50", { cache: "no-store" })
-  if (!res.ok) throw new Error("Erreur de chargement des actualités")
-  return res.json() as Promise<{ data: Actualite[] }>
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/actualite`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Erreur lors du chargement des actualités");
+  const json = await res.json();
+  return { data: Array.isArray(json.data) ? json.data : [] };
 }
+
 
 export async function fetchActualiteById(id: string) {
   const res = await fetch(`/api/actualite/${id}`)
