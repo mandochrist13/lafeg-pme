@@ -8,13 +8,13 @@ import { Calendar, ArrowLeft } from "lucide-react"
 import { Button} from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
-export default async function ArticlePage({ params }: { params: { slug: string } }) {
-  // ✅ On récupère uniquement l'id à la fin du slug
-  const id = params.slug.split("-").pop()
+export default async function ArticlePage({ params }: { params: { id: string } }) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/actualite/${params.id}`, {
+    cache: "no-store",
+  });
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/actualite/${id}`, { cache: "no-store" })
-  if (!res.ok) notFound()
-  const article = await res.json()
+  if (!res.ok) notFound();
+  const article = await res.json();
 
   // Format de date
   const formatDate = (dateString: string) =>
@@ -27,7 +27,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        <Link href="/actualites">
+        <Link href="/actualite">
           <Button variant="outline" className="mb-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Retour aux actualités
