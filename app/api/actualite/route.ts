@@ -35,15 +35,7 @@ export async function GET(request: NextRequest) {
     //   slug: `${slugify(a.titre, { lower: true, strict: true })}-${a.id}`,
     // }));
 
-    return NextResponse.json({
-    //   data: actualitesAvecSlug,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-      },
-    });
+     return NextResponse.json({ data: actualites });
   } catch (error) {
     console.error("❌ Erreur GET /actualite:", error);
     return NextResponse.json(
