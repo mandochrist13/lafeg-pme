@@ -3,7 +3,7 @@
 const API_BASE_URL = "/api/vente";
 
 export interface Annonce {
-  id_publicite: string;
+  id_vente: string; // ✅ même nom que dans Prisma
   libelle: string;
   nom_structure: string;
   image_url?: string | null;
@@ -12,6 +12,7 @@ export interface Annonce {
   updatedAt: string;
   imageFile: File | null;
 }
+
 
 // CREATE - Créer une nouvelle publicité
 export async function createPublicite(data: FormData) {
