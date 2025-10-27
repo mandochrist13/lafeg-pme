@@ -10,7 +10,7 @@ export type Actualite = {
 }
 
 export async function fetchActualites() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/actualite`, { cache: "no-store" });
+  const res = await fetch(`/api/actualite`, { cache: "no-store" });
   if (!res.ok) throw new Error("Erreur lors du chargement des actualités");
   const json = await res.json();
   return { data: Array.isArray(json.data) ? json.data : [] };

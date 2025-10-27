@@ -9,7 +9,7 @@ import { Button} from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
 export default async function ArticlePage({ params }: { params: { id: string } }) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/actualite/${params.id}`, {
+  const res = await fetch(`/api/actualite/${params.id}`, {
     cache: "no-store",
   });
 
