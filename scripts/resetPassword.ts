@@ -1,16 +1,16 @@
 const { PrismaClient: PrismaClientGenerated } = require("../generated/prisma");
 const { hash: bcryptHash } = require("bcryptjs");
 
-const prisma = new PrismaClientGenerated();
+const prismaClient = new PrismaClientGenerated();
 
 async function main() {
-  const email = "mandochrist13@gmail.com";
-  const plainPassword = "admin789";
+  const email = "coeurllyb@gmail.com";
+  const plainPassword = "coeurlly";
 
   console.log("🔍 Vérification ou création de l'utilisateur :", email);
 
   // Recherche insensible à la casse
-  const user = await prisma.utilisateur.findFirst({
+  const user = await prismaClient.utilisateur.findFirst({
     where: { email: { equals: email, mode: "insensitive" } },
   });
 
@@ -19,10 +19,10 @@ async function main() {
   if (!user) {
     console.log("⚠️ Aucun utilisateur trouvé — création en cours...");
 
-    const newUser = await prisma.utilisateur.create({
+    const newUser = await prismaClient.utilisateur.create({
       data: {
-        nom: "Admin",
-        prenom: "FEG",
+        nom: "BOUROBOU",
+        prenom: "Coeurlly",
         email,
         mot_de_passe: hashed,
         role: "ADMIN",
@@ -32,7 +32,7 @@ async function main() {
     console.log("✅ Nouvel utilisateur créé :", newUser.email);
   } else {
     console.log("✅ Utilisateur trouvé :", user.nom, user.prenom);
-    await prisma.utilisateur.update({
+    await prismaClient.utilisateur.update({
       where: { id_utilisateur: user.id_utilisateur },
       data: { mot_de_passe: hashed },
     });
@@ -41,8 +41,8 @@ async function main() {
 }
 
 main()
-  .then(() => prisma.$disconnect())
+  .then(() => prismaClient.$disconnect())
   .catch((e) => {
     console.error("❌ Erreur :", e);
-    prisma.$disconnect();
+    prismaClient.$disconnect();
   });
