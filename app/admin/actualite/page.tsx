@@ -94,7 +94,7 @@ const [viewing, setViewing] = useState<Actualite | null>(null)
         page: p,
         limit,
         categorie: selectedCategorie,
-      });
+      }) as { data: Actualite[], pagination: PageMeta };
       setItems(res.data);
       setMeta(res.pagination);
     } catch (e: any) {
