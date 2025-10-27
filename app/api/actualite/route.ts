@@ -7,6 +7,8 @@ export const config = {
   api: { bodyParser: false },
 };
 
+
+
 // 📍 GET : Liste paginée
 export async function GET(request: NextRequest) {
   try {

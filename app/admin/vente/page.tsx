@@ -76,7 +76,7 @@ export default function PublicitesPage({ trigger, onConfirm }: Props) {
 
   const fetchPublicites = async () => {
     try {
-      const response = await fetch("/api/publicites");
+      const response = await fetch("/api/vente");
       if (response.ok) {
         const data = await response.json();
         setPublicites(Array.isArray(data) ? data : data.publicites);
@@ -246,7 +246,7 @@ export default function PublicitesPage({ trigger, onConfirm }: Props) {
               </TableHeader>
               <TableBody>
                 {filteredPublicites.map((publicite) => (
-                  <TableRow key={publicite.id_publicite}>
+                  <TableRow key={publicite.id_vente}>
                     <TableCell className="font-medium">
                       {publicite.libelle}
                     </TableCell>
@@ -289,7 +289,7 @@ export default function PublicitesPage({ trigger, onConfirm }: Props) {
                           }
                           onConfirm={async () => {
                             const response = await fetch(
-                              `/api/publicites/${publicite.id_publicite}`,
+                              `/api/vente/${publicite.id_vente}`,
                               {
                                 method: "DELETE",
                               }

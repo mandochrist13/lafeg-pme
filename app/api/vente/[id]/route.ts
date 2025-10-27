@@ -270,48 +270,27 @@ export async function PUT(request:NextRequest, { params }:{ params: { id: string
  */
 
 // DELETE - Supprimer une publicité
-export async function DELETE(request:NextRequest, { params }:{ params: { id: string } }) {
+export async function DELETE(
+  request: NextRequest,
+  // 👇 Accepte Promise ou objet direct pour garder la compatibilité
+  { params }: { params: { id: string } } | { params: Promise<{ id: string }> }
+) {
   try {
-    const { id } = params;
-    
-    // Vérifier si la publicité existe
-    const publicite = await prisma.vente.findUnique({
-      where: { id_vente: id }
-    });
-    
-    if (!publicite) {
-      return NextResponse.json(
-        { erreur: 'Publicité non trouvée' }, 
-        { status: 404 }
-      );
+    // Normalisation : marche que ce soit une Promise ou non
+    const { id } = await Promise.resolve(params);
+
+    // Vérifier l’existence
+    const vente = await prisma.vente.findUnique({ where: { id_vente: id } });
+    if (!vente) {
+      return NextResponse.json({ message: "Vente introuvable" }, { status: 404 });
     }
-    
-    // Extraire le chemin du fichier depuis l'URL
-    const fileUrl = publicite.image_url;
-    const fileName = fileUrl.split('/').pop();
-    
-    // Supprimer l'image de Supabase Storage
-    if (fileName) {
-      const { error: deleteError } = await supabase.storage
-        .from('feg')
-        .remove([`publicites/${fileName}`]);
-        
-      if (deleteError) {
-        console.warn('Erreur lors de la suppression de l\'image:', deleteError);
-      }
-    }
-    
-    // Supprimer la publicité de la base de données
-    await prisma.vente.delete({
-      where: { id_vente: id }
-    });
-    
-    return NextResponse.json({ message: 'Publicité supprimée avec succès' });
-  } catch (error) {
-    console.error('Erreur lors de la suppression de la publicité:', error);
-    return NextResponse.json(
-      { error: 'Erreur lors de la suppression de la publicité' }, 
-      { status: 500 }
-    );
+
+    await prisma.vente.delete({ where: { id_vente: id } });
+
+    // 204 = succès sans corps de réponse
+    return new NextResponse(null, { status: 204 });
+  } catch (err) {
+    console.error("DELETE /api/vente/[id] error:", err);
+    return NextResponse.json({ message: "Erreur serveur" }, { status: 500 });
   }
 }
