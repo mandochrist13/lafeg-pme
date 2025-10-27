@@ -82,19 +82,33 @@ export async function PUT(
   }
 }
 
+
 // 📍 DELETE : Supprime une actualité
 export async function DELETE(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
   const { id } = await context.params;
-  const cleanId = id.split("-").pop();
 
   try {
-    await prisma.actualite.delete({ where: { id: cleanId } });
-    return NextResponse.json({ message: "Actualité supprimée" });
-  } catch (error) {
+    const deleted = await prisma.actualite.delete({
+      where: { id }, // ✅ utilise l'UUID complet
+    });
+    return NextResponse.json({ message: "Actualité supprimée", data: deleted });
+  } catch (error: any) {
     console.error("❌ Erreur DELETE /actualite/[id]:", error);
-    return NextResponse.json({ error: "Erreur serveur ou ID non trouvé" }, { status: 500 });
+
+    if (error.code === "P2025") {
+      return NextResponse.json(
+        { error: "Actualité introuvable ou déjà supprimée" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { error: "Erreur serveur" },
+      { status: 500 }
+    );
   }
 }
+
