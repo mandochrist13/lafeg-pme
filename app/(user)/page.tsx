@@ -701,8 +701,7 @@ export default function Home() {
                   </div> */}
                 </div>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Financement d'équipements professionnels avec conditions
-                  préférentielles pour les membres FEG.
+                  Financement d'équipements professionnels.
                 </p>
               </CardContent>
             </Card>
