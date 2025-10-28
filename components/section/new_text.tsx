@@ -85,7 +85,7 @@ export default function NewText() {
       </div>
     );
   return (
-    <section className="py-12 bg-[#EAEEEB]">
+    <section className="py-12 md:px-4 bg-[#EAEEEB]">
       <div className="container">
         <h2 className="text-2xl font-bold mb-8">Mises à jour récentes</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -15,6 +15,8 @@ import {
   ChevronRight,
   // UserGroup,
   Award,
+  Sparkles,
+  ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -203,7 +205,7 @@ export default function EntreprisesServices() {
       <section className="relative bg-gradient-to-r from-[#063a1e] to-[#063a1e]/80 text-white py-16">
         <div className="absolute inset-0 bg-[url('/ban_feg.png?height=600&width=1200')] bg-cover bg-center opacity-10" />
         <div className="container">
-          <div className="max-w-4xl mx-auto text-center space-y-6">
+          <div className="max-w-5xl mx-auto text-center space-y-6">
             <h1 className="text-3xl md:text-4xl font-bold">
               Offre de services des PME
             </h1>
@@ -214,7 +216,7 @@ export default function EntreprisesServices() {
 
             {/* Statistiques */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-              <div className="bg-white/10 rounded-lg p-6 backdrop-blur">
+              {/* <div className="bg-white/10 rounded-lg p-6 backdrop-blur">
                 <div className="text-3xl font-bold text-[#dcdaa4]">150+</div>
                 <div className="text-white/90">Entreprises inscrites</div>
               </div>
@@ -225,6 +227,46 @@ export default function EntreprisesServices() {
               <div className="bg-white/10 rounded-lg p-6 backdrop-blur">
                 <div className="text-3xl font-bold text-[#dcdaa4]">85%</div>
                 <div className="text-white/90">Membres FEG</div>
+              </div> */}
+              <div className="bg-white/10 rounded-lg p-6 backdrop-blur">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-[#dcdaa4]/20 flex items-center justify-center">
+                    <ShieldCheck className="h-5 w-5 text-[#dcdaa4]" />
+                  </div>
+                  <h3 className="text-lg font-semibold">Profils vérifiés</h3>
+                </div>
+                <p className="mt-2 text-white/90 text-sm">
+                  Chaque entreprise est contrôlée avant publication pour
+                  renforcer la confiance.
+                </p>
+              </div>
+
+              <div className="bg-white/10 rounded-lg p-6 backdrop-blur">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-[#dcdaa4]/20 flex items-center justify-center">
+                    <Sparkles className="h-5 w-5 text-[#dcdaa4]" />
+                  </div>
+                  <h3 className="text-lg font-semibold">
+                    Mise en relation simple
+                  </h3>
+                </div>
+                <p className="mt-2 text-white/90 text-sm">
+                  Contact direct, sans intermédiaires, et outils clairs pour
+                  gagner du temps.
+                </p>
+              </div>
+
+              <div className="bg-white/10 rounded-lg p-6 backdrop-blur">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-[#dcdaa4]/20 flex items-center justify-center">
+                    <Users className="h-5 w-5 text-[#dcdaa4]" />
+                  </div>
+                  <h3 className="text-lg font-semibold">Communauté FEG</h3>
+                </div>
+                <p className="mt-2 text-white/90 text-sm">
+                  Accès privilégié aux membres FEG et à des opportunités
+                  locales.
+                </p>
               </div>
             </div>
           </div>
@@ -550,7 +592,7 @@ export default function EntreprisesServices() {
                     </div>
 
                     <div className="flex flex-col mt-8 sm:flex-row sm:justify-center items-center w-full gap-4">
-                      <Link href="https://docs.google.com/forms/d/e/1FAIpQLSdvlgJLCxOAtzxaqaXMtT9jTjwbsDx3iXdTVHimcAKCkkMstg/viewform?usp=header">
+                      <Link href="https://forms.gle/XdeLVsN2cqkUdZnU7">
                         <Button
                           variant="secondary"
                           size="lg"

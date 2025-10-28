@@ -12,11 +12,10 @@ interface FormValues {
   company: string;
   contact: string;
   address: string;
-  textes_legislatifs_et_reglementaires_des_administrations_publiques?: boolean;
-  textes_legislatifs_et_reglementaires_pour_les_pme?: boolean;
-  textes_juridiques_regionaux_et_internationaux?: boolean;
-  institutions_financieres?: boolean;
-  sea?: boolean;
+  textes_juridiques?: boolean;
+  offres_de_services_des_pme?: boolean;
+  offres_financieres?: boolean;
+  actualite?: boolean;
   consent: boolean;
 }
 
@@ -54,11 +53,10 @@ export default function Form() {
 
      // 1. Correspondance Case à cocher → entry.xxx Google Forms
   const checkboxMapping = {
-    textes_legislatifs_et_reglementaires_des_administrations_publiques: "entry.1384270388",
-    textes_legislatifs_et_reglementaires_pour_les_pme: "entry.1029160559",
-    textes_juridiques_regionaux_et_internationaux: "entry.487191522",
-    institutions_financieres: "entry.1435833601",
-    sea: "entry.1601997713"
+    textes_juridiques: "entry.1384270388",
+    offres_de_services_des_pme: "entry.1029160559",
+    offres_financieres: "entry.487191522",
+    actualite: "entry.1601997713"
   };
   
     try {
@@ -71,23 +69,6 @@ export default function Form() {
           { name: "entreprise", value: data.company },
           { name: "contact", value: data.contact },
           { name: "addresse_de_l_entreprise", value: data.address },
-          // { 
-          //   name: "textes_legislatifs_et_reglementaires_des_administrations_publiques", 
-          //   value: data.textes_legislatifs_et_reglementaires_des_administrations_publiques ? "Oui" : "Non" 
-          // },
-          // { 
-          //   name: "textes_legislatifs_et_reglementaires_pour_les_pme", 
-          //   value: data.textes_legislatifs_et_reglementaires_pour_les_pme ? "Oui" : "Non"
-          // },
-          // { 
-          //   name: "textes_juridiques_regionaux_et_internationaux", 
-          //   value: data.textes_juridiques_regionaux_et_internationaux ? "Oui" : "Non"
-          // },
-          // { 
-          //   name: "institutions_financieres", 
-          //   value: data.institutions_financieres ? "Oui" : "Non"
-          // },
-          // { name: "sea", value: data.sea ? "Oui" : "Non" },
           { name: "consent", value: data.consent ? "Oui" : "Non" },
         ],
       };
@@ -151,7 +132,7 @@ export default function Form() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
+    <div className="max-w-3xl mx-auto">
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -201,7 +182,7 @@ export default function Form() {
           {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
             <label className="block mb-2 font-medium">
               Entreprise <span className="text-red-600">*</span>
@@ -250,50 +231,41 @@ export default function Form() {
 
         <div className="space-y-4">
           <h3 className="font-medium">Centres d'intérêt</h3>
-          <div className="grid grid-cols-1 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <label className="flex items-center space-x-3">
               <input
                 type="checkbox"
-                {...register("textes_legislatifs_et_reglementaires_des_administrations_publiques")}
+                {...register("textes_juridiques")}
                 className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
               />
-              <span>Textes législatifs et réglementaires des administrations publiques</span>
+              <span>Textes Juridiques</span>
             </label>
             
             <label className="flex items-center space-x-3">
               <input
                 type="checkbox"
-                {...register("textes_legislatifs_et_reglementaires_pour_les_pme")}
+                {...register("offres_financieres")}
                 className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
               />
-              <span>Textes législatifs et réglementaires pour les PME</span>
+              <span>Offres Financières</span>
             </label>
             
             <label className="flex items-center space-x-3">
               <input
                 type="checkbox"
-                {...register("textes_juridiques_regionaux_et_internationaux")}
+                {...register("offres_de_services_des_pme")}
                 className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
               />
-              <span>Textes juridiques régionaux et internationaux</span>
+              <span>Offres de services des PME</span>
             </label>
             
             <label className="flex items-center space-x-3">
               <input
                 type="checkbox"
-                {...register("institutions_financieres")}
+                {...register("actualite")}
                 className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
               />
-              <span>Institutions financières</span>
-            </label>
-            
-            <label className="flex items-center space-x-3">
-              <input
-                type="checkbox"
-                {...register("sea")}
-                className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
-              />
-              <span>SEA</span>
+              <span>Actualité</span>
             </label>
           </div>
         </div>
