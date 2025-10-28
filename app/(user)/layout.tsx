@@ -25,9 +25,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <h1 className="md:text-2xl md:hidden lg:block font-hyundai font-bold text-[#063a1e]">
                   Guide Numérique des PME
                 </h1>
-                {/* <h1 className="md:text-2xl hidden md:block lg:hidden font-hyundai font-bold text-[#063a1e]">
-                  Guide Numérique des PME
-                </h1> */}
+                
               </div>
             </div>
             <AdBanner
