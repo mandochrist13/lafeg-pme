@@ -7,7 +7,6 @@ import Form from "@/components/section/form";
 import AdBanner from "@/components/ads/AdBanner";
 import {
   ArrowRight,
- 
   Linkedin,
   Facebook,
   Rocket,
@@ -15,10 +14,9 @@ import {
   GraduationCap,
   Mail,
   Phone,
-  
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import  offresFinancement  from "./offre/page";
+import offresFinancement from "./offre/page";
 import {
   Card,
   CardContent,
@@ -107,7 +105,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-[#063a1e] to-[#063a1e]/50 text-white relative overflow-hidden p-10 lg:p-16">
-      <div className="absolute inset-0 opacity-35">
+        <div className="absolute inset-0 opacity-35">
           <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-[#fff] to-transparent rounded-full -translate-x-48 -translate-y-48"></div>
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-[#063a1e] to-transparent rounded-full translate-x-48 translate-y-48"></div>
         </div>
@@ -184,89 +182,48 @@ export default function Home() {
           className="w-full max-w-[900px] h-full object-cover object-center"
         />
       </div>
-      {/* Enhanced Business Services Section */}
-      <section className="py-12 bg-gradient-to-br from-[#063a1e] via-[#063a1e]/95 to-[#063a1e]/90 text-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-25">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-[#fff] to-transparent rounded-full -translate-x-48 -translate-y-48"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-[#bdbd95] to-transparent rounded-full translate-x-48 translate-y-48"></div>
-        </div>
+      {/* Section horizontale simple : texte à gauche, image à droite */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-[#063a1e] to-[#063a1e] px-4 text-white">
+        {/* petite image décorative flottante (hors cadre, optionnelle) */}
+        <img
+          src="/megaphone.jpeg"
+          alt=""
+          className="pointer-events-none absolute object-cover object-center left-[-8rem] hidden h-40 w-64 -rotate-3 rounded-xl opacity-40 ring-1 ring-white/10 md:block float-slow"
+          loading="lazy"
+        />
 
-        <div className="container relative z-10">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] bg-clip-text text-transparent mb-4">
-              Offres & Services des PME
-            </h2>
-            <p className="text-white/90 text-lg max-w-3xl mx-auto">
-              Découvrez et publiez vos services sur notre plateforme dédiée aux
-              PME gabonaises. Bénéficiez de tarifs préférentiels en tant que
-              membre FEG.
-            </p>
-          </div>
+        <section className="container mx-auto px-4 py-12">
+          <div className="grid items-center gap-8 md:grid-cols-2">
+            {/* Colonne Image (à droite) */}
+            <div className="relative">
+              <div className="relative h-56 w-full overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm md:h-72 lg:h-80">
+                <Image
+                  src="/pub_offre1.jpeg" /* ⬅️ remplace par ton image principale */
+                  width={100}
+                  height={100}
+                  alt="Mise en relation professionnelle"
+                  className="h-full w-full object-cover transition-transform duration-700 will-change-transform md:group-hover:scale-105"
+                  loading="lazy"
+                />
+                {/* voile pour lisibilité + respect de la charte */}
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#063a1e]/70 via-transparent to-transparent" />
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Service Categories */}
-            <div className="bg-white/10 flex flex-col justify-center items-center backdrop-blur-xl rounded-lg p-6 border border-white/20">
-              {/* <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] flex items-center justify-center mb-4">
-                <span className="text-[#063a1e] font-bold text-lg">C</span>
-              </div> */}
-              <h3 className="text-xl font-bold mb-3">Conseils & Expertise</h3>
-              <ul className="space-y-2 text-white/90 text-sm mb-4">
-                <li>• Conseil en gestion d'entreprise</li>
-                <li>• Audit & Expertise comptable</li>
-                <li>• Conseil juridique spécialisé</li>
-                <li>• Accompagnement stratégique</li>
-              </ul>
-            
+              {/* halo doux derrière l'image */}
+              <div className="pointer-events-none absolute -inset-4 -z-10 rounded-2xl bg-[#dcdaa4]/15 blur-2xl" />
             </div>
-
-            <div className="bg-white/10 backdrop-blur-xl flex flex-col justify-center items-center rounded-lg p-6 border border-white/20">
-              {/* <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] flex items-center justify-center mb-4">
-                <span className="text-[#063a1e] font-bold text-lg">T</span>
-              </div> */}
-              <h3 className="text-xl font-bold mb-3">Technologies & Digital</h3>
-              <ul className="space-y-2 text-white/90 text-sm mb-4">
-                <li>• Développement web & mobile</li>
-                <li>• Solutions ERP et CRM</li>
-                <li>• Transformation digitale</li>
-                <li>• Marketing digital</li>
-              </ul>
-              {/* <Badge className="bg-[#dcdaa4]/20 text-[#dcdaa4] border-[#dcdaa4]/30">
-                32 services disponibles
-              </Badge> */}
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-xl flex flex-col justify-center items-center rounded-lg p-6 border border-white/20">
-              {/* <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] flex items-center justify-center mb-4">
-                <span className="text-[#063a1e] font-bold text-lg">F</span>
-              </div> */}
-              <h3 className="text-xl font-bold mb-3">
-                Formation & Développement
-              </h3>
-              <ul className="space-y-2 text-white/90 text-sm mb-4">
-                <li>• Formation professionnelle</li>
-                <li>• Coaching d'entreprise</li>
-                <li>• Développement des compétences</li>
-                <li>• Certifications métiers</li>
-              </ul>
-              {/* <Badge className="bg-[#dcdaa4]/20 text-[#dcdaa4] border-[#dcdaa4]/30">
-                28 services disponibles
-              </Badge> */}
-            </div>
-          </div>
-
-          {/* CTA Section */}
-          <div className="mt-12 text-center">
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-8 border border-white/20">
-              <h3 className="text-2xl font-bold mb-4">
-                Rejoignez la plateforme dès aujourd'hui
-              </h3>
-              <p className="text-white/90 mb-6 max-w-2xl mx-auto">
-                Publiez vos services et bénéficiez de la visibilité auprès de
-                milliers d'entreprises gabonaises. Les membres FEG profitent de
-                d'une réduction sur nos les forfaits.
+            {/* Colonne Texte */}
+            <div>
+              <h1 className="text-2xl font-bold leading-tight">
+                Offres & Services des PME
+              </h1>
+              <p className="mt-3 text-[#dcdaa4]/90 text-base md:text-lg max-w-xl">
+                Découvrez et publiez vos services sur notre plateforme dédiée
+                aux PME gabonaises. Bénéficiez de tarifs préférentiels en tant
+                que membre FEG.
               </p>
 
-              <div className="flex flex-col mt-8 sm:flex-row sm:justify-center items-center w-full gap-4">
+              <div className="flex flex-col mt-8 sm:flex-row items-center w-full gap-4">
                 <Link href="/entreprise">
                   <Button
                     variant="secondary"
@@ -294,10 +251,40 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+        <img
+          src="/contrat.jpeg"
+          alt=""
+          className="pointer-events-none object-cover object-center absolute -bottom-10 right-[-5rem] hidden h-40 w-64 -rotate-3 rounded-xl opacity-40 ring-1 ring-white/10 md:block float-slow"
+          loading="lazy"
+        />
+
+        {/* Animation flottante discrète */}
+        <style jsx>{`
+          @keyframes floatY {
+            0% {
+              transform: translateY(0);
+            }
+            50% {
+              transform: translateY(-8px);
+            }
+            100% {
+              transform: translateY(0);
+            }
+          }
+          .float-slow {
+            animation: floatY 10s ease-in-out infinite;
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .float-slow {
+              animation: none;
+            }
+          }
+        `}</style>
+      </div>
+
       {/* Support Structures Section */}
-      <section className="py-12 bg-gray-50">
+      <section className="py-12 md:px-4 bg-gray-50">
         <div className="container">
           <div className="flex flex-col md:flex-row justify-between items-center mb-8">
             <div>
@@ -321,7 +308,7 @@ export default function Home() {
                 <span className="absolute inset-0 w-full h-full bg-[#dcdaa4] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0"></span>
                 <span className="relative mr-3 z-10 transition-colors duration-500 ease-in-out group-hover:text-[#063a1e]">
                   <p className="flex items-center justify-center">
-                      Découvrir toutes les structures{" "}
+                    Découvrir toutes les structures{" "}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </p>
                 </span>
@@ -335,7 +322,9 @@ export default function Home() {
               <CardHeader>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] flex items-center justify-center">
-                    <span className="text-[#063a1e] font-bold text-lg"><Rocket className="h-6 w-6" /></span>
+                    <span className="text-[#063a1e] font-bold text-lg">
+                      <Rocket className="h-6 w-6" />
+                    </span>
                   </div>
                   <div>
                     <CardTitle className="text-lg">Incubateurs</CardTitle>
@@ -381,7 +370,9 @@ export default function Home() {
               <CardHeader>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] flex items-center justify-center">
-                    <span className="text-[#063a1e] font-bold text-lg"><GraduationCap className=" h-6 w-6" /></span>
+                    <span className="text-[#063a1e] font-bold text-lg">
+                      <GraduationCap className=" h-6 w-6" />
+                    </span>
                   </div>
                   <div>
                     <CardTitle className="text-lg">
@@ -429,7 +420,9 @@ export default function Home() {
               <CardHeader>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] flex items-center justify-center">
-                    <span className="text-[#063a1e] font-bold text-lg"><Building className=" h-6 w-6" /></span>
+                    <span className="text-[#063a1e] font-bold text-lg">
+                      <Building className=" h-6 w-6" />
+                    </span>
                   </div>
                   <div>
                     <CardTitle className="text-lg">
@@ -472,35 +465,10 @@ export default function Home() {
               </CardFooter>
             </Card>
           </div>
-
-          {/* Call to Action */}
-          {/* <div className="mt-12 text-center">
-            <div className="bg-white rounded-lg p-8 shadow-sm border-2 border-[#dcdaa4]/30">
-              <h3 className="text-xl font-bold text-[#063a1e] mb-4">
-                Besoin d'un accompagnement personnalisé ?
-              </h3>
-              <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-                Nos structures partenaires vous accompagnent à chaque étape de
-                votre développement, de la création à la croissance de votre
-                entreprise.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button className="bg-[#063a1e] hover:bg-[#063a1e]/90">
-                  Demander un accompagnement
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-[#063a1e] text-[#063a1e] hover:bg-[#063a1e]/10"
-                >
-                  Télécharger le guide
-                </Button>
-              </div>
-            </div>
-          </div> */}
         </div>
       </section>
       {/* Financial Institutions Section */}
-      <section className="py-12 bg-[#063a1e]">
+      <section className="py-12 md:px-4 bg-[#063a1e]">
         <div className="container">
           <div className="flex flex-col md:flex-row gap-5 justify-between items-center mb-8">
             <div>
@@ -680,7 +648,7 @@ export default function Home() {
         </div>
       </section>
       {/* Financial Offers Comparison Section */}
-      <section className="py-12 bg-white">
+      <section className="py-12 md:px-4 bg-white">
         <div className="container">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-[#063a1e] mb-4">
@@ -701,7 +669,6 @@ export default function Home() {
                   <div>
                     <CardTitle className="text-[#063a1e]">
                       <h1 className="text-base ">Crédit Équipement Pro</h1>
-                      
                     </CardTitle>
                     <p className="text-sm text-muted-foreground">
                       BCEG - Banque
@@ -720,7 +687,9 @@ export default function Home() {
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Taux</p>
-                    <p className="font-semibold text-green-600">Variable selon profil</p>
+                    <p className="font-semibold text-green-600">
+                      Variable selon profil
+                    </p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Durée</p>
@@ -735,7 +704,6 @@ export default function Home() {
                   Financement d'équipements professionnels avec conditions
                   préférentielles pour les membres FEG.
                 </p>
-                
               </CardContent>
             </Card>
 
@@ -745,7 +713,7 @@ export default function Home() {
                 <div className="flex justify-between items-start">
                   <div>
                     <CardTitle className="text-lg text-[#063a1e]">
-                                          <h1 className="text-base ">                 CRÉDIT D'INVESTISSEMENT</h1>
+                      <h1 className="text-base "> CRÉDIT D'INVESTISSEMENT</h1>
                     </CardTitle>
 
                     <p className="text-sm text-muted-foreground">
@@ -763,7 +731,9 @@ export default function Home() {
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Taux</p>
-                    <p className="font-semibold text-blue-600">Variable selon profil</p>
+                    <p className="font-semibold text-blue-600">
+                      Variable selon profil
+                    </p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Durée</p>
@@ -778,7 +748,6 @@ export default function Home() {
                   Ligne de crédit flexible pour financer le besoin en fonds de
                   roulement de votre entreprise.
                 </p>
-              
               </CardContent>
             </Card>
 
@@ -788,7 +757,7 @@ export default function Home() {
                 <div className="flex justify-between items-start">
                   <div>
                     <CardTitle className=" text-[#063a1e]">
-                                           <h1 className="text-base ">                                Crédit Investissement </h1>
+                      <h1 className="text-base "> Crédit Investissement </h1>
                     </CardTitle>
                     <p className="text-sm text-muted-foreground">
                       FINAM - Microfinance
@@ -822,7 +791,6 @@ export default function Home() {
                   Solution de financement adaptée aux petites entreprises et
                   entrepreneurs individuels.
                 </p>
-                
               </CardContent>
             </Card>
 
@@ -834,9 +802,7 @@ export default function Home() {
                     <CardTitle className=" text-[#063a1e]">
                       <h1 className="text-base ">INTRODUCTION EN BOURSE PME</h1>
                     </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      BVMAC
-                    </p>
+                    <p className="text-sm text-muted-foreground">BVMAC</p>
                   </div>
                   <Badge className="bg-purple-100 text-purple-800">
                     Long terme
@@ -847,7 +813,9 @@ export default function Home() {
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div>
                     <p className="text-xs text-muted-foreground">Montant</p>
-                    <p className="font-semibold">200 000 000 - 10 000 000 000 F CFA</p>
+                    <p className="font-semibold">
+                      200 000 000 - 10 000 000 000 F CFA
+                    </p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Taux</p>
@@ -866,74 +834,87 @@ export default function Home() {
                   Financement pour l'acquisition de locaux commerciaux ou
                   industriels pour votre entreprise.
                 </p>
-                
               </CardContent>
             </Card>
           </div>
 
           {/* Comparison Tool */}
-          <div className="bg-gradient-to-r from-[#063a1e] to-[#063a1e]/90 rounded-lg p-8 text-white">
-            <div className="text-center mb-6">
-              <h3 className="text-2xl font-bold mb-2">Outil de Comparaison</h3>
-              <p className="text-white/90">
-                Comparez jusqu'à 3 offres de financement pour trouver celle qui
-                correspond le mieux à vos besoins
-              </p>
-            </div>
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#063a1e] to-[#063a1e]/90 text-white">
+            {/* décor léger */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -top-10 -right-10 h-48 w-48 rounded-full bg-[#dcdaa4]/20 blur-2xl"
+            />
+            <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 p-8 md:p-12 lg:grid-cols-2">
+              {/* Colonne texte */}
+              <div className="flex flex-col">
+                <div className="mb-6 text-left">
+                  <h3 className="text-3xl">Outil de comparaison</h3>
+                  <p className="mt-2 text-white/90">
+                    Comparez jusqu&apos;à 3 offres de financement pour trouver
+                    celle qui correspond le mieux à vos besoins.
+                  </p>
+                </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-                <h4 className="font-semibold mb-2">Critères de comparaison</h4>
-                <ul className="text-sm text-white/90 space-y-1">
-                  <li>• Taux d'intérêt</li>
-                  <li>• Montant maximum</li>
-                  <li>• Durée de remboursement</li>
-                  <li>• Conditions d'éligibilité</li>
-                </ul>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className="rounded-xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm">
+                    <h4 className="mb-2 font-semibold">
+                      Critères de comparaison
+                    </h4>
+                    <ul className="space-y-1 text-sm text-white/90">
+                      <li>• Taux d&apos;intérêt</li>
+                      <li>• Montant maximum</li>
+                      <li>• Durée de remboursement</li>
+                      <li>• Conditions d&apos;éligibilité</li>
+                    </ul>
+                  </div>
+
+                  <div className="rounded-xl border border-white/20 bg-white/5 p-4 backdrop-blur-sm">
+                    <h4 className="mb-2 font-semibold">Astuce</h4>
+                    <p className="text-sm text-white/90">
+                      Ajoutez vos offres une par une et laissez-nous mettre en
+                      évidence les avantages clés de chacune.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-6">
+                  <Link href="/offre">
+                    <Button
+                      variant="secondary"
+                      size="lg"
+                      className="bg-[#063a1e] relative hover:bg-white min-w-[200px] group"
+                    >
+                      <span className="absolute inset-0 w-full h-full bg-[#dcdaa4] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0"></span>
+                      <span className="relative mr-3 z-10 transition-colors duration-500 ease-in-out group-hover:text-[#063a1e]">
+                        <p className="flex items-center justify-center">
+                          {" "}
+                          Voir toutes les offres{" "}
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </p>
+                      </span>
+                    </Button>
+                  </Link>
+                </div>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-                <h4 className="font-semibold mb-2">Avantages membres FEG</h4>
-                <ul className="text-sm text-white/90 space-y-1">
-                  <li>• Taux préférentiels</li>
-                  <li>• Traitement prioritaire</li>
-                  <li>• Accompagnement dédié</li>
-                  <li>• Conditions négociées</li>
-                </ul>
+              {/* Colonne image */}
+              <div className="flex items-center justify-center">
+                <figure className="relative w-full max-w-xl overflow-hidden rounded-2xl border border-white/15 bg-white/5 shadow-2xl ring-1 ring-white/10">
+                  <img
+                    src="/pub_offre3.png"
+                    alt="Illustration d’un tableau comparatif de trois offres de financement"
+                    className="h-full w-full object-cover"
+                  />
+                </figure>
               </div>
-
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-                <h4 className="font-semibold mb-2">Support inclus</h4>
-                <ul className="text-sm text-white/90 space-y-1">
-                  <li>• Simulation personnalisée</li>
-                  <li>• Aide au montage de dossier</li>
-                  <li>• Suivi de demande</li>
-                  <li>• Conseil expert</li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="text-center">
-              <Link href="/offre">
-                  <Button
-                    variant="secondary"
-                    size="lg"
-                    className="bg-[#063a1e] relative hover:bg-white min-w-[200px] group"
-                  >
-                    <span className="absolute inset-0 w-full h-full bg-[#dcdaa4] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0"></span>
-                    <span className="relative mr-3 z-10 transition-colors duration-500 ease-in-out group-hover:text-[#063a1e]">
-                      <p className="flex items-center justify-center">          Voir toutes les offres <ArrowRight className="ml-2 h-4 w-4" /></p>
-                    </span>
-                  </Button>
-                </Link>
             </div>
           </div>
         </div>
       </section>
-  
 
       {/* News & Events Section */}
-      <section className="py-12 ">
+      <section className="py-12 px-4 ">
         <div className="container">
           <div className="flex flex-col md:flex-row gap-5 justify-between items-center mb-8">
             <div>
@@ -945,24 +926,24 @@ export default function Home() {
                 Restez informé des dernières actualités du monde des PME
               </p>
             </div>
-           
+
             <Link href="/actualite">
-            <Button
-              size="lg"
-              className="hover:text-[#063a1e] duration-300 ease-in-out hover:bg-white border hover:border-[#063a1e] font-medium"
-            >
-                        Toutes les actualités <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </Link>
+              <Button
+                size="lg"
+                className="hover:text-[#063a1e] duration-300 ease-in-out hover:bg-white border hover:border-[#063a1e] font-medium"
+              >
+                Toutes les actualités <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Featured Article */}
             <div className="lg:col-span-2">
-             <DernieresActualites />
+              <DernieresActualites />
             </div>
 
-            {/* Side Articles */}
+            {/* Side Articles 
             <div className="space-y-6">
               <Card className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
@@ -1044,7 +1025,7 @@ export default function Home() {
                   </Button>
                 </CardContent>
               </Card>
-            </div>
+            </div>*/}
           </div>
         </div>
       </section>
@@ -1073,13 +1054,7 @@ export default function Home() {
                       <span className="bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] text-[#063a1e] rounded-full h-5 w-5 flex items-center justify-center text-xs font-bold mt-0.5">
                         ✓
                       </span>
-                      <span>Structures d'Encadrement et d'Accompagnement</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] text-[#063a1e] rounded-full h-5 w-5 flex items-center justify-center text-xs font-bold mt-0.5">
-                        ✓
-                      </span>
-                      <span>Institutions Financières </span>
+                      <span>Fil d'Actualité des PME </span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] text-[#063a1e] rounded-full h-5 w-5 flex items-center justify-center text-xs font-bold mt-0.5">
