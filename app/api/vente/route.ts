@@ -244,13 +244,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Traitement du logo s'il est fourni
-    if (!file.type.match(/^image\/(jpeg|png)$/)) {
-      return NextResponse.json(
-          { error: 'Le logo doit être au format JPEG ou PNG' },
-          { status: 400 }
-        );
-    }
+    // ✅ autoriser JPEG/PNG/GIF
+if (!/^image\/(jpeg|png|gif)$/i.test(file.type)) {
+  return NextResponse.json(
+    { error: "L’image doit être au format JPEG, PNG ou GIF" },
+    { status: 400 }
+  );
+}
 
     // Création d'un nom de fichier unique
     const timestamp = Date.now();
@@ -264,6 +264,7 @@ export async function POST(request: NextRequest) {
       .upload(FilePath, file, {
         cacheControl: '3600',
         upsert: false,
+        contentType: file.type,
       })
 
     // Vérification de l'upload
@@ -285,12 +286,12 @@ export async function POST(request: NextRequest) {
     const annonce = await prisma.vente.create(
       {
         data: {
-          libelle,
+          libelle: formData.get('libelle') as string,
           image_url: urlData.publicUrl,
           image_nom: file.name,
           taille_image: file.size,
           mime_type: file.type,
-          nom_structure,
+          nom_structure: formData.get('nom_structure') as string,
         }
       }
     )
