@@ -56,7 +56,7 @@ export default function AdBanner({
       </div> */}
 
       {/* Image de la pub */}
-        <Image
+        <img
           src={pub.image_url!}
           alt={pub.nom_structure}
           width={800}
