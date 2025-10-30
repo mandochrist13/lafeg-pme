@@ -17,6 +17,10 @@ import {
   Award,
   Sparkles,
   ShieldCheck,
+  CheckCircle2,
+  PenTool,
+  Megaphone,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -481,140 +485,222 @@ export default function EntreprisesServices() {
                   </Card>
                 ))}
               </div>
-
-              {/* {entreprises.length === 0 && (
-                <div className="text-center py-12">
-                  <p className="text-muted-foreground">
-                    Aucune entreprise ne correspond à vos critères de recherche.
-                  </p>
-                </div>
-              )} */}
             </TabsContent>
 
             <TabsContent value="publier" className="mt-8">
               {/* Section Modalités Tarifaires */}
               <div className="space-y-8">
                 {/* Avantages pour les Entreprises Partenaires */}
-                <div className="bg-gradient-to-r from-[#063a1e] to-[#063a1e]/80 text-white p-8 rounded-lg">
-                  <div className="max-w-4xl flex flex-col justify-center items-center mx-auto">
+
+                <div className=" text-[#063a1e] p-8 rounded-lg">
+                  <div className=" flex flex-col justify-center items-center mx-auto">
                     <div className="text-center mb-8">
                       <h2 className="text-3xl font-bold mb-4">
-                        Pourquoi publier sur le{" "}
-                        <span className="text-[#dcdaa4]">
-                          Guide Numérique des PME
-                        </span>
-                         ?
+                        Pourquoi publier sur le Guide Numérique des PME ?
                       </h2>
-                      <p className="text-xl text-white/90">
+                      <p className="text-xl text-[#063a1e] /90">
                         Accélérez votre visibilité, vos ventes et vos
                         opportunités B2B
                       </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                      <div className="bg-white/10 rounded-lg p-6 backdrop-blur">
-                        <div className="text-center">
-                          <Network className="h-12 w-12 text-[#dcdaa4] mx-auto mb-4" />
-                          <h3 className="font-bold text-lg mb-2">
-                            Visibilité Ciblée
-                          </h3>
-                          <p className="text-white/90">
-                            Touchez directement un public professionnel, engagé
-                            et local
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* <div className="bg-white/10 rounded-lg p-6 backdrop-blur">
-                        <div className="text-center">
-                          <Handshake className="h-12 w-12 text-[#dcdaa4] mx-auto mb-4" />
-                          <h3 className="font-bold text-lg mb-2">
-                            Crédibilité Renforcée
-                          </h3>
-                          <p className="text-white/90">
-                            Associez votre image à une institution reconnue du
-                            monde économique
-                          </p>
-                        </div>
-                      </div> */}
-
-                      <div className="bg-white/10 rounded-lg p-6 backdrop-blur">
-                        <div className="text-center">
-                          <Award className="h-12 w-12 text-[#dcdaa4] mx-auto mb-4" />
-                          <h3 className="font-bold text-lg mb-2">
-                            Offres Valoriséées
-                          </h3>
-                          <p className="text-white/90">
-                            Vos offres sont mises en avant dans une section
-                            dédiée du guide
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="bg-white/10 rounded-lg p-6 backdrop-blur">
-                        <div className="text-center">
-                          <BookOpen className="h-12 w-12 text-[#dcdaa4] mx-auto mb-4" />
-                          <h3 className="font-bold text-lg mb-2">
-                            Communication Optimisée
-                          </h3>
-                          <p className="text-white/90">
-                            Profitez de notre audience web, réseaux sociaux et
-                            de notre communauté fédérale
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="bg-white/10 rounded-lg p-6 backdrop-blur">
-                        <div className="text-center">
-                          <Users className="h-12 w-12 text-[#dcdaa4] mx-auto mb-4" />
-                          <h3 className="font-bold text-lg mb-2">
-                            Nouvelles Opportunités
-                          </h3>
-                          <p className="text-white/90">
-                            Entrez en contact avec de nouveaux clients,
-                            partenaires et fournisseurs
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* <div className="bg-white/10 rounded-lg p-6 backdrop-blur">
-                        <div className="text-center">
-                          <Gavel className="h-12 w-12 text-[#dcdaa4] mx-auto mb-4" />
-                          <h3 className="font-bold text-lg mb-2">
-                            Avantage Concurrentiel
-                          </h3>
-                          <p className="text-white/90">
-                            Démarquez-vous avec une présence professionnelle et
-                            valorisante
-                          </p>
-                        </div>
-                      </div> */}
-                    </div>
-
-                    <div className="flex flex-col mt-8 sm:flex-row sm:justify-center items-center w-full gap-4">
-                      <Link href="https://forms.gle/XdeLVsN2cqkUdZnU7">
-                        <Button
-                          variant="secondary"
-                          size="lg"
-                          className="bg-[#063a1e] relative hover:bg-white min-w-[200px] group"
+                    {/* --- Services FEG (version cards 4 colonnes) --- */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                      {[
+                        {
+                          title: "Visibilité Ciblée",
+                          desc: "Touchez directement un public professionnel, engagé et local",
+                          img: "/visibilit.jpeg",
+                          Icon: Users,
+                        },
+                        {
+                          title: "Offres Valoriséées",
+                          desc: "Vos offres sont mises en avant dans une section dédiée du guide",
+                          img: "/pub_offre1.jpeg",
+                          Icon: ShieldCheck,
+                        },
+                        {
+                          title: "Communication Optimisée",
+                          desc: "Profitez de notre audience web, réseaux sociaux et de notre communauté fédérale",
+                          img: "/communication.jpeg",
+                          Icon: Megaphone,
+                        },
+                        {
+                          title: "Nouvelles Opportunités",
+                          desc: "Entrez en contact avec de nouveaux clients, partenaires et fournisseurs",
+                          img: "/opportunite.jpeg",
+                          Icon: FileText,
+                        },
+                      ].map(({ title, desc, img, Icon }) => (
+                        <div
+                          key={title}
+                          className="group relative rounded-md overflow-hidden bg-[#063a1e] border-2 border-[#145c35]/30 shadow-lg hover:border-[#dcdaa4]/60 transition-all"
                         >
-                          <span className="absolute inset-0 w-full h-full bg-[#dcdaa4] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0"></span>
-                          <span className="relative mr-3 z-10 transition-colors duration-500 ease-in-out group-hover:text-[#063a1e]">
-                            <p>Publier mon offre sur le Guide</p>
-                          </span>
-                        </Button>
-                      </Link>
-                      <Link href="https://www.lafeg.ga/home#register">
-                        <Button
-                          size="lg"
-                          className="text-[#063a1e] hover:bg-white/70 duration-300 ease-in-out bg-white border-none font-medium min-w-[200px]"
-                        >
-                          Devenir membre FEG
-                        </Button>
-                      </Link>
+                          {/* image de fond */}
+                          <img
+                            src={img}
+                            alt={title}
+                            className="absolute brightness-50 inset-0 h-full w-full object-cover"
+                            loading="lazy"
+                          />
+
+                          {/* voile qui monte au survol */}
+                          <div
+                            className="absolute inset-0 bg-gradient-to-t from-[#063a1e] via-[#063a1e]/80 to-transparent
+                   translate-y-2/3 group-hover:translate-y-1/3 transition-transform duration-500 ease-out"
+                          />
+
+                          {/* zone de contenu calée en bas */}
+                          <div className="relative h-56 flex items-end">
+                            <div className="w-full p-4">
+                              {/* icône + titre (toujours visibles) */}
+                              <div className="flex items-center gap-3 transition-transform duration-300 ease-out group-hover:-translate-y-1">
+                                <div className="flex h-11 w-11 items-center justify-center rounded-md bg-[#dcdaa4]/20 ring-1 ring-[#dcdaa4]/30">
+                                  <Icon className="h-5 w-5 text-[#dcdaa4]" />
+                                </div>
+                                <h3 className="text-white font-semibold text-lg drop-shadow">
+                                  {title}
+                                </h3>
+                              </div>
+
+                              {/* description : cachée, puis apparaît en montant */}
+                              <p
+                                className="mt-2 text-sm text-white/90 leading-relaxed
+                       max-h-0 overflow-hidden opacity-0 translate-y-2
+                       group-hover:max-h-24 group-hover:opacity-100 group-hover:translate-y-0
+                       transition-all duration-300 ease-out"
+                              >
+                                {desc}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* halo fin au survol */}
+                          <div className="pointer-events-none absolute inset-0 rounded-md ring-0 ring-[#dcdaa4]/0 transition-all duration-300 group-hover:ring-2 group-hover:ring-[#dcdaa4]/40" />
+                        </div>
+                      ))}
                     </div>
+                    {/* --- /fin Services FEG --- */}
                   </div>
                 </div>
+
+                {/* Processus de Publication  */}
+
+                <section className="relative rounded-lg overflow-hidden bg-gradient-to-r from-[#063a1e] to-[#063a1e]/80 text-white">
+                  {/* texture légère, optionnelle : remplace l’URL si tu as une image locale */}
+                  <div className="absolute inset-0 bg-[url('/ban_feg.png?height=600&width=1200')] bg-cover bg-center opacity-10 pointer-events-none" />
+                  <div className="relative px-6 py-12 md:py-16">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center max-w-6xl mx-auto">
+                      {/* Images à gauche */}
+                      <div className="relative order-2 md:order-1">
+                        <img
+                          src="/etape2.jpeg"
+                          alt="Événement FEG"
+                          className="w-full brightness-50 rounded-xl shadow-xl"
+                          loading="lazy"
+                        />
+                        <img
+                          src="/étape.png"
+                          alt="Illustration FEG"
+                          className="absolute w-full -bottom-10 -right-6  md:max-w-[450px] rounded-xl shadow-xl translate-y-6 md:translate-y-10"
+                          loading="lazy"
+                        />
+                      </div>
+
+                      {/* Contenu à droite */}
+                      <div className="order-1 md:order-2">
+                        <span className="inline-block text-[#dcdaa4] font-medium mb-2">
+                          Comment publier ?
+                        </span>
+                        <h3 className="text-3xl md:text-4xl font-bold leading-tight mb-6">
+                          Publier son offre en 3 étapes
+                        </h3>
+
+                        <ul className="space-y-6">
+                          <li className="flex gap-4">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 backdrop-blur">
+                              <PenTool className="h-5 w-5 text-[#dcdaa4]" />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold">
+                                Compléter le formulaire de souscription de publication
+                              </h4>
+                              <p className="text-white/85">
+                                Renseignez les informations clés sur votre
+                                entreprise et le temps d'abonnement choisis
+                              </p>
+                            </div>
+                          </li>
+
+                          <li className="flex gap-4">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 backdrop-blur">
+                              <Mail className="h-5 w-5 text-[#dcdaa4]" />
+                            </div>
+                            <div>
+                              
+                              <h4 className="font-semibold">
+                                Envoyer les éléments requis par email
+                              </h4>
+                              <p className="text-white/85">
+                                Joindre les documents nécessaires (logo,
+                                bannière, description, contacts et un document
+                                PDF si disponible) à l'adresse :{" "}
+                                <a
+                                  href="mailto:a.obiang@lafeg.ga"
+                                  className="underline"
+                                >a.obiang@lafeg?ga</a>
+                              </p>
+                            </div>
+                          </li>
+
+                          <li className="flex gap-4">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 backdrop-blur">
+                              <CheckCircle2 className="h-5 w-5 text-[#dcdaa4]" />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold">
+                                S'acquiter du paiement de l'abonnement
+                              </h4>
+                              <p className="text-white/85">
+                                Vous rendre au siège de la FEG ou effectuer un
+                                virement bancaire pour finaliser votre
+                                inscription.
+                              </p>
+                            </div>
+                          </li>
+                        </ul>
+
+                        <p className="mt-8 text-sm text-white/80 italic">
+                          NB : Après une année d&apos;affiliation, les
+                          cotisations patronales peuvent être payées en
+                          plusieurs tranches et à votre propre rythme.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col my-8 sm:flex-row sm:justify-center items-center w-full gap-4">
+                    <Link href="https://forms.gle/XdeLVsN2cqkUdZnU7">
+                      <Button
+                        variant="secondary"
+                        size="lg"
+                        className="bg-[#063a1e] relative hover:bg-white min-w-[200px] group"
+                      >
+                        <span className="absolute inset-0 w-full h-full bg-[#dcdaa4] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0"></span>
+                        <span className="relative mr-3 z-10 transition-colors duration-500 ease-in-out group-hover:text-[#063a1e]">
+                          <p>Publier mon offre sur le Guide</p>
+                        </span>
+                      </Button>
+                    </Link>
+                    <Link href="https://www.lafeg.ga/home#register">
+                      <Button
+                        size="lg"
+                        className="text-[#063a1e] hover:bg-white/70 duration-300 ease-in-out bg-white border-none font-medium min-w-[200px]"
+                      >
+                        Devenir membre FEG
+                      </Button>
+                    </Link>
+                  </div>
+                </section>
 
                 {/* Grille Tarifaire */}
                 <div className="bg-white">
@@ -658,9 +744,6 @@ export default function EntreprisesServices() {
                               >
                                 <span className="font-medium">{duree}</span>
                                 <div className="text-right">
-                                  {/* <div className="text-sm text-muted-foreground line-through">
-                                    {prix.nonMembre} FCFA
-                                  </div> */}
                                   <div className="font-bold text-[#063a1e]">
                                     {prix.membre} FCFA
                                   </div>
@@ -671,35 +754,9 @@ export default function EntreprisesServices() {
                                 </div>
                               </div>
                             ))}
-
-                            {/* <div className="pt-4 border-t">
-                              <h4 className="font-medium mb-2 text-[#063a1e]">
-                                Inclus :
-                              </h4>
-                              <ul className="text-sm space-y-1">
-                                <li className="flex items-center gap-2">
-                                  <div className="w-1.5 h-1.5 bg-[#063a1e] rounded-full"></div>
-                                  Profil entreprise complet
-                                </li>
-                                <li className="flex items-center gap-2">
-                                  <div className="w-1.5 h-1.5 bg-[#063a1e] rounded-full"></div>
-                                  Publication de services
-                                </li>
-                              </ul>
-                            </div> */}
                           </CardContent>
 
-                          <CardFooter className="p-4  bg-gradient-to-r from-[#063a1e] to-[#145c35]">
-                            {/* <Button
-                              className={`w-full rounded-md text-white font-medium ${
-                                forfait === "Profil Premium"
-                                  ? "bg-[#063a1e] hover:bg-[#063a1e]/90"
-                                  : "bg-[#145c35] hover:bg-[#145c35]/90"
-                              }`}
-                            >
-                              Choisir ce forfait
-                            </Button> */}
-                          </CardFooter>
+                          <CardFooter className="p-4  bg-gradient-to-r from-[#063a1e] to-[#145c35]"></CardFooter>
                         </Card>
                       )
                     )}
@@ -746,98 +803,14 @@ export default function EntreprisesServices() {
                                 </div>
                               </div>
                             ))}
-
-                            {/* <div className="pt-4 border-t">
-                              <h4 className="font-medium mb-2 text-[#063a1e]">
-                                Inclus :
-                              </h4>
-                              <ul className="text-sm space-y-1">
-                                <li className="flex items-center gap-2">
-                                  <div className="w-1.5 h-1.5 bg-[#063a1e] rounded-full"></div>
-                                  Profil entreprise complet
-                                </li>
-                                <li className="flex items-center gap-2">
-                                  <div className="w-1.5 h-1.5 bg-[#063a1e] rounded-full"></div>
-                                  Publication de services
-                                </li>
-                              </ul>
-                            </div> */}
                           </CardContent>
 
-                          <CardFooter className="p-4  bg-[#dcdaa4]">
-                            {/* <Button
-                              className={`w-full rounded-md text-white font-medium ${
-                                forfait === "Profil Premium"
-                                  ? "bg-[#063a1e] hover:bg-[#063a1e]/90"
-                                  : "bg-[#145c35] hover:bg-[#145c35]/90"
-                              }`}
-                            >
-                              Choisir ce forfait
-                            </Button> */}
-                          </CardFooter>
+                          <CardFooter className="p-4  bg-[#dcdaa4]"></CardFooter>
                         </Card>
                       )
                     )}
                   </div>
                 </div>
-
-                {/* Processus de Publication 
-                <div className="bg-gray-50 p-8 rounded-lg">
-                  <h3 className="text-2xl font-bold text-[#063a1e] mb-6 text-center">
-                    Comment publier vos services ?
-                  </h3>
-
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div className="text-center">
-                      <div className="w-12 h-12 bg-[#063a1e] text-white rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-lg">
-                        1
-                      </div>
-                      <h4 className="font-medium mb-2">Inscription</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Créez votre compte entreprise
-                      </p>
-                    </div>
-
-                    <div className="text-center">
-                      <div className="w-12 h-12 bg-[#063a1e] text-white rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-lg">
-                        2
-                      </div>
-                      <h4 className="font-medium mb-2">Profil</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Complétez votre profil entreprise
-                      </p>
-                    </div>
-
-                    <div className="text-center">
-                      <div className="w-12 h-12 bg-[#063a1e] text-white rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-lg">
-                        3
-                      </div>
-                      <h4 className="font-medium mb-2">Forfait</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Choisissez votre forfait
-                      </p>
-                    </div>
-
-                    <div className="text-center">
-                      <div className="w-12 h-12 bg-[#063a1e] text-white rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-lg">
-                        4
-                      </div>
-                      <h4 className="font-medium mb-2">Publication</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Publiez vos services
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="text-center mt-8">
-                    <Button
-                      size="lg"
-                      className="bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] text-[#063a1e] hover:from-[#e6e4b4] hover:to-[#c7c7a0] font-medium"
-                    >
-                      Commencer maintenant
-                    </Button>
-                  </div>
-                </div>*/}
               </div>
             </TabsContent>
           </Tabs>
