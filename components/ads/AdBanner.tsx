@@ -18,7 +18,7 @@ type DynamicAdBannerProps = {
 
 export default function AdBanner({
   emplacement,
-  interval = 5000,
+  interval = 7000,
   className = "w-full h-32",
 }: DynamicAdBannerProps) {
   const [ads, setAds] = useState<Annonce[]>([]);
