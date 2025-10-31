@@ -372,7 +372,7 @@ export default function Structure() {
           <div className="w-80 hidden lg:block space-y-6">
             <AdBanner
               emplacement="SEA"
-              interval={3000}
+              interval={6000}
               className="w-80 h-auto"
             />
           </div>
@@ -381,8 +381,8 @@ export default function Structure() {
           <div className="flex lg:hidden w-full">
             <AdBanner
               emplacement="SEA"
-              interval={3000}
-              className="w-full h-48"
+              interval={6000}
+              className="w-full"
             />
           </div>
         </div>
