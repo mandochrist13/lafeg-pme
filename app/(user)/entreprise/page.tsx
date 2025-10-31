@@ -349,6 +349,8 @@ export default function EntreprisesServices() {
                   </Button>
                 </div>
               </div>
+                
+              
 
               {loading && (
                 <div className="text-center py-6 text-gray-500">
@@ -485,6 +487,16 @@ export default function EntreprisesServices() {
                   </Card>
                 ))}
               </div>
+               {entreprises.length === 0 && (
+                  <div className="text-center py-12 text-gray-500">
+                 <h4 className="text-lg font-semibold">Aucune offre pour l&apos;instant</h4>
+      <p className="mt-1 text-sm ">
+        Essayez de modifier les filtres ou revenez plus tard.
+      </p>
+                  </div>
+                     
+                )}
+
             </TabsContent>
 
             <TabsContent value="publier" className="mt-8">
@@ -669,12 +681,6 @@ export default function EntreprisesServices() {
                             </div>
                           </li>
                         </ul>
-
-                        <p className="mt-8 text-sm text-white/80 italic">
-                          NB : Après une année d&apos;affiliation, les
-                          cotisations patronales peuvent être payées en
-                          plusieurs tranches et à votre propre rythme.
-                        </p>
                       </div>
                     </div>
                   </div>
