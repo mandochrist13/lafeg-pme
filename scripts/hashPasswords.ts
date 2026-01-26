@@ -1,19 +1,29 @@
-// ✅ Version compatible sans ES modules
+// hash-passwords.cjs
+require("dotenv").config();
+
 const { PrismaClient } = require("../generated/prisma");
+const { PrismaPg } = require("@prisma/adapter-pg");
 const { hash } = require("bcryptjs");
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  adapter: new PrismaPg({
+    // ✅ préfère DIRECT_URL si tu l'as (port 5432), sinon DATABASE_URL
+    connectionString: process.env.DIRECT_URL || process.env.DATABASE_URL,
+  }),
+});
 
 async function run() {
   const users = await prisma.utilisateur.findMany();
 
   for (const user of users) {
-    if (!user.mot_de_passe.startsWith("$2b$")) {
+    if (user.mot_de_passe && !user.mot_de_passe.startsWith("$2b$")) {
       const hashed = await hash(user.mot_de_passe, 10);
+
       await prisma.utilisateur.update({
         where: { id_utilisateur: user.id_utilisateur },
         data: { mot_de_passe: hashed },
       });
+
       console.log(`✅ Mot de passe hashé pour ${user.email}`);
     }
   }
@@ -22,4 +32,4 @@ async function run() {
 run()
   .then(() => console.log("🎉 Terminé"))
   .catch((e) => console.error("❌ Erreur :", e))
-  .finally(() => prisma.$disconnect());
+  .finally(async () => prisma.$disconnect());
