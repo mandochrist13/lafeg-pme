@@ -265,7 +265,7 @@ export default function ActualitesPage() {
 
             {/* Liste des articles */}
             {viewMode === "grid" ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredActualites.map((article) => (
                   <Card
                     key={article.id}
@@ -287,13 +287,18 @@ export default function ActualitesPage() {
                         {article.titre}
                       </h3>
                       <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                        {article.contenu.slice(0, 100)}...
+                        {article.contenu}
                       </p>
                       <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
                         <span>{formatDate(article.datePub)}</span>
                        
                       </div>
-                      <Link href={`/actualite/${article.id}`}>
+                      {/* <Link href={`/actualite/${article.id}`}>
+  <Button variant="default" size="sm" className="w-full">
+    Lire la suite
+  </Button>
+</Link> */}
+ <Link href={`${article.lienSource}`}>
   <Button variant="default" size="sm" className="w-full">
     Lire la suite
   </Button>
@@ -338,7 +343,7 @@ export default function ActualitesPage() {
                               {/* <span>{article.tempsLecture}</span>
                               <span>{article.vues} vues</span> */}
                             </div>
-                            <Link href={`/actualite${article.id}`}>
+                            <Link href={`${article.lienSource}`}>
                               <Button variant="outline" size="sm">
                                 Lire
                                 <ArrowRight className="w-3 h-3 ml-1" />
