@@ -378,12 +378,12 @@ export default function EntreprisesServices() {
                           <Image
                             src={entreprise.image_url || "/placeholder.svg"}
                             alt={`Logo ${entreprise.image_nom}`}
-                            width={60}
-                            height={60}
+                            width={40}
+                            height={40}
                             className="rounded-md bg-white p-1"
                           />
                           <div>
-                            <CardTitle className="text-lg font-bold bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] bg-clip-text text-transparent">
+                            <CardTitle className="font-bold bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] bg-clip-text text-transparent">
                               {entreprise.nom_structure}
                             </CardTitle>
                             <p className="text-xs text-white/80 italic">
@@ -391,9 +391,9 @@ export default function EntreprisesServices() {
                             </p>
                           </div>
                         </div>
-                        <div className="flex flex-col items-end gap-1">
+                        <div className="flex flex-col items-start gap-1">
                           {entreprise.membre_feg && (
-                            <Badge className="bg-white text-[#063a1e] text-xs">
+                            <Badge className="bg-white text-[#063a1e] text-[9px] font-bold">
                               Membre FEG
                             </Badge>
                           )}
