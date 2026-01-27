@@ -1,11 +1,9 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  // url      = env("DATABASE_URL")
 }
 
 model TexteJuridique {
@@ -58,10 +56,11 @@ model Vente {
   image_url     String
   image_nom     String
   taille_image  Int?
-  mime_type     String   
+  mime_type     String
   nom_structure String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  lien          String?
 
   @@map("vente")
 }

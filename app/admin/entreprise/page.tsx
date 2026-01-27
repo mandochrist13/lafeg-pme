@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import type { ReactElement } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -281,7 +282,7 @@ export default function ServicesEntreprisesPage() {
     statut: "ACTIF" | "INACTIF" | "ARCHIVE" | string;
   }
 
-  const getStatusBadge = (statut: StatusBadgeProps["statut"]): JSX.Element => {
+  const getStatusBadge = (statut: StatusBadgeProps["statut"]): ReactElement => {
     const variants: Record<string, string> = {
       ACTIF: "default",
       INACTIF: "secondary",
@@ -305,7 +306,7 @@ export default function ServicesEntreprisesPage() {
     type: "EMPLOI" | "STAGE" | "FORMATION" | "CONSULTATION" | string;
   }
 
-  const getTypeBadge = (type: TypeBadgeProps["type"]): JSX.Element => {
+  const getTypeBadge = (type: TypeBadgeProps["type"]): ReactElement => {
     const colors: Record<string, string> = {
       EMPLOI: "bg-blue-100 text-blue-800",
       STAGE: "bg-purple-100 text-purple-800",

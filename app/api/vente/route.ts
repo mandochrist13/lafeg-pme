@@ -283,12 +283,16 @@ if (!/^image\/(jpeg|png|gif)$/i.test(file.type)) {
     const nom_structure = formData.get('nom_structure') as string;
 
     // Créer la publicité dans la base de données
+    const lienRaw = formData.get("lien");
+const lien = typeof lienRaw === "string" && lienRaw.trim() !== "" ? lienRaw.trim() : null;
+
     const annonce = await prisma.vente.create(
       {
         data: {
           libelle: formData.get('libelle') as string,
           image_url: urlData.publicUrl,
           image_nom: file.name,
+          lien,
           taille_image: file.size,
           mime_type: file.type,
           nom_structure: formData.get('nom_structure') as string,

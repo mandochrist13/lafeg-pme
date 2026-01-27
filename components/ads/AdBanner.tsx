@@ -3,11 +3,13 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { fetchAllPublicites, Annonce } from "@/app/services/vente/api";
+import Link from "next/link";
+import { Button } from "../ui/button";
 
 type DynamicAdBannerProps = {
-  /** 
-   * Valeur de `libelle` (emplacement) à filtrer, 
-   * ex: "HEADER", "SIDEBAR", "FOOTER", "HOMEPAGE_BANNER" 
+  /**
+   * Valeur de `libelle` (emplacement) à filtrer,
+   * ex: "HEADER", "SIDEBAR", "FOOTER", "HOMEPAGE_BANNER"
    */
   emplacement: string;
   /** Intervalle en ms entre chaque slide */
@@ -50,10 +52,15 @@ export default function AdBanner({
   const pub = ads[current];
 
   return (
-    <div className={`relative ${className} bg-gray-100 overflow-hidden rounded-xl shadow-lg`}>
-      
-
+    <div
+      className={`relative ${className} bg-gray-100 overflow-hidden rounded-xl shadow-lg`}
+    >
       {/* Image de la pub */}
+      <Link
+        href={`${pub.lien || "#"}`}
+        target={pub.lien ? "_blank" : "_self"}
+        rel="noopener noreferrer"
+      >
         <Image
           src={pub.image_url!}
           alt={pub.nom_structure}
@@ -61,7 +68,7 @@ export default function AdBanner({
           height={200}
           className="object-cover object-center w-full h-full transition-opacity duration-700"
         />
- 
+      </Link>
 
       {/* Indicateurs (points) */}
       <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">

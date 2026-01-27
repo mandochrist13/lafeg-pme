@@ -241,6 +241,7 @@ export default function PublicitesPage({ trigger, onConfirm }: Props) {
                   <TableHead>Emplacement</TableHead>
                   <TableHead>Image</TableHead>
                   <TableHead>Nom de la structure</TableHead>
+                  <TableHead>Lien</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -262,6 +263,7 @@ export default function PublicitesPage({ trigger, onConfirm }: Props) {
                     </TableCell>
 
                     <TableCell>{publicite.nom_structure}</TableCell>
+                    <TableCell>{publicite.lien}</TableCell>
 
                     <TableCell>
                       <div className="flex space-x-2">

@@ -6,6 +6,7 @@ export interface Annonce {
   id_vente: string; // ✅ même nom que dans Prisma
   libelle: string;
   nom_structure: string;
+  lien: string | null;
   image_url?: string | null;
   image_nom?: string | null;
   createdAt: string;

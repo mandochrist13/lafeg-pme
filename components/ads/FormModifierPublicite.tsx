@@ -28,6 +28,7 @@ export function FormModifierPublicite({
     libelle: publicite.libelle,
     nom_structure: publicite.nom_structure,
     imageFile: null as File | null,
+    lien: publicite.lien || "",
   });
   const [loading, setLoading] = useState(false);
 
@@ -38,10 +39,11 @@ export function FormModifierPublicite({
     const formData = new FormData();
     formData.append("libelle", formValues.libelle);
     formData.append("nom_structure", formValues.nom_structure);
+    formData.append("lien", formValues.lien);
     if (formValues.imageFile) {
       formData.append("image", formValues.imageFile);
     }
-    await updatePubliciteWithImage(publicite.id_publicite, formData);
+    await updatePubliciteWithImage(publicite.id_vente, formData);
     setLoading(false);
     toast.success("Publicité mise à jour avec succès !");
     onSuccess();
@@ -49,8 +51,8 @@ export function FormModifierPublicite({
 
   return (
     <form className="grid grid-cols-2 gap-5" onSubmit={handleSubmit}>
-      
-      <Select
+      <div className="flex flex-col gap-2">
+        <Select
         value={formValues.libelle}
         onValueChange={(value: string) =>
           setFormValues({ ...formValues, libelle: value })
@@ -79,6 +81,14 @@ export function FormModifierPublicite({
         accept="image/png"
         onChange={(e) => setFormValues({ ...formValues, imageFile: e.target.files?.[0] || null })}
       />
+      <Input
+        type="text"
+        value={formValues.lien}
+        onChange={(e) => setFormValues({ ...formValues, lien: e.target.value })}
+        required
+      />
+      </div>
+      
 
       {publicite.image_url && (
         <img src={publicite.image_url} alt="Image existante" style={{ maxWidth: 200 }} />
