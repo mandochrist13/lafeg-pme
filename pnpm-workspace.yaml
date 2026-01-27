@@ -6,6 +6,10 @@ ignoredBuiltDependencies:
   - tree-sitter
   - tree-sitter-json
 
+packages:
+  - ./apps/*
+  - ./packages/*
+
 onlyBuiltDependencies:
   - '@prisma/engines'
   - prisma

@@ -7,16 +7,18 @@ import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
+import { fetchActualites, type Actualite } from "@/app/services/public/actualite";
 // import slugify from "slugify"
 
-interface Actualite {
-  id: string
-  titre: string
-  contenu: string
-  imageUrl: string | null
-  categorie: string | null
-  datePub: string
-}
+// interface Actualite {
+//   id: string
+//   titre: string
+//   contenu: string
+//   imageUrl: string | null
+//   categorie: string | null
+//   datePub: string
+//   lien: string | null
+// }
 
 export default function DernieresActualites() {
   const [actus, setActus] = useState<Actualite[]>([])
@@ -25,7 +27,7 @@ export default function DernieresActualites() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch(`/api/actualite?page=1&limit=2`, { cache: "no-store" })
+        const res = await fetch(`/api/actualite?page=1&limit=3`, { cache: "no-store" })
         const json = await res.json()
         if (json?.data) setActus(json.data)
       } catch (e) {
@@ -68,17 +70,17 @@ export default function DernieresActualites() {
                 className="w-full h-full object-center object-cover transition-transform duration-500 hover:scale-105"
               />
               <div className="absolute top-4 left-4">
-                <Badge className={index === 0 ? "bg-red-500 text-white" : "bg-[#063a1e] text-white"}>
+                <Badge className={index === 0 ? "bg-red-500/80 text-white" : "bg-[#063a1e]/80 text-white"}>
                   {index === 0 ? "À LA UNE" : "RÉCENT"}
                 </Badge>
               </div>
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
-                <h3 className="text-white text-xl font-bold mb-2 line-clamp-2">{article.titre}</h3>
-                <p className="text-white/90 text-sm line-clamp-2">{article.contenu}</p>
+                <h3 className="text-white text-xl font-bold mb-1 line-clamp-2">{article.titre}</h3>
+                {/* <p className="text-white/90 text-sm line-clamp-2">{article.contenu}</p> */}
               </div>
             </div>
             <CardContent className="p-6">
-              <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+              <div className="flex items-center gap-4 text-sm text-[#063a1e] font-bold mb-4">
                 <span>
                   {new Date(article.datePub).toLocaleDateString("fr-FR", {
                     day: "2-digit",
@@ -96,7 +98,7 @@ export default function DernieresActualites() {
               <p className="text-muted-foreground mb-4 line-clamp-3">
                 {article.contenu.slice(0, 180)}...
               </p>
-              {/* <Link href={`/actualites/${slug}`}>
+               <Link href={`${article.lienSource || "#"}`} target={article.lienSource ? "_blank" : "_self"} rel="noopener noreferrer">
                 <Button
                   variant="ghost"
                   className="text-[#063a1e] hover:bg-[#063a1e]/10 p-0"
@@ -104,7 +106,7 @@ export default function DernieresActualites() {
                   Lire l'article complet
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-              </Link> */}
+              </Link> 
             </CardContent>
           </Card>
         )

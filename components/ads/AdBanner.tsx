@@ -18,7 +18,7 @@ type DynamicAdBannerProps = {
 
 export default function AdBanner({
   emplacement,
-  interval = 7000,
+  interval = 8000,
   className = "w-full h-32",
 }: DynamicAdBannerProps) {
   const [ads, setAds] = useState<Annonce[]>([]);
@@ -51,17 +51,15 @@ export default function AdBanner({
 
   return (
     <div className={`relative ${className} bg-gray-100 overflow-hidden rounded-xl shadow-lg`}>
-      {/* <div className="absolute top-2 left-2 z-10 bg-gray-500/80 text-white text-xs px-1 rounded">
-        Publicité
-      </div> */}
+      
 
       {/* Image de la pub */}
-        <img
+        <Image
           src={pub.image_url!}
           alt={pub.nom_structure}
           width={800}
           height={200}
-          className="object-cover w-full h-full transition-opacity duration-700"
+          className="object-cover object-center w-full h-full transition-opacity duration-700"
         />
  
 

@@ -30,7 +30,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
             <AdBanner
               emplacement="HEADER"
-              className="w-full lg:max-w-[50%] "
+              className="w-full lg:max-w-[65%] md:h-32"
               interval={8000}
             />
           </div>

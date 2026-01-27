@@ -10,7 +10,7 @@ import Image from "next/image";
 import Link from "next/link";
 import HamburgerMenu from "./burgermenu";
 import { usePathname } from "next/navigation";
-import { ChevronDownIcon } from "lucide-react";
+// import { ChevronDownIcon } from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuContent,
