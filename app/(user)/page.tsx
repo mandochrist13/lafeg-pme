@@ -97,7 +97,7 @@ export default function Home() {
               NOUVEAU
             </Badge>
             <p className="text-sm">
-              Mise à jour des textes relatifs à la fiscalité des PME - Mai 2025
+              La Loi de Finances 2026
             </p>
           </div>
         </div>
@@ -406,7 +406,7 @@ export default function Home() {
                     variant="ghost"
                     className="w-full text-[#063a1e] hover:bg-[#063a1e]/10"
                   >
-                    Voir les formations
+                    Voir centres de formations
                   </Button>
                 </Link>
                 <Badge className="bg-[#063a1e]/10 text-[#063a1e] hover:bg-[#063a1e]/20">
