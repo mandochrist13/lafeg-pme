@@ -97,9 +97,7 @@ export default function Home() {
             >
               NOUVEAU
             </Badge>
-            <p className="text-sm">
-              La Loi de Finances 2026
-            </p>
+            <p className="text-sm">La Loi de Finances 2026</p>
           </div>
         </div>
       </div>
@@ -319,152 +317,166 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Incubateurs */}
-            <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-[#063a1e]">
-              <CardHeader>
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] flex items-center justify-center">
-                    <span className="text-[#063a1e] font-bold text-lg">
-                      <Rocket className="h-6 w-6" />
-                    </span>
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">Incubateurs</CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      Accompagnement startup
-                    </p>
+            <div className="group relative overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:shadow-xl">
+              <div className="relative h-48 overflow-hidden">
+                <Image
+                  src="/incubateur.jpg"
+                  alt="Incubateurs"
+                  width={400}
+                  height={300}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#063a1e] to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-70" />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                  <div className="rounded-full bg-white/90 p-3 shadow-lg">
+                    <Link href="/structures-accompagnement?tab=incubateurs">
+                      <ArrowRight className="h-6 w-6 text-[#063a1e]" />
+                    </Link>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm mb-4">
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#063a1e] rounded-full"></div>
-                    <span>Programme d'incubation 6-12 mois</span>
+
+                {/* petit chip icône */}
+                <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-[#063a1e] shadow">
+                  <Rocket className="h-4 w-4" />
+                  Incubateurs
+                </div>
+              </div>
+
+              <div className="p-5">
+                <h3 className="mb-1 text-xl font-bold text-[#063a1e]">
+                  Incubateurs
+                </h3>
+                <p className="mb-3 text-sm text-gray-500">
+                  Accompagnement startup
+                </p>
+
+                <ul className="mb-4 space-y-1 text-sm">
+                  <li className="text-gray-600">
+                    • Programme d&apos;incubation 6-12 mois
                   </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#063a1e] rounded-full"></div>
-                    <span>Mentorat personnalisé</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#063a1e] rounded-full"></div>
-                    <span>Accès au financement</span>
-                  </li>
+                  <li className="text-gray-600">• Mentorat personnalisé</li>
+                  <li className="text-gray-600">• Accès au financement</li>
                 </ul>
-              </CardContent>
-              <CardFooter>
-                <Link href="/structures-accompagnement?tab=incubateurs">
-                  <Button
-                    variant="ghost"
-                    className="w-full text-[#063a1e] hover:bg-[#063a1e]/10"
+
+                <div className="flex items-center justify-between">
+                  <Link
+                    href="/structures-accompagnement?tab=incubateurs"
+                    className="inline-flex items-center text-sm font-medium text-[#063a1e] hover:underline"
                   >
-                    Explorer les incubateurs
-                  </Button>
-                </Link>
-                <Badge className="bg-[#063a1e]/10 text-[#063a1e] hover:bg-[#063a1e]/20">
-                  3 structures disponibles
-                </Badge>
-              </CardFooter>
-            </Card>
+                    Explorer <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                  <Badge className="bg-[#063a1e]/20 text-[#063a1e] border-[#063a1e]/30">
+                    3 structures disponibles
+                  </Badge>
+                </div>
+              </div>
+            </div>
 
             {/* Centres de formation */}
-            <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-[#063a1e]">
-              <CardHeader>
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] flex items-center justify-center">
-                    <span className="text-[#063a1e] font-bold text-lg">
-                      <GraduationCap className=" h-6 w-6" />
-                    </span>
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">
-                      Centres de Formation
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      Développement des compétences
-                    </p>
+            <div className="group relative overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:shadow-xl">
+              <div className="relative h-48 overflow-hidden">
+                <Image
+                  src="/formation.jpg"
+                  alt="Centres de formation"
+                  width={400}
+                  height={300}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#063a1e] to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-70" />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                  <div className="rounded-full bg-white/90 p-3 shadow-lg">
+                    <Link href="/structures-accompagnement?tab=centresFormation">
+                      <ArrowRight className="h-6 w-6 text-[#063a1e]" />
+                    </Link>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm mb-4">
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#063a1e] rounded-full"></div>
-                    <span>Formation professionnelle</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#063a1e] rounded-full"></div>
-                    <span>Certifications reconnues</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#063a1e] rounded-full"></div>
-                    <span>Formation continue</span>
-                  </li>
-                </ul>
-              </CardContent>
-              <CardFooter>
-                <Link href="/structures-accompagnement?tab=centresFormation">
-                  <Button
-                    variant="ghost"
-                    className="w-full text-[#063a1e] hover:bg-[#063a1e]/10"
-                  >
-                    Voir centres de formations
-                  </Button>
-                </Link>
-                <Badge className="bg-[#063a1e]/10 text-[#063a1e] hover:bg-[#063a1e]/20">
-                  2 centres partenaires
-                </Badge>
-              </CardFooter>
-            </Card>
 
-            {/* Structure publique */}
-            <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-[#063a1e]">
-              <CardHeader>
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] flex items-center justify-center">
-                    <span className="text-[#063a1e] font-bold text-lg">
-                      <Building className=" h-6 w-6" />
-                    </span>
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">
-                      Structure Publique
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      Accompagnement spécialisé
-                    </p>
+                <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-[#063a1e] shadow">
+                  <GraduationCap className="h-4 w-4" />
+                  Formation
+                </div>
+              </div>
+
+              <div className="p-5">
+                <h3 className="mb-1 text-xl font-bold text-[#063a1e]">
+                  Centres de Formation
+                </h3>
+                <p className="mb-3 text-sm text-gray-500">
+                  Développement des compétences
+                </p>
+
+                <ul className="mb-4 space-y-1 text-sm">
+                  <li className="text-gray-600">• Formation professionnelle</li>
+                  <li className="text-gray-600">• Certifications reconnues</li>
+                  <li className="text-gray-600">• Formation continue</li>
+                </ul>
+
+                <div className="flex items-center justify-between">
+                  <Link
+                    href="/structures-accompagnement?tab=centresFormation"
+                    className="inline-flex items-center text-sm font-medium text-[#063a1e] hover:underline"
+                  >
+                    Explorer <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                  <Badge className="bg-[#063a1e]/20 text-[#063a1e] border-[#063a1e]/30">
+                    2 centres partenaires
+                  </Badge>
+                </div>
+              </div>
+            </div>
+
+            {/* Structures publiques */}
+            <div className="group relative overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:shadow-xl">
+              <div className="relative h-48 overflow-hidden">
+                <Image
+                  src="/images/mine.jpg"
+                  alt="Structures publiques"
+                  width={400}
+                  height={300}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#063a1e] to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-70" />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                  <div className="rounded-full bg-white/90 p-3 shadow-lg">
+                    <Link href="/structures-accompagnement?tab=structuresPubliques">
+                      <ArrowRight className="h-6 w-6 text-[#063a1e]" />
+                    </Link>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm mb-4">
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#063a1e] rounded-full"></div>
-                    <span>Ministère des PME</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#063a1e] rounded-full"></div>
-                    <span>CNSS, CNAMGS</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#063a1e] rounded-full"></div>
-                    <span>Chambre de commerce</span>
-                  </li>
+
+                <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-[#063a1e] shadow">
+                  <Building className="h-4 w-4" />
+                  Public
+                </div>
+              </div>
+
+              <div className="p-5">
+                <h3 className="mb-1 text-xl font-bold text-[#063a1e]">
+                  Structures Publiques
+                </h3>
+                <p className="mb-3 text-sm text-gray-500">
+                  Accompagnement spécialisé
+                </p>
+
+                <ul className="mb-4 space-y-1 text-sm">
+                  <li className="text-gray-600">• Ministère des PME</li>
+                  <li className="text-gray-600">• CNSS, CNAMGS</li>
+                  <li className="text-gray-600">• Chambre de commerce</li>
                 </ul>
-              </CardContent>
-              <CardFooter>
-                <Link href="/structures-accompagnement?tab=structuresPubliques">
-                  <Button
-                    variant="ghost"
-                    className="w-full text-[#063a1e] hover:bg-[#063a1e]/10"
+
+                <div className="flex items-center justify-between">
+                  <Link
+                    href="/structures-accompagnement?tab=structuresPubliques"
+                    className="inline-flex items-center text-sm font-medium text-[#063a1e] hover:underline"
                   >
-                    Voir les structures Publiques
-                  </Button>
-                </Link>
-                <Badge className="bg-[#063a1e]/10 text-[#063a1e] hover:bg-[#063a1e]/20">
-                  9 institutions publiques
-                </Badge>
-              </CardFooter>
-            </Card>
+                    Explorer <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                  <Badge className="bg-[#063a1e]/20 text-[#063a1e] border-[#063a1e]/30">
+                    9 institutions publiques
+                  </Badge>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -660,7 +672,7 @@ export default function Home() {
               disponibles pour les PME gabonaises
             </p>
           </div>
-          
+
           <FinancingOffersCarousel />
 
           {/* Comparison Tool */}
@@ -674,7 +686,9 @@ export default function Home() {
               {/* Colonne texte */}
               <div className="flex flex-col">
                 <div className="mb-6 text-left">
-                  <h3 className="text-3xl text-[#dcdaa4]/90">Outil de comparaison</h3>
+                  <h3 className="text-3xl text-[#dcdaa4]/90">
+                    Outil de comparaison
+                  </h3>
                   <p className="mt-2 text-white/90">
                     Comparez jusqu&apos;à 3 offres de financement pour trouver
                     celle qui correspond le mieux à vos besoins.
@@ -912,9 +926,6 @@ export default function Home() {
               </CardContent>
             </Card>
           </div> */}
-
-           
-
         </div>
       </section>
 
