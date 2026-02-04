@@ -33,6 +33,8 @@ const categories = [
   "Innovation",
   "Commerce",
   "Formation",
+  "Publication",
+  "Autres",
 ];
 
 export default function ActualitesPage() {
