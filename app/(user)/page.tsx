@@ -33,6 +33,7 @@ import TickerTextes from "@/components/section/TickerTextes";
 import TextSearch from "@/components/section/search";
 import NewText from "@/components/section/new_text";
 import DernieresActualites from "./actualite/ActuLast";
+import FinancingOffersCarousel from "@/components/section/FinancingOffersCarousel";
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
@@ -214,10 +215,10 @@ export default function Home() {
             </div>
             {/* Colonne Texte */}
             <div>
-              <h1 className="text-2xl font-bold leading-tight">
+              <h1 className="text-2xl text-[#dcdaa4]/90 font-bold leading-tight">
                 Offres & Services des PME
               </h1>
-              <p className="mt-3 text-[#dcdaa4]/90 text-base md:text-lg max-w-xl">
+              <p className="mt-3  text-base md:text-lg max-w-xl">
                 Découvrez et publiez vos services sur notre plateforme dédiée
                 aux PME gabonaises. Bénéficiez de tarifs préférentiels en tant
                 que membre FEG.
@@ -659,183 +660,8 @@ export default function Home() {
               disponibles pour les PME gabonaises
             </p>
           </div>
-
-          {/* Featured Offers */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Offer 1 */}
-            <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-green-500">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="text-[#063a1e]">
-                      <h1 className="text-base ">Crédit Équipement Pro</h1>
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      BCEG - Banque
-                    </p>
-                  </div>
-                  <Badge className="bg-green-100 text-green-800">
-                    Taux préférentiel
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Montant</p>
-                    <p className="font-semibold">À partir de 1 000 000 F CFA</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Taux</p>
-                    <p className="font-semibold text-green-600">
-                      Variable selon profil
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Durée</p>
-                    <p className="font-semibold">3 à 12 mois</p>
-                  </div>
-                  {/* <div>
-                    <p className="text-xs text-muted-foreground">Apport</p>
-                    <p className="font-semibold">20% minimum</p>
-                  </div> */}
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Financement d'équipements professionnels.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Offer 2 */}
-            <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-blue-500">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="text-lg text-[#063a1e]">
-                      <h1 className="text-base "> CRÉDIT D'INVESTISSEMENT</h1>
-                    </CardTitle>
-
-                    <p className="text-sm text-muted-foreground">
-                      BCEG - Banque
-                    </p>
-                  </div>
-                  <Badge className="bg-blue-100 text-blue-800">Flexible</Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Montant</p>
-                    <p className="font-semibold">À partir de 3 000 000 F CFA</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Taux</p>
-                    <p className="font-semibold text-blue-600">
-                      Variable selon profil
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Durée</p>
-                    <p className="font-semibold">6 à 36 mois</p>
-                  </div>
-                  {/* <div>
-                    <p className="text-xs text-muted-foreground">Garantie</p>
-                    <p className="font-semibold">Selon contexte</p>
-                  </div> */}
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Ligne de crédit flexible pour financer le besoin en fonds de
-                  roulement de votre entreprise.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Offer 3 */}
-            <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-orange-500">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className=" text-[#063a1e]">
-                      <h1 className="text-base "> Crédit Investissement </h1>
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      FINAM - Microfinance
-                    </p>
-                  </div>
-                  <Badge className="bg-orange-100 text-orange-800">
-                    Accessible
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Montant</p>
-                    <p className="font-semibold">Variable</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Taux</p>
-                    <p className="font-semibold text-orange-600">Variable</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Durée</p>
-                    <p className="font-semibold">Selon contrat</p>
-                  </div>
-                  {/* <div>
-                    <p className="text-xs text-muted-foreground">Garantie</p>
-                    <p className="font-semibold">Solidaire</p>
-                  </div> */}
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Solution de financement adaptée aux petites entreprises et
-                  entrepreneurs individuels.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Offer 4 */}
-            <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-purple-500">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className=" text-[#063a1e]">
-                      <h1 className="text-base ">INTRODUCTION EN BOURSE PME</h1>
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">BVMAC</p>
-                  </div>
-                  <Badge className="bg-purple-100 text-purple-800">
-                    Long terme
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Montant</p>
-                    <p className="font-semibold">
-                      200 000 000 - 10 000 000 000 F CFA
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Taux</p>
-                    <p className="font-semibold text-purple-600">N/A</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Durée</p>
-                    <p className="font-semibold">Aucun remboursement</p>
-                  </div>
-                  {/* <div>
-                    <p className="text-xs text-muted-foreground">Apport</p>
-                    <p className="font-semibold">30% minimum</p>
-                  </div> */}
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Financement pour l'acquisition de locaux commerciaux ou
-                  industriels pour votre entreprise.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+          
+          <FinancingOffersCarousel />
 
           {/* Comparison Tool */}
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#063a1e] to-[#063a1e]/90 text-white">
@@ -848,7 +674,7 @@ export default function Home() {
               {/* Colonne texte */}
               <div className="flex flex-col">
                 <div className="mb-6 text-left">
-                  <h3 className="text-3xl">Outil de comparaison</h3>
+                  <h3 className="text-3xl text-[#dcdaa4]/90">Outil de comparaison</h3>
                   <p className="mt-2 text-white/90">
                     Comparez jusqu&apos;à 3 offres de financement pour trouver
                     celle qui correspond le mieux à vos besoins.
@@ -909,6 +735,186 @@ export default function Home() {
               </div>
             </div>
           </div>
+
+          {/* Featured Offers 
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 my-8">
+            // {/* Offer 1 
+            <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-green-500">
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle className="text-[#063a1e]">
+                      <h1 className="text-base ">CRÉDIT ÉQUIPEMENT PRO</h1>
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      BCEG - Banque
+                    </p>
+                  </div>
+                  <Badge className="bg-green-100 text-green-800">
+                    Taux préférentiel
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Montant</p>
+                    <p className="font-semibold">À partir de 1 000 000 F CFA</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Taux</p>
+                    <p className="font-semibold text-green-600">
+                      Variable selon profil
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Durée</p>
+                    <p className="font-semibold">3 à 12 mois</p>
+                  </div>
+                  {/* <div>
+                    <p className="text-xs text-muted-foreground">Apport</p>
+                    <p className="font-semibold">20% minimum</p>
+                  </div> 
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Financement d'équipements professionnels.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Offer 2 
+            <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-blue-500">
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle className="text-lg text-[#063a1e]">
+                      <h1 className="text-base "> CRÉDIT D'INVESTISSEMENT</h1>
+                    </CardTitle>
+
+                    <p className="text-sm text-muted-foreground">
+                      BCEG - Banque
+                    </p>
+                  </div>
+                  <Badge className="bg-blue-100 text-blue-800">Flexible</Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Montant</p>
+                    <p className="font-semibold">À partir de 3 000 000 F CFA</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Taux</p>
+                    <p className="font-semibold text-blue-600">
+                      Variable selon profil
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Durée</p>
+                    <p className="font-semibold">6 à 36 mois</p>
+                  </div>
+                  {/* <div>
+                    <p className="text-xs text-muted-foreground">Garantie</p>
+                    <p className="font-semibold">Selon contexte</p>
+                  </div> 
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Ligne de crédit flexible pour financer le besoin en fonds de
+                  roulement de votre entreprise.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Offer 3 
+            <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-orange-500">
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle className=" text-[#063a1e]">
+                      <h1 className="text-base "> CRÉDIT INVESTISSEMENT </h1>
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      FINAM - Microfinance
+                    </p>
+                  </div>
+                  <Badge className="bg-orange-100 text-orange-800">
+                    Accessible
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Montant</p>
+                    <p className="font-semibold">Variable</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Taux</p>
+                    <p className="font-semibold text-orange-600">Variable</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Durée</p>
+                    <p className="font-semibold">Selon contrat</p>
+                  </div>
+                  {/* <div>
+                    <p className="text-xs text-muted-foreground">Garantie</p>
+                    <p className="font-semibold">Solidaire</p>
+                  </div> 
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Solution de financement adaptée aux petites entreprises et
+                  entrepreneurs individuels.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Offer 4 
+            <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-purple-500">
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle className=" text-[#063a1e]">
+                      <h1 className="text-base ">INTRODUCTION EN BOURSE PME</h1>
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground">BVMAC</p>
+                  </div>
+                  <Badge className="bg-purple-100 text-purple-800">
+                    Long terme
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Montant</p>
+                    <p className="font-semibold">
+                      200 000 000 - 10 000 000 000 F CFA
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Taux</p>
+                    <p className="font-semibold text-purple-600">N/A</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Durée</p>
+                    <p className="font-semibold">Aucun remboursement</p>
+                  </div>
+                  {/* <div>
+                    <p className="text-xs text-muted-foreground">Apport</p>
+                    <p className="font-semibold">30% minimum</p>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Financement pour l'acquisition de locaux commerciaux ou
+                  industriels pour votre entreprise.
+                </p>
+              </CardContent>
+            </Card>
+          </div> */}
+
+           
+
         </div>
       </section>
 
