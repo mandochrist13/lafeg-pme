@@ -15,16 +15,9 @@ import {
   Mail,
   Phone,
 } from "lucide-react";
+import Reveal from "@/components/ui/reveal";
+import Parallax from "@/components/ui/parallax";
 import { Button } from "@/components/ui/button";
-import offresFinancement from "./offre/page";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import TickerTextes from "@/components/section/TickerTextes";
 
@@ -34,9 +27,31 @@ import TextSearch from "@/components/section/search";
 import NewText from "@/components/section/new_text";
 import DernieresActualites from "./actualite/ActuLast";
 import FinancingOffersCarousel from "@/components/section/FinancingOffersCarousel";
+import { RecentOffersMiniCarousel } from "./entreprise/recentOffre";
+import { fetchOffres, Offre } from "../services/offre/api";
+
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
+const [offres, setOffres] = useState<Offre[]>([]);
+const [offresLoading, setOffresLoading] = useState(true);
+
+useEffect(() => {
+  const loadOffres = async () => {
+    try {
+      setOffresLoading(true);
+      const res = await fetchOffres({}); // ou sans filtre
+      setOffres(res?.data ?? []);
+    } catch (e) {
+      console.error("Erreur fetchOffres:", e);
+      setOffres([]);
+    } finally {
+      setOffresLoading(false);
+    }
+  };
+
+  loadOffres();
+}, []);
 
   useEffect(() => {
     const hasVisited = sessionStorage.getItem("hasVisited");
@@ -111,76 +126,119 @@ export default function Home() {
         <div className="lg:container">
           <div className="grid grid-cols-1 md:flex md:justify-between gap-8 lg:gap-12 items-center">
             <div className="space-y-6 w-full md:max-w-[50%] flex flex-col items-center text-center md:items-start md:text-left">
-              <h2 className="text-3xl text-center md:text-left lg:text-4xl font-bold">
-                Les textes juridiques pour votre PME au Gabon
-              </h2>
-              <p className="text-white/90 text-center md:text-left text-lg">
-                Accédez facilement aux textes juridiques, lois et règlements
-                concernant les PME gabonaises.
-              </p>
-              <div className="flex flex-col sm:flex-row sm:justify-center md:justify-normal gap-4">
-                <Link href="/textes-juridiques">
-                  <Button
-                    variant="secondary"
-                    size="lg"
-                    className="bg-[#063a1e] relative hover:bg-white min-w-[200px] group"
-                  >
-                    <span className="absolute inset-0 w-full h-full bg-[#dcdaa4] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0"></span>
-                    <span className="relative mr-3 z-10 transition-colors duration-500 ease-in-out group-hover:text-[#063a1e]">
-                      <p>Consulter les textes</p>
-                    </span>
-                  </Button>
-                </Link>
-                <Link href="/a-propos">
-                  <Button
-                    size="lg"
-                    className="hover:text-[#063a1e] relative z-10 duration-300 ease-in-out hover:bg-white border-none font-medium min-w-[200px]"
-                  >
-                    En savoir plus
-                  </Button>
-                </Link>
-              </div>
+              <Reveal preset="slide" direction="left" distance={40}>
+                <h2 className="text-3xl text-center md:text-left lg:text-4xl font-bold">
+                  Les textes juridiques pour votre PME au Gabon
+                </h2>
+              </Reveal>
+              <Reveal preset="blur" delay={0.08}>
+                <p className="text-white/90 text-center md:text-left text-lg">
+                  Accédez facilement aux textes juridiques, lois et règlements
+                  concernant les PME gabonaises.
+                </p>
+              </Reveal>
+              <Reveal preset="scaleFade" delay={0.14}>
+                <div className="flex flex-col sm:flex-row sm:justify-center md:justify-normal gap-4">
+                  <Link href="/textes-juridiques">
+                    <Button
+                      variant="secondary"
+                      size="lg"
+                      className="bg-[#063a1e] relative hover:bg-white min-w-[200px] group"
+                    >
+                      <span className="absolute inset-0 w-full h-full bg-[#dcdaa4] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0"></span>
+                      <span className="relative mr-3 z-10 transition-colors duration-500 ease-in-out group-hover:text-[#063a1e]">
+                        <p>Consulter les textes</p>
+                      </span>
+                    </Button>
+                  </Link>
+                  <Link href="/a-propos">
+                    <Button
+                      size="lg"
+                      className="hover:text-[#063a1e] relative z-10 duration-300 ease-in-out hover:bg-white border-none font-medium min-w-[200px]"
+                    >
+                      En savoir plus
+                    </Button>
+                  </Link>
+                </div>
+              </Reveal>
             </div>
-            <div className="hidden md:block group [transform:perspective(1500px)_rotateY(15deg)] rounded-xl shadow-[rgba(0,0,0,0.25)_0px_25px_50px_-12px] transition-transform duration-1000 ease-in-out hover:[transform:perspective(3000px)_rotateY(5deg)] ">
-              <Image
-                src="/images/hero-img.jpg"
-                alt="Texte et loi pour les PME"
-                width={1000}
-                height={1000}
-                className="rounded-lg shadow-lg object-cover"
-              />
-            </div>
+            <Parallax
+              offset={34}
+              className="group [transform:perspective(1500px)_rotateY(15deg)] rounded-xl "
+            >
+              <Reveal
+                preset="slideFade"
+                direction="right"
+                distance={30}
+                delay={0.5}
+              >
+                <div className="hidden md:block group [transform:perspective(1500px)_rotateY(15deg)] rounded-xl shadow-[rgba(0,0,0,0.25)_0px_25px_50px_-12px] transition-transform duration-1000 ease-in-out hover:[transform:perspective(3000px)_rotateY(5deg)] ">
+                  <Image
+                    src="/images/hero-img.jpg"
+                    alt="Texte et loi pour les PME"
+                    width={1000}
+                    height={1000}
+                    className="rounded-lg shadow-lg object-cover"
+                  />
+                </div>
+              </Reveal>
+            </Parallax>
           </div>
         </div>
       </section>
 
       {/* Search Section */}
-      <section className="py-12 bg-white">
-        <div className="container">
-          <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold mb-2">
-                Recherchez un texte juridique
-              </h2>
-              <p className="text-muted-foreground font-bold">
-                Trouvez rapidement les textes juridiques dont vous avez besoin
-                pour votre entreprise
-              </p>
+      <Reveal preset="slideFade" direction="up" distance={30} delay={0.2}>
+        <section className="py-12 bg-white">
+          <div className="container">
+            <div className="max-w-3xl mx-auto">
+              <div className="text-center mb-8">
+                <h2 className="text-2xl font-bold mb-2">
+                  Recherchez un texte juridique
+                </h2>
+                <p className="text-muted-foreground font-bold">
+                  Trouvez rapidement les textes juridiques dont vous avez besoin
+                  pour votre entreprise
+                </p>
+              </div>
+              <TextSearch />
             </div>
-            <TextSearch />
+          </div>
+        </section>
+      </Reveal>
+      {/* Recent Updates + Ad avec effet "parallax" Tailwind (bg-fixed) */}
+      <section
+        className="w-full
+    relative overflow-hidden
+    bg-[url('/images/arriere_texte_2.jpg')]
+    bg-cover bg-center bg-no-repeat
+    bg-fixed
+  "
+      >
+        {/* Overlay pour lisibilité */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#eaeeeb]/95 via-[#eaeeeb]/75 to-[#eaeeeb]/95" />
+
+        {/* Glow déco (optionnel) */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-[#dcdaa4]/20 blur-3xl"
+        />
+
+        {/* Contenu */}
+        <div className="relative z-10">
+          {/* Recent Updates */}
+          <NewText />
+
+          {/* Sidebar Video Ad */}
+          <div className="flex justify-center items-center pb-12 container">
+            <AdBanner
+              emplacement="MIDDLE"
+              className="w-full max-w-[900px] h-full object-cover object-center"
+            />
           </div>
         </div>
       </section>
 
-      {/* Recent Updates */}
-      <NewText />
-      {/* Sidebar Video Ad */}
-      <div className="flex justify-center items-center pb-12 container bg-[#eaeeeb]">
-        <AdBanner
-          emplacement="MIDDLE"
-          className="w-full max-w-[900px] h-full object-cover object-center"
-        />
-      </div>
       {/* Section horizontale simple : texte à gauche, image à droite */}
       <div className="relative overflow-hidden bg-gradient-to-r from-[#063a1e] to-[#063a1e] px-4 text-white">
         {/* petite image décorative flottante (hors cadre, optionnelle) */}
@@ -195,18 +253,20 @@ export default function Home() {
           <div className="grid items-center gap-8 md:grid-cols-2">
             {/* Colonne Image (à droite) */}
             <div className="relative">
-              <div className="relative h-56 w-full overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm md:h-72 lg:h-80">
+              {/* <div className="relative h-56 w-full overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm md:h-72 lg:h-80">
                 <Image
-                  src="/pub_offre1.jpeg" /* ⬅️ remplace par ton image principale */
+                  src="/pub_offre4.jpg" 
                   width={100}
                   height={100}
                   alt="Mise en relation professionnelle"
                   className="h-full w-full object-cover transition-transform duration-700 will-change-transform md:group-hover:scale-105"
                   loading="lazy"
                 />
-                {/* voile pour lisibilité + respect de la charte */}
+             
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#063a1e]/70 via-transparent to-transparent" />
-              </div>
+              </div> */}
+            <RecentOffersMiniCarousel offres={offres} interval={8000} />
+
 
               {/* halo doux derrière l'image */}
               <div className="pointer-events-none absolute -inset-4 -z-10 rounded-2xl bg-[#dcdaa4]/15 blur-2xl" />
@@ -674,7 +734,24 @@ export default function Home() {
           </div>
 
           <FinancingOffersCarousel />
-
+          <div className="mb-8 flex justify-center">
+            <Link href="/offre">
+              <Button
+                variant="secondary"
+                size="lg"
+                className="bg-[#063a1e] relative hover:bg-white min-w-[200px] group"
+              >
+                <span className="absolute inset-0 w-full h-full bg-[#dcdaa4] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0"></span>
+                <span className="relative mr-3 z-10 transition-colors duration-500 ease-in-out group-hover:text-[#063a1e]">
+                  <p className="flex items-center justify-center">
+                    {" "}
+                    Voir toutes les offres{" "}
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </p>
+                </span>
+              </Button>
+            </Link>
+          </div>
           {/* Comparison Tool */}
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#063a1e] to-[#063a1e]/90 text-white">
             {/* décor léger */}
@@ -716,25 +793,6 @@ export default function Home() {
                     </p>
                   </div>
                 </div>
-
-                <div className="mt-6">
-                  <Link href="/offre">
-                    <Button
-                      variant="secondary"
-                      size="lg"
-                      className="bg-[#063a1e] relative hover:bg-white min-w-[200px] group"
-                    >
-                      <span className="absolute inset-0 w-full h-full bg-[#dcdaa4] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0"></span>
-                      <span className="relative mr-3 z-10 transition-colors duration-500 ease-in-out group-hover:text-[#063a1e]">
-                        <p className="flex items-center justify-center">
-                          {" "}
-                          Voir toutes les offres{" "}
-                          <ArrowRight className="ml-2 h-4 w-4" />
-                        </p>
-                      </span>
-                    </Button>
-                  </Link>
-                </div>
               </div>
 
               {/* Colonne image */}
@@ -749,183 +807,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-
-          {/* Featured Offers 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 my-8">
-            // {/* Offer 1 
-            <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-green-500">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="text-[#063a1e]">
-                      <h1 className="text-base ">CRÉDIT ÉQUIPEMENT PRO</h1>
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      BCEG - Banque
-                    </p>
-                  </div>
-                  <Badge className="bg-green-100 text-green-800">
-                    Taux préférentiel
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Montant</p>
-                    <p className="font-semibold">À partir de 1 000 000 F CFA</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Taux</p>
-                    <p className="font-semibold text-green-600">
-                      Variable selon profil
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Durée</p>
-                    <p className="font-semibold">3 à 12 mois</p>
-                  </div>
-                  {/* <div>
-                    <p className="text-xs text-muted-foreground">Apport</p>
-                    <p className="font-semibold">20% minimum</p>
-                  </div> 
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Financement d'équipements professionnels.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Offer 2 
-            <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-blue-500">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="text-lg text-[#063a1e]">
-                      <h1 className="text-base "> CRÉDIT D'INVESTISSEMENT</h1>
-                    </CardTitle>
-
-                    <p className="text-sm text-muted-foreground">
-                      BCEG - Banque
-                    </p>
-                  </div>
-                  <Badge className="bg-blue-100 text-blue-800">Flexible</Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Montant</p>
-                    <p className="font-semibold">À partir de 3 000 000 F CFA</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Taux</p>
-                    <p className="font-semibold text-blue-600">
-                      Variable selon profil
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Durée</p>
-                    <p className="font-semibold">6 à 36 mois</p>
-                  </div>
-                  {/* <div>
-                    <p className="text-xs text-muted-foreground">Garantie</p>
-                    <p className="font-semibold">Selon contexte</p>
-                  </div> 
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Ligne de crédit flexible pour financer le besoin en fonds de
-                  roulement de votre entreprise.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Offer 3 
-            <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-orange-500">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className=" text-[#063a1e]">
-                      <h1 className="text-base "> CRÉDIT INVESTISSEMENT </h1>
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      FINAM - Microfinance
-                    </p>
-                  </div>
-                  <Badge className="bg-orange-100 text-orange-800">
-                    Accessible
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Montant</p>
-                    <p className="font-semibold">Variable</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Taux</p>
-                    <p className="font-semibold text-orange-600">Variable</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Durée</p>
-                    <p className="font-semibold">Selon contrat</p>
-                  </div>
-                  {/* <div>
-                    <p className="text-xs text-muted-foreground">Garantie</p>
-                    <p className="font-semibold">Solidaire</p>
-                  </div> 
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Solution de financement adaptée aux petites entreprises et
-                  entrepreneurs individuels.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Offer 4 
-            <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-purple-500">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className=" text-[#063a1e]">
-                      <h1 className="text-base ">INTRODUCTION EN BOURSE PME</h1>
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">BVMAC</p>
-                  </div>
-                  <Badge className="bg-purple-100 text-purple-800">
-                    Long terme
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Montant</p>
-                    <p className="font-semibold">
-                      200 000 000 - 10 000 000 000 F CFA
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Taux</p>
-                    <p className="font-semibold text-purple-600">N/A</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Durée</p>
-                    <p className="font-semibold">Aucun remboursement</p>
-                  </div>
-                  {/* <div>
-                    <p className="text-xs text-muted-foreground">Apport</p>
-                    <p className="font-semibold">30% minimum</p>
-                  </div>
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Financement pour l'acquisition de locaux commerciaux ou
-                  industriels pour votre entreprise.
-                </p>
-              </CardContent>
-            </Card>
-          </div> */}
         </div>
       </section>
 
@@ -958,90 +839,6 @@ export default function Home() {
             <div className="lg:col-span-3">
               <DernieresActualites />
             </div>
-
-            {/* Side Articles 
-            <div className="space-y-6">
-              <Card className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge variant="outline" className="text-xs">
-                      ÉVÉNEMENT
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">
-                      20 Juin 2025
-                    </span>
-                  </div>
-                  <h4 className="font-semibold mb-2 text-sm">
-                    Forum de l'Entrepreneuriat Féminin 2025
-                  </h4>
-                  <p className="text-xs text-muted-foreground mb-3">
-                    Rendez-vous le 15 juillet à Libreville pour célébrer
-                    l'entrepreneuriat féminin au Gabon.
-                  </p>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-[#063a1e] hover:bg-[#063a1e]/10 p-0 h-auto"
-                  >
-                    En savoir plus
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge variant="outline" className="text-xs">
-                      FORMATION
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">
-                      18 Juin 2025
-                    </span>
-                  </div>
-                  <h4 className="font-semibold mb-2 text-sm">
-                    Webinaire : Digitalisation des PME
-                  </h4>
-                  <p className="text-xs text-muted-foreground mb-3">
-                    Formation gratuite sur les outils digitaux essentiels pour
-                    moderniser votre entreprise.
-                  </p>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-[#063a1e] hover:bg-[#063a1e]/10 p-0 h-auto"
-                  >
-                    S'inscrire gratuitement
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge variant="outline" className="text-xs">
-                      RÉGLEMENTATION
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">
-                      16 Juin 2025
-                    </span>
-                  </div>
-                  <h4 className="font-semibold mb-2 text-sm">
-                    Nouvelles mesures fiscales 2025
-                  </h4>
-                  <p className="text-xs text-muted-foreground mb-3">
-                    Découvrez les changements fiscaux qui impactent les PME à
-                    partir de juillet 2025.
-                  </p>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-[#063a1e] hover:bg-[#063a1e]/10 p-0 h-auto"
-                  >
-                    Consulter le guide
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>*/}
           </div>
         </div>
       </section>

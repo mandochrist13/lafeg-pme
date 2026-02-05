@@ -133,8 +133,8 @@ export default function FinancingOffersCarousel() {
                 >
                   <Card
                     className={`
-    group relative h-full overflow-hidden rounded-2xl border-l-4
-    ${offer.borderColor}
+    group relative h-full overflow-hidden rounded-2xl border-x-4
+    border-x-[#dcdaa4]
     text-white shadow-xl transition-all duration-500 hover:shadow-2xl
     animate-shimmer
     bg-[linear-gradient(110deg,#0B3E23,45%,#386140,55%,#0B3E23)]

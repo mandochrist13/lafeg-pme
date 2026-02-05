@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
+import { Stagger, StaggerItem } from "@/components/ui/stagger";
 import {
   fetchTextesJuridiques,
   TexteJuridique,
@@ -80,21 +80,22 @@ export default function NewText() {
     );
   if (error)
     return (
-      <div className="min-h-screen flex items-center justify-center text-red-500">
+      <div className="h-[320px] flex items-center justify-center text-red-500">
         Erreur: {error}
       </div>
     );
   return (
-    <section className="py-12 md:px-4 bg-[#EAEEEB]">
+    <section className="py-12 md:px-4 ">
       <div className="container">
         <h2 className="text-2xl font-bold mb-8">Mises à jour récentes</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Stagger className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {textes.slice(0, 4).map(
             (
               text // Afficher les 4 derniers objets
             ) => (
+              
+              <StaggerItem key={text.id_texteJuridique}> 
               <Card
-                key={text.id_texteJuridique}
                 className="hover:shadow-md transition-shadow"
               >
                 {" "}
@@ -138,10 +139,11 @@ export default function NewText() {
                     </Button>
                   </Link>
                 </CardFooter>
-              </Card>
+              </Card> </StaggerItem>
+              
             )
           )}
-        </div>
+        </Stagger>
         <div className="mt-8 text-center">
           <Link href="/textes-juridiques">
             <Button
