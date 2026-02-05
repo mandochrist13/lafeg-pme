@@ -64,7 +64,7 @@ export function RecentOffersMiniCarousel({
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <Link href="/offre" className="absolute inset-0">
+      <Link href="/entreprise" className="absolute inset-0">
         <img
           src={item.bannier_url || "/placeholder.svg"}
           alt={item.titre_offre || "Offre récente"}
