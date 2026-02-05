@@ -172,14 +172,19 @@ useEffect(() => {
                 distance={30}
                 delay={0.5}
               >
-                <div className="hidden md:block group [transform:perspective(1500px)_rotateY(15deg)] rounded-xl shadow-[rgba(0,0,0,0.25)_0px_25px_50px_-12px] transition-transform duration-1000 ease-in-out hover:[transform:perspective(3000px)_rotateY(5deg)] ">
-                  <Image
+                <div className=" group [transform:perspective(1500px)_rotateY(15deg)] rounded-xl shadow-[rgba(0,0,0,0.25)_0px_25px_50px_-12px] transition-transform duration-1000 ease-in-out hover:[transform:perspective(3000px)_rotateY(5deg)] ">
+                  {/* <Image
                     src="/images/hero-img.jpg"
                     alt="Texte et loi pour les PME"
                     width={1000}
                     height={1000}
                     className="rounded-lg shadow-lg object-cover"
-                  />
+                  /> */}
+                  <AdBanner
+        emplacement="HERO" // ✅ mets le libellé voulu (ex: "HEADER" / "HOMEPAGE_BANNER" / "HERO")
+        className="w-full h-[360px] lg:h-[420px] rounded-xl"
+        interval={8000}
+      />
                 </div>
               </Reveal>
             </Parallax>

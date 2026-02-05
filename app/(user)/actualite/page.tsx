@@ -418,7 +418,7 @@ export default function ActualitesPage() {
               {/* Desktop */}
               <div className="w-full hidden lg:block">
                 <AdBanner
-                  emplacement="INSTITUTION"
+                  emplacement="ACTU"
                   interval={7000}
                   className="w-full h-auto"
                 />
@@ -427,7 +427,7 @@ export default function ActualitesPage() {
               {/* Mobile */}
               <div className="flex lg:hidden w-full">
                 <AdBanner
-                  emplacement="INSTITUTION"
+                  emplacement="ACTU"
                   interval={7000}
                   className="w-full max-w-96"
                 />
