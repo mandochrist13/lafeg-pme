@@ -254,22 +254,11 @@ useEffect(() => {
           loading="lazy"
         />
 
-        <section className="container mx-auto px-4 py-12">
-          <div className="grid items-center gap-8 md:grid-cols-2">
+        <section className="mx-auto px-4 py-12">
+          <div className="grid container items-center gap-8 md:grid-cols-2">
             {/* Colonne Image (à droite) */}
             <div className="relative">
-              {/* <div className="relative h-56 w-full overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm md:h-72 lg:h-80">
-                <Image
-                  src="/pub_offre4.jpg" 
-                  width={100}
-                  height={100}
-                  alt="Mise en relation professionnelle"
-                  className="h-full w-full object-cover transition-transform duration-700 will-change-transform md:group-hover:scale-105"
-                  loading="lazy"
-                />
-             
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#063a1e]/70 via-transparent to-transparent" />
-              </div> */}
+              
             <RecentOffersMiniCarousel offres={offres} interval={8000} />
 
 

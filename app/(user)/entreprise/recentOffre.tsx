@@ -68,7 +68,7 @@ export function RecentOffersMiniCarousel({
         <img
           src={item.bannier_url || "/placeholder.svg"}
           alt={item.titre_offre || "Offre récente"}
-          className="h-full w-full object-cover transition-transform duration-700 will-change-transform md:group-hover:scale-105"
+          className="h-full w-full object-cover object-center transition-transform duration-700 will-change-transform md:group-hover:scale-105"
         />
       </Link>
 
