@@ -103,6 +103,20 @@
   }
 }
 
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 7s linear infinite;
+}
+
+
 @layer utilities {
   .beige-gradient {
     background: linear-gradient(to right, #dcdaa4, #bdbd95);

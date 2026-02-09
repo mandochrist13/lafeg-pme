@@ -15,16 +15,9 @@ import {
   Mail,
   Phone,
 } from "lucide-react";
+import Reveal from "@/components/ui/reveal";
+import Parallax from "@/components/ui/parallax";
 import { Button } from "@/components/ui/button";
-import offresFinancement from "./offre/page";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import TickerTextes from "@/components/section/TickerTextes";
 
@@ -33,9 +26,32 @@ import TickerTextes from "@/components/section/TickerTextes";
 import TextSearch from "@/components/section/search";
 import NewText from "@/components/section/new_text";
 import DernieresActualites from "./actualite/ActuLast";
+import FinancingOffersCarousel from "@/components/section/FinancingOffersCarousel";
+import { RecentOffersMiniCarousel } from "./entreprise/recentOffre";
+import { fetchOffres, Offre } from "../services/offre/api";
+
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
+const [offres, setOffres] = useState<Offre[]>([]);
+const [offresLoading, setOffresLoading] = useState(true);
+
+useEffect(() => {
+  const loadOffres = async () => {
+    try {
+      setOffresLoading(true);
+      const res = await fetchOffres({}); // ou sans filtre
+      setOffres(res?.data ?? []);
+    } catch (e) {
+      console.error("Erreur fetchOffres:", e);
+      setOffres([]);
+    } finally {
+      setOffresLoading(false);
+    }
+  };
+
+  loadOffres();
+}, []);
 
   useEffect(() => {
     const hasVisited = sessionStorage.getItem("hasVisited");
@@ -96,9 +112,7 @@ export default function Home() {
             >
               NOUVEAU
             </Badge>
-            <p className="text-sm">
-              La Loi de Finances 2026
-            </p>
+            <p className="text-sm">La Loi de Finances 2026</p>
           </div>
         </div>
       </div>
@@ -112,76 +126,124 @@ export default function Home() {
         <div className="lg:container">
           <div className="grid grid-cols-1 md:flex md:justify-between gap-8 lg:gap-12 items-center">
             <div className="space-y-6 w-full md:max-w-[50%] flex flex-col items-center text-center md:items-start md:text-left">
-              <h2 className="text-3xl text-center md:text-left lg:text-4xl font-bold">
-                Les textes juridiques pour votre PME au Gabon
-              </h2>
-              <p className="text-white/90 text-center md:text-left text-lg">
-                Accédez facilement aux textes juridiques, lois et règlements
-                concernant les PME gabonaises.
-              </p>
-              <div className="flex flex-col sm:flex-row sm:justify-center md:justify-normal gap-4">
-                <Link href="/textes-juridiques">
-                  <Button
-                    variant="secondary"
-                    size="lg"
-                    className="bg-[#063a1e] relative hover:bg-white min-w-[200px] group"
-                  >
-                    <span className="absolute inset-0 w-full h-full bg-[#dcdaa4] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0"></span>
-                    <span className="relative mr-3 z-10 transition-colors duration-500 ease-in-out group-hover:text-[#063a1e]">
-                      <p>Consulter les textes</p>
-                    </span>
-                  </Button>
-                </Link>
-                <Link href="/a-propos">
-                  <Button
-                    size="lg"
-                    className="hover:text-[#063a1e] relative z-10 duration-300 ease-in-out hover:bg-white border-none font-medium min-w-[200px]"
-                  >
-                    En savoir plus
-                  </Button>
-                </Link>
-              </div>
+              <Reveal preset="slide" direction="left" distance={40}>
+                <h2 className="text-3xl text-center md:text-left lg:text-4xl font-bold">
+                  Les textes juridiques pour votre PME au Gabon
+                </h2>
+              </Reveal>
+              <Reveal preset="blur" delay={0.08}>
+                <p className="text-white/90 text-center md:text-left text-lg">
+                  Accédez facilement aux textes juridiques, lois et règlements
+                  concernant les PME gabonaises.
+                </p>
+              </Reveal>
+              <Reveal preset="scaleFade" delay={0.14}>
+                <div className="flex flex-col sm:flex-row sm:justify-center md:justify-normal gap-4">
+                  <Link href="/textes-juridiques">
+                    <Button
+                      variant="secondary"
+                      size="lg"
+                      className="bg-[#063a1e] relative hover:bg-white min-w-[200px] group"
+                    >
+                      <span className="absolute inset-0 w-full h-full bg-[#dcdaa4] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0"></span>
+                      <span className="relative mr-3 z-10 transition-colors duration-500 ease-in-out group-hover:text-[#063a1e]">
+                        <p>Consulter les textes</p>
+                      </span>
+                    </Button>
+                  </Link>
+                  <Link href="/a-propos">
+                    <Button
+                      size="lg"
+                      className="hover:text-[#063a1e] relative z-10 duration-300 ease-in-out hover:bg-white border-none font-medium min-w-[200px]"
+                    >
+                      En savoir plus
+                    </Button>
+                  </Link>
+                </div>
+              </Reveal>
             </div>
-            <div className="hidden md:block group [transform:perspective(1500px)_rotateY(15deg)] rounded-xl shadow-[rgba(0,0,0,0.25)_0px_25px_50px_-12px] transition-transform duration-1000 ease-in-out hover:[transform:perspective(3000px)_rotateY(5deg)] ">
-              <Image
-                src="/images/hero-img.jpg"
-                alt="Texte et loi pour les PME"
-                width={1000}
-                height={1000}
-                className="rounded-lg shadow-lg object-cover"
-              />
-            </div>
+            <Parallax
+              offset={34}
+              className="group [transform:perspective(1500px)_rotateY(15deg)] rounded-xl "
+            >
+              <Reveal
+                preset="slideFade"
+                direction="right"
+                distance={30}
+                delay={0.5}
+              >
+                <div className=" group [transform:perspective(1500px)_rotateY(15deg)] rounded-xl shadow-[rgba(0,0,0,0.25)_0px_25px_50px_-12px] transition-transform duration-1000 ease-in-out hover:[transform:perspective(3000px)_rotateY(5deg)] ">
+                  {/* <Image
+                    src="/images/hero-img.jpg"
+                    alt="Texte et loi pour les PME"
+                    width={1000}
+                    height={1000}
+                    className="rounded-lg shadow-lg object-cover"
+                  /> */}
+                  <AdBanner
+        emplacement="HERO" // ✅ mets le libellé voulu (ex: "HEADER" / "HOMEPAGE_BANNER" / "HERO")
+        className="w-full h-[360px] lg:h-[420px] rounded-xl"
+        interval={8000}
+      />
+                </div>
+              </Reveal>
+            </Parallax>
           </div>
         </div>
       </section>
 
       {/* Search Section */}
-      <section className="py-12 bg-white">
-        <div className="container">
-          <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold mb-2">
-                Recherchez un texte juridique
-              </h2>
-              <p className="text-muted-foreground font-bold">
-                Trouvez rapidement les textes juridiques dont vous avez besoin
-                pour votre entreprise
-              </p>
+      <Reveal preset="slideFade" direction="up" distance={30} delay={0.2}>
+        <section className="py-12 bg-white">
+          <div className="container">
+            <div className="max-w-3xl mx-auto">
+              <div className="text-center mb-8">
+                <h2 className="text-2xl font-bold mb-2">
+                  Recherchez un texte juridique
+                </h2>
+                <p className="text-muted-foreground font-bold">
+                  Trouvez rapidement les textes juridiques dont vous avez besoin
+                  pour votre entreprise
+                </p>
+              </div>
+              <TextSearch />
             </div>
-            <TextSearch />
+          </div>
+        </section>
+      </Reveal>
+      {/* Recent Updates + Ad avec effet "parallax" Tailwind (bg-fixed) */}
+      <section
+        className="w-full
+    relative overflow-hidden
+    bg-[url('/images/arriere_texte_2.jpg')]
+    bg-cover bg-center bg-no-repeat
+    bg-fixed
+  "
+      >
+        {/* Overlay pour lisibilité */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#eaeeeb]/95 via-[#eaeeeb]/75 to-[#eaeeeb]/95" />
+
+        {/* Glow déco (optionnel) */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-[#dcdaa4]/20 blur-3xl"
+        />
+
+        {/* Contenu */}
+        <div className="relative z-10">
+          {/* Recent Updates */}
+          <NewText />
+
+          {/* Sidebar Video Ad */}
+          <div className="flex justify-center items-center pb-12 container">
+            <AdBanner
+              emplacement="MIDDLE"
+              className="w-full max-w-[900px] h-full object-cover object-center"
+            />
           </div>
         </div>
       </section>
 
-      {/* Recent Updates */}
-      <NewText />
-      {/* Sidebar Video Ad */}
-      <div className="flex justify-center items-center pb-12 container bg-[#eaeeeb]">
-        <AdBanner
-          emplacement="MIDDLE"
-          className="w-full max-w-[900px] h-full object-cover object-center"
-        />
-      </div>
       {/* Section horizontale simple : texte à gauche, image à droite */}
       <div className="relative overflow-hidden bg-gradient-to-r from-[#063a1e] to-[#063a1e] px-4 text-white">
         {/* petite image décorative flottante (hors cadre, optionnelle) */}
@@ -192,32 +254,23 @@ export default function Home() {
           loading="lazy"
         />
 
-        <section className="container mx-auto px-4 py-12">
-          <div className="grid items-center gap-8 md:grid-cols-2">
+        <section className="mx-auto px-4 py-12">
+          <div className="grid container items-center gap-8 md:grid-cols-2">
             {/* Colonne Image (à droite) */}
             <div className="relative">
-              <div className="relative h-56 w-full overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm md:h-72 lg:h-80">
-                <Image
-                  src="/pub_offre1.jpeg" /* ⬅️ remplace par ton image principale */
-                  width={100}
-                  height={100}
-                  alt="Mise en relation professionnelle"
-                  className="h-full w-full object-cover transition-transform duration-700 will-change-transform md:group-hover:scale-105"
-                  loading="lazy"
-                />
-                {/* voile pour lisibilité + respect de la charte */}
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#063a1e]/70 via-transparent to-transparent" />
-              </div>
+              
+            <RecentOffersMiniCarousel offres={offres} interval={8000} />
+
 
               {/* halo doux derrière l'image */}
               <div className="pointer-events-none absolute -inset-4 -z-10 rounded-2xl bg-[#dcdaa4]/15 blur-2xl" />
             </div>
             {/* Colonne Texte */}
             <div>
-              <h1 className="text-2xl font-bold leading-tight">
+              <h1 className="text-2xl text-[#dcdaa4]/90 font-bold leading-tight">
                 Offres & Services des PME
               </h1>
-              <p className="mt-3 text-[#dcdaa4]/90 text-base md:text-lg max-w-xl">
+              <p className="mt-3  text-base md:text-lg max-w-xl">
                 Découvrez et publiez vos services sur notre plateforme dédiée
                 aux PME gabonaises. Bénéficiez de tarifs préférentiels en tant
                 que membre FEG.
@@ -318,152 +371,166 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Incubateurs */}
-            <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-[#063a1e]">
-              <CardHeader>
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] flex items-center justify-center">
-                    <span className="text-[#063a1e] font-bold text-lg">
-                      <Rocket className="h-6 w-6" />
-                    </span>
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">Incubateurs</CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      Accompagnement startup
-                    </p>
+            <div className="group relative overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:shadow-xl">
+              <div className="relative h-48 overflow-hidden">
+                <Image
+                  src="/incubateur.jpg"
+                  alt="Incubateurs"
+                  width={400}
+                  height={300}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#063a1e] to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-70" />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                  <div className="rounded-full bg-white/90 p-3 shadow-lg">
+                    <Link href="/structures-accompagnement?tab=incubateurs">
+                      <ArrowRight className="h-6 w-6 text-[#063a1e]" />
+                    </Link>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm mb-4">
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#063a1e] rounded-full"></div>
-                    <span>Programme d'incubation 6-12 mois</span>
+
+                {/* petit chip icône */}
+                <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-[#063a1e] shadow">
+                  <Rocket className="h-4 w-4" />
+                  Incubateurs
+                </div>
+              </div>
+
+              <div className="p-5">
+                <h3 className="mb-1 text-xl font-bold text-[#063a1e]">
+                  Incubateurs
+                </h3>
+                <p className="mb-3 text-sm text-gray-500">
+                  Accompagnement startup
+                </p>
+
+                <ul className="mb-4 space-y-1 text-sm">
+                  <li className="text-gray-600">
+                    • Programme d&apos;incubation 6-12 mois
                   </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#063a1e] rounded-full"></div>
-                    <span>Mentorat personnalisé</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#063a1e] rounded-full"></div>
-                    <span>Accès au financement</span>
-                  </li>
+                  <li className="text-gray-600">• Mentorat personnalisé</li>
+                  <li className="text-gray-600">• Accès au financement</li>
                 </ul>
-              </CardContent>
-              <CardFooter>
-                <Link href="/structures-accompagnement?tab=incubateurs">
-                  <Button
-                    variant="ghost"
-                    className="w-full text-[#063a1e] hover:bg-[#063a1e]/10"
+
+                <div className="flex items-center justify-between">
+                  <Link
+                    href="/structures-accompagnement?tab=incubateurs"
+                    className="inline-flex items-center text-sm font-medium text-[#063a1e] hover:underline"
                   >
-                    Explorer les incubateurs
-                  </Button>
-                </Link>
-                <Badge className="bg-[#063a1e]/10 text-[#063a1e] hover:bg-[#063a1e]/20">
-                  3 structures disponibles
-                </Badge>
-              </CardFooter>
-            </Card>
+                    Explorer <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                  <Badge className="bg-[#063a1e]/20 text-[#063a1e] border-[#063a1e]/30">
+                    3 structures disponibles
+                  </Badge>
+                </div>
+              </div>
+            </div>
 
             {/* Centres de formation */}
-            <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-[#063a1e]">
-              <CardHeader>
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] flex items-center justify-center">
-                    <span className="text-[#063a1e] font-bold text-lg">
-                      <GraduationCap className=" h-6 w-6" />
-                    </span>
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">
-                      Centres de Formation
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      Développement des compétences
-                    </p>
+            <div className="group relative overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:shadow-xl">
+              <div className="relative h-48 overflow-hidden">
+                <Image
+                  src="/formation.jpg"
+                  alt="Centres de formation"
+                  width={400}
+                  height={300}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#063a1e] to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-70" />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                  <div className="rounded-full bg-white/90 p-3 shadow-lg">
+                    <Link href="/structures-accompagnement?tab=centresFormation">
+                      <ArrowRight className="h-6 w-6 text-[#063a1e]" />
+                    </Link>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm mb-4">
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#063a1e] rounded-full"></div>
-                    <span>Formation professionnelle</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#063a1e] rounded-full"></div>
-                    <span>Certifications reconnues</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#063a1e] rounded-full"></div>
-                    <span>Formation continue</span>
-                  </li>
-                </ul>
-              </CardContent>
-              <CardFooter>
-                <Link href="/structures-accompagnement?tab=centresFormation">
-                  <Button
-                    variant="ghost"
-                    className="w-full text-[#063a1e] hover:bg-[#063a1e]/10"
-                  >
-                    Voir centres de formations
-                  </Button>
-                </Link>
-                <Badge className="bg-[#063a1e]/10 text-[#063a1e] hover:bg-[#063a1e]/20">
-                  2 centres partenaires
-                </Badge>
-              </CardFooter>
-            </Card>
 
-            {/* Structure publique */}
-            <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-[#063a1e]">
-              <CardHeader>
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#dcdaa4] to-[#bdbd95] flex items-center justify-center">
-                    <span className="text-[#063a1e] font-bold text-lg">
-                      <Building className=" h-6 w-6" />
-                    </span>
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">
-                      Structure Publique
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      Accompagnement spécialisé
-                    </p>
+                <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-[#063a1e] shadow">
+                  <GraduationCap className="h-4 w-4" />
+                  Formation
+                </div>
+              </div>
+
+              <div className="p-5">
+                <h3 className="mb-1 text-xl font-bold text-[#063a1e]">
+                  Centres de Formation
+                </h3>
+                <p className="mb-3 text-sm text-gray-500">
+                  Développement des compétences
+                </p>
+
+                <ul className="mb-4 space-y-1 text-sm">
+                  <li className="text-gray-600">• Formation professionnelle</li>
+                  <li className="text-gray-600">• Certifications reconnues</li>
+                  <li className="text-gray-600">• Formation continue</li>
+                </ul>
+
+                <div className="flex items-center justify-between">
+                  <Link
+                    href="/structures-accompagnement?tab=centresFormation"
+                    className="inline-flex items-center text-sm font-medium text-[#063a1e] hover:underline"
+                  >
+                    Explorer <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                  <Badge className="bg-[#063a1e]/20 text-[#063a1e] border-[#063a1e]/30">
+                    2 centres partenaires
+                  </Badge>
+                </div>
+              </div>
+            </div>
+
+            {/* Structures publiques */}
+            <div className="group relative overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:shadow-xl">
+              <div className="relative h-48 overflow-hidden">
+                <Image
+                  src="/images/mine.jpg"
+                  alt="Structures publiques"
+                  width={400}
+                  height={300}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#063a1e] to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-70" />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                  <div className="rounded-full bg-white/90 p-3 shadow-lg">
+                    <Link href="/structures-accompagnement?tab=structuresPubliques">
+                      <ArrowRight className="h-6 w-6 text-[#063a1e]" />
+                    </Link>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm mb-4">
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#063a1e] rounded-full"></div>
-                    <span>Ministère des PME</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#063a1e] rounded-full"></div>
-                    <span>CNSS, CNAMGS</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#063a1e] rounded-full"></div>
-                    <span>Chambre de commerce</span>
-                  </li>
+
+                <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-[#063a1e] shadow">
+                  <Building className="h-4 w-4" />
+                  Public
+                </div>
+              </div>
+
+              <div className="p-5">
+                <h3 className="mb-1 text-xl font-bold text-[#063a1e]">
+                  Structures Publiques
+                </h3>
+                <p className="mb-3 text-sm text-gray-500">
+                  Accompagnement spécialisé
+                </p>
+
+                <ul className="mb-4 space-y-1 text-sm">
+                  <li className="text-gray-600">• Ministère des PME</li>
+                  <li className="text-gray-600">• CNSS, CNAMGS</li>
+                  <li className="text-gray-600">• Chambre de commerce</li>
                 </ul>
-              </CardContent>
-              <CardFooter>
-                <Link href="/structures-accompagnement?tab=structuresPubliques">
-                  <Button
-                    variant="ghost"
-                    className="w-full text-[#063a1e] hover:bg-[#063a1e]/10"
+
+                <div className="flex items-center justify-between">
+                  <Link
+                    href="/structures-accompagnement?tab=structuresPubliques"
+                    className="inline-flex items-center text-sm font-medium text-[#063a1e] hover:underline"
                   >
-                    Voir les structures Publiques
-                  </Button>
-                </Link>
-                <Badge className="bg-[#063a1e]/10 text-[#063a1e] hover:bg-[#063a1e]/20">
-                  9 institutions publiques
-                </Badge>
-              </CardFooter>
-            </Card>
+                    Explorer <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                  <Badge className="bg-[#063a1e]/20 text-[#063a1e] border-[#063a1e]/30">
+                    9 institutions publiques
+                  </Badge>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -660,183 +727,25 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Featured Offers */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Offer 1 */}
-            <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-green-500">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="text-[#063a1e]">
-                      <h1 className="text-base ">Crédit Équipement Pro</h1>
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      BCEG - Banque
-                    </p>
-                  </div>
-                  <Badge className="bg-green-100 text-green-800">
-                    Taux préférentiel
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Montant</p>
-                    <p className="font-semibold">À partir de 1 000 000 F CFA</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Taux</p>
-                    <p className="font-semibold text-green-600">
-                      Variable selon profil
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Durée</p>
-                    <p className="font-semibold">3 à 12 mois</p>
-                  </div>
-                  {/* <div>
-                    <p className="text-xs text-muted-foreground">Apport</p>
-                    <p className="font-semibold">20% minimum</p>
-                  </div> */}
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Financement d'équipements professionnels.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Offer 2 */}
-            <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-blue-500">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="text-lg text-[#063a1e]">
-                      <h1 className="text-base "> CRÉDIT D'INVESTISSEMENT</h1>
-                    </CardTitle>
-
-                    <p className="text-sm text-muted-foreground">
-                      BCEG - Banque
-                    </p>
-                  </div>
-                  <Badge className="bg-blue-100 text-blue-800">Flexible</Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Montant</p>
-                    <p className="font-semibold">À partir de 3 000 000 F CFA</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Taux</p>
-                    <p className="font-semibold text-blue-600">
-                      Variable selon profil
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Durée</p>
-                    <p className="font-semibold">6 à 36 mois</p>
-                  </div>
-                  {/* <div>
-                    <p className="text-xs text-muted-foreground">Garantie</p>
-                    <p className="font-semibold">Selon contexte</p>
-                  </div> */}
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Ligne de crédit flexible pour financer le besoin en fonds de
-                  roulement de votre entreprise.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Offer 3 */}
-            <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-orange-500">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className=" text-[#063a1e]">
-                      <h1 className="text-base "> Crédit Investissement </h1>
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      FINAM - Microfinance
-                    </p>
-                  </div>
-                  <Badge className="bg-orange-100 text-orange-800">
-                    Accessible
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Montant</p>
-                    <p className="font-semibold">Variable</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Taux</p>
-                    <p className="font-semibold text-orange-600">Variable</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Durée</p>
-                    <p className="font-semibold">Selon contrat</p>
-                  </div>
-                  {/* <div>
-                    <p className="text-xs text-muted-foreground">Garantie</p>
-                    <p className="font-semibold">Solidaire</p>
-                  </div> */}
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Solution de financement adaptée aux petites entreprises et
-                  entrepreneurs individuels.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Offer 4 */}
-            <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-purple-500">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className=" text-[#063a1e]">
-                      <h1 className="text-base ">INTRODUCTION EN BOURSE PME</h1>
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">BVMAC</p>
-                  </div>
-                  <Badge className="bg-purple-100 text-purple-800">
-                    Long terme
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Montant</p>
-                    <p className="font-semibold">
-                      200 000 000 - 10 000 000 000 F CFA
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Taux</p>
-                    <p className="font-semibold text-purple-600">N/A</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Durée</p>
-                    <p className="font-semibold">Aucun remboursement</p>
-                  </div>
-                  {/* <div>
-                    <p className="text-xs text-muted-foreground">Apport</p>
-                    <p className="font-semibold">30% minimum</p>
-                  </div> */}
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Financement pour l'acquisition de locaux commerciaux ou
-                  industriels pour votre entreprise.
-                </p>
-              </CardContent>
-            </Card>
+          <FinancingOffersCarousel />
+          <div className="mb-8 flex justify-center">
+            <Link href="/offre">
+              <Button
+                variant="secondary"
+                size="lg"
+                className="bg-[#063a1e] relative hover:bg-white min-w-[200px] group"
+              >
+                <span className="absolute inset-0 w-full h-full bg-[#dcdaa4] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0"></span>
+                <span className="relative mr-3 z-10 transition-colors duration-500 ease-in-out group-hover:text-[#063a1e]">
+                  <p className="flex items-center justify-center">
+                    {" "}
+                    Voir toutes les offres{" "}
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </p>
+                </span>
+              </Button>
+            </Link>
           </div>
-
           {/* Comparison Tool */}
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#063a1e] to-[#063a1e]/90 text-white">
             {/* décor léger */}
@@ -848,7 +757,9 @@ export default function Home() {
               {/* Colonne texte */}
               <div className="flex flex-col">
                 <div className="mb-6 text-left">
-                  <h3 className="text-3xl">Outil de comparaison</h3>
+                  <h3 className="text-3xl text-[#dcdaa4]/90">
+                    Outil de comparaison
+                  </h3>
                   <p className="mt-2 text-white/90">
                     Comparez jusqu&apos;à 3 offres de financement pour trouver
                     celle qui correspond le mieux à vos besoins.
@@ -875,25 +786,6 @@ export default function Home() {
                       évidence les avantages clés de chacune.
                     </p>
                   </div>
-                </div>
-
-                <div className="mt-6">
-                  <Link href="/offre">
-                    <Button
-                      variant="secondary"
-                      size="lg"
-                      className="bg-[#063a1e] relative hover:bg-white min-w-[200px] group"
-                    >
-                      <span className="absolute inset-0 w-full h-full bg-[#dcdaa4] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0"></span>
-                      <span className="relative mr-3 z-10 transition-colors duration-500 ease-in-out group-hover:text-[#063a1e]">
-                        <p className="flex items-center justify-center">
-                          {" "}
-                          Voir toutes les offres{" "}
-                          <ArrowRight className="ml-2 h-4 w-4" />
-                        </p>
-                      </span>
-                    </Button>
-                  </Link>
                 </div>
               </div>
 
@@ -938,93 +830,9 @@ export default function Home() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Featured Article */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-3">
               <DernieresActualites />
             </div>
-
-            {/* Side Articles 
-            <div className="space-y-6">
-              <Card className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge variant="outline" className="text-xs">
-                      ÉVÉNEMENT
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">
-                      20 Juin 2025
-                    </span>
-                  </div>
-                  <h4 className="font-semibold mb-2 text-sm">
-                    Forum de l'Entrepreneuriat Féminin 2025
-                  </h4>
-                  <p className="text-xs text-muted-foreground mb-3">
-                    Rendez-vous le 15 juillet à Libreville pour célébrer
-                    l'entrepreneuriat féminin au Gabon.
-                  </p>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-[#063a1e] hover:bg-[#063a1e]/10 p-0 h-auto"
-                  >
-                    En savoir plus
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge variant="outline" className="text-xs">
-                      FORMATION
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">
-                      18 Juin 2025
-                    </span>
-                  </div>
-                  <h4 className="font-semibold mb-2 text-sm">
-                    Webinaire : Digitalisation des PME
-                  </h4>
-                  <p className="text-xs text-muted-foreground mb-3">
-                    Formation gratuite sur les outils digitaux essentiels pour
-                    moderniser votre entreprise.
-                  </p>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-[#063a1e] hover:bg-[#063a1e]/10 p-0 h-auto"
-                  >
-                    S'inscrire gratuitement
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge variant="outline" className="text-xs">
-                      RÉGLEMENTATION
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">
-                      16 Juin 2025
-                    </span>
-                  </div>
-                  <h4 className="font-semibold mb-2 text-sm">
-                    Nouvelles mesures fiscales 2025
-                  </h4>
-                  <p className="text-xs text-muted-foreground mb-3">
-                    Découvrez les changements fiscaux qui impactent les PME à
-                    partir de juillet 2025.
-                  </p>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-[#063a1e] hover:bg-[#063a1e]/10 p-0 h-auto"
-                  >
-                    Consulter le guide
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>*/}
           </div>
         </div>
       </section>

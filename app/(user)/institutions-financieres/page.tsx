@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AdBanner from "@/components/ads/AdBanner";
-import AutoCarousel from "@/components/section/AutoCarousel";
+// import AutoCarousel from "@/components/section/AutoCarousel";
 import {
   Card,
   CardContent,
