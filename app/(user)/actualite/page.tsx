@@ -130,12 +130,12 @@ export default function ActualitesPage() {
       {/* Hero Section */}
       <div className="relative bg-[#063a1e] text-white py-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-[#063a1e]/90 to-[#0a4d28]/20" />
-        <div className="absolute inset-0 bg-[url('/feg_actu.png?height=600&width=1200')] bg-cover bg-center opacity-20" />
+        <div className="absolute inset-0 bg-[url('/feg_actu.png?height=600&width=1200')] bg-cover bg-center opacity-0" />
         <div className="relative container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-3xl md:text-4xl font-bold mb-6">Actualités</h1>
             <p className="text-xl text-green-100 mb-8">
-              Restez informé des dernières nouvelles du monde des PME gabonaises
+              Restez informés des dernières nouvelles du monde des PME gabonaises
             </p>
           </div>
         </div>
