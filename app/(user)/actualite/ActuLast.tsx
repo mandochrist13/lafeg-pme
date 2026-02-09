@@ -8,17 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { fetchActualites, type Actualite } from "@/app/services/public/actualite";
-// import slugify from "slugify"
 
-// interface Actualite {
-//   id: string
-//   titre: string
-//   contenu: string
-//   imageUrl: string | null
-//   categorie: string | null
-//   datePub: string
-//   lien: string | null
-// }
 
 export default function DernieresActualites() {
   const [actus, setActus] = useState<Actualite[]>([])
@@ -56,7 +46,7 @@ export default function DernieresActualites() {
   }
 
   return (
-    <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {actus.map((article, index) => {
         // const slug = `${slugify(article.titre, { lower: true, strict: true })}-${article.id}`
         return (

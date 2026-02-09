@@ -64,6 +64,8 @@ export function FormModifierPublicite({
         <SelectContent>
           <SelectItem value="HEADER">Entête (HEADER)</SelectItem>
           <SelectItem value="MIDDLE">Section Accueil (MIDDLE)</SelectItem>
+                 <SelectItem value="HERO">Section Hero (HERO)</SelectItem>
+                    <SelectItem value="ACTU">Section Actualités (ACTU)</SelectItem>
           <SelectItem value="INSTITUTION">
             Page Institution Financière (INSTITUTION)
           </SelectItem>

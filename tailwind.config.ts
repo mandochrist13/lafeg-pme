@@ -74,6 +74,10 @@ const config = {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
         },
+        // "shine":{
+        //   "0%": { transform: "translateX(-100%)" },
+        //   "100%": { transform: "translateX(200%)" },
+        // },
         "accordion-up": {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },

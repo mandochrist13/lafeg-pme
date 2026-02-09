@@ -95,15 +95,15 @@ export default function Form() {
       const googleFormsUrl = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSfuP1j6-cAoftKQNNLF5DRYIom445w0NtMKxPdptxqaVErcqQ/formResponse";
   
       // Envoi simultané
-      const [hubspotRes, googleFormsRes] = await Promise.all([
-        fetch(
-          "https://api.hsforms.com/submissions/v3/integration/submit/146034890/7daccfd8-efad-4139-a2cc-30bd3a5c4476",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(hubspotPayload),
-          }
-        ),
+      const [ googleFormsRes] = await Promise.all([
+        // fetch(
+        //   "https://api.hsforms.com/submissions/v3/integration/submit/146034890/7daccfd8-efad-4139-a2cc-30bd3a5c4476",
+        //   {
+        //     method: "POST",
+        //     headers: { "Content-Type": "application/json" },
+        //     body: JSON.stringify(hubspotPayload),
+        //   }
+        // ),
         fetch(googleFormsUrl, {
           method: "POST",
           mode: "no-cors",
@@ -112,11 +112,11 @@ export default function Form() {
         })
       ]);
   
-      // Vérification HubSpot
-      if (!hubspotRes.ok) {
-  let errorText = await hubspotRes.text();
-  throw new Error(`HubSpot: ${errorText || "Erreur inconnue"}`);
-}
+//       // Vérification HubSpot
+//       if (!hubspotRes.ok) {
+//   let errorText = await hubspotRes.text();
+//   throw new Error(`HubSpot: ${errorText || "Erreur inconnue"}`);
+// }
 
   
       showNotification("✅ Merci ! Votre inscription a été envoyée.", "success");

@@ -22,7 +22,11 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { fetchActualites, type Actualite } from "@/app/services/public/actualite";
+import {
+  fetchActualites,
+  type Actualite,
+} from "@/app/services/public/actualite";
+import AdBanner from "@/components/ads/AdBanner";
 // import slugify from "slugify"
 
 const categories = [
@@ -33,6 +37,8 @@ const categories = [
   "Innovation",
   "Commerce",
   "Formation",
+  "Publication",
+  "Autres",
 ];
 
 export default function ActualitesPage() {
@@ -63,27 +69,27 @@ export default function ActualitesPage() {
 
   // 🔍 Filtrage et tri
   const filteredActualites = useMemo(() => {
-  const list = Array.isArray(actualites) ? actualites : [];
+    const list = Array.isArray(actualites) ? actualites : [];
 
-  const filtered = list.filter((article) => {
-    const matchesSearch =
-      article.titre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      article.contenu?.toLowerCase().includes(searchTerm.toLowerCase());
+    const filtered = list.filter((article) => {
+      const matchesSearch =
+        article.titre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        article.contenu?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesCategory =
-      selectedCategory === "Toutes" || article.categorie === selectedCategory;
+      const matchesCategory =
+        selectedCategory === "Toutes" || article.categorie === selectedCategory;
 
-    return matchesSearch && matchesCategory;
-  });
+      return matchesSearch && matchesCategory;
+    });
 
-  if (sortBy === "recent") {
-    filtered.sort(
-      (a, b) => new Date(b.datePub).getTime() - new Date(a.datePub).getTime()
-    );
-  }
+    if (sortBy === "recent") {
+      filtered.sort(
+        (a, b) => new Date(b.datePub).getTime() - new Date(a.datePub).getTime(),
+      );
+    }
 
-  return filtered;
-}, [searchTerm, selectedCategory, sortBy, actualites]);
+    return filtered;
+  }, [searchTerm, selectedCategory, sortBy, actualites]);
 
   const featuredArticles = actualites
     .filter((a) => a.categorie === "Événements")
@@ -105,27 +111,22 @@ export default function ActualitesPage() {
       </p>
     );
   if (error)
-    return (
-      <p className="p-8 text-center text-red-600">
-        Erreur : {error}
-      </p>
-    );
+    return <p className="p-8 text-center text-red-600">Erreur : {error}</p>;
 
   return (
-    
     <div className="min-h-screen bg-gray-50">
-       {/* Breadcrumb */}
-            <div className="bg-white border-b">
-              <div className="container py-4">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Link href="/" className="hover:text-[#063a1e]">
-                    Accueil
-                  </Link>
-                  <ChevronRight className="h-4 w-4" />
-                  <span>Actualité</span>
-                </div>
-              </div>
-            </div>
+      {/* Breadcrumb */}
+      <div className="bg-white border-b">
+        <div className="container py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link href="/" className="hover:text-[#063a1e]">
+              Accueil
+            </Link>
+            <ChevronRight className="h-4 w-4" />
+            <span>Actualité</span>
+          </div>
+        </div>
+      </div>
       {/* Hero Section */}
       <div className="relative bg-[#063a1e] text-white py-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-[#063a1e]/90 to-[#0a4d28]/20" />
@@ -141,7 +142,6 @@ export default function ActualitesPage() {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        
         {/* Articles à la une */}
         {featuredArticles.length > 0 && (
           <section className="mb-12">
@@ -174,12 +174,10 @@ export default function ActualitesPage() {
                     </p>
                     <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                       <div className="flex items-center gap-4">
-                       
                         <div className="flex text-black items-center gap-1">
                           <Calendar className="w-4 h-4" />
                           <span>{formatDate(article.datePub)}</span>
                         </div>
-                        
                       </div>
                     </div>
                     <Link href={`/actualites/${article.id}`}>
@@ -291,19 +289,17 @@ export default function ActualitesPage() {
                       </p>
                       <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
                         <span>{formatDate(article.datePub)}</span>
-                       
                       </div>
                       {/* <Link href={`/actualite/${article.id}`}>
   <Button variant="default" size="sm" className="w-full">
     Lire la suite
   </Button>
 </Link> */}
- <Link href={`${article.lienSource}`}>
-  <Button variant="default" size="sm" className="w-full">
-    Lire la suite
-  </Button>
-</Link>
-
+                      <Link href={`${article.lienSource}`}>
+                        <Button variant="default" size="sm" className="w-full">
+                          Lire la suite
+                        </Button>
+                      </Link>
                     </CardContent>
                   </Card>
                 ))}
@@ -380,8 +376,8 @@ export default function ActualitesPage() {
           </div>
 
           {/* Sidebar */}
-          <div className="lg:w-1/4">
-            <div className="space-y-6">
+          <div className="space-y-6 lg:w-1/4">
+            <div className="hidden lg:block space-y-6">
               {/* Catégories */}
               <Card>
                 <CardHeader>
@@ -393,7 +389,7 @@ export default function ActualitesPage() {
                   <div className="space-y-2">
                     {categories.slice(1).map((category) => {
                       const count = actualites.filter(
-                        (article) => article.categorie === category
+                        (article) => article.categorie === category,
                       ).length;
                       return (
                         <button
@@ -417,6 +413,25 @@ export default function ActualitesPage() {
                   </div>
                 </CardContent>
               </Card>
+            </div>
+            <div>
+              {/* Desktop */}
+              <div className="w-full hidden lg:block">
+                <AdBanner
+                  emplacement="ACTU"
+                  interval={7000}
+                  className="w-full h-auto"
+                />
+              </div>
+
+              {/* Mobile */}
+              <div className="flex lg:hidden w-full">
+                <AdBanner
+                  emplacement="ACTU"
+                  interval={7000}
+                  className="w-full max-w-96"
+                />
+              </div>
             </div>
           </div>
         </div>
