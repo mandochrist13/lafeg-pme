@@ -135,7 +135,8 @@ export default function ActualitesPage() {
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-3xl md:text-4xl font-bold mb-6">Actualités</h1>
             <p className="text-xl text-green-100 mb-8">
-              Restez informés des dernières nouvelles du monde des PME gabonaises
+              Restez informés des dernières nouvelles du monde des PME
+              gabonaises
             </p>
           </div>
         </div>
@@ -232,10 +233,10 @@ export default function ActualitesPage() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="recent">Plus récent</SelectItem>
-                        <SelectItem value="popular">Plus populaire</SelectItem>
+                        {/* <SelectItem value="popular">Plus populaire</SelectItem>
                         <SelectItem value="alphabetical">
                           Alphabétique
-                        </SelectItem>
+                        </SelectItem> */}
                       </SelectContent>
                     </Select>
                     <div className="flex border rounded-md">
@@ -264,7 +265,7 @@ export default function ActualitesPage() {
             {/* Liste des articles */}
             {viewMode === "grid" ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredActualites.map((article) => (
+                {filteredActualites.map((article, index) => (
                   <Card
                     key={article.id}
                     className="overflow-hidden hover:shadow-lg transition-shadow duration-300"
@@ -279,12 +280,23 @@ export default function ActualitesPage() {
                       <div className="absolute top-3 left-3">
                         <Badge variant="secondary">{article.categorie}</Badge>
                       </div>
+                      <div className="absolute top-4 right-4">
+                        <Badge
+                          className={
+                            index === 0
+                              ? "bg-red-500/80 text-white"
+                              : "bg-[#063a1e]/0 text-white"
+                          }
+                        >
+                          {index === 0 ? "À LA UNE" : " "}
+                        </Badge>
+                      </div>
                     </div>
                     <CardContent className="p-4">
                       <h3 className="text-lg font-semibold text-[#063a1e] mb-2 line-clamp-2">
                         {article.titre}
                       </h3>
-                      <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                      <p className="text-gray-600 text-sm mb-3 line-clamp-4">
                         {article.contenu}
                       </p>
                       <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
@@ -306,19 +318,19 @@ export default function ActualitesPage() {
               </div>
             ) : (
               <div className="space-y-4">
-                {filteredActualites.map((article) => (
+                {filteredActualites.map((article, index) => (
                   <Card
                     key={article.id}
                     className="overflow-hidden hover:shadow-lg transition-shadow duration-300"
                   >
                     <CardContent className="p-6">
                       <div className="flex gap-4">
-                        <div className="relative w-32 h-24 flex-shrink-0">
+                        <div className="relative w-48 flex-shrink-0">
                           <Image
                             src={article.imageUrl || "/article.png"}
                             alt={article.titre}
                             fill
-                            className="object-cover rounded"
+                            className="object-cover object-center w-full rounded"
                           />
                         </div>
                         <div className="flex-1">
@@ -326,15 +338,26 @@ export default function ActualitesPage() {
                             <h3 className="text-lg font-semibold text-[#063a1e] line-clamp-1">
                               {article.titre}
                             </h3>
-                            <Badge variant="secondary" className="ml-2">
-                              {article.categorie}
-                            </Badge>
+                            <div>
+                              <Badge
+                                className={
+                                  index === 0
+                                    ? "bg-red-500/80 text-white"
+                                    : "bg-[#063a1e]/0 text-white"
+                                }
+                              >
+                                {index === 0 ? "À LA UNE" : " "}
+                              </Badge>
+                              <Badge variant="secondary" className="ml-2">
+                                {article.categorie}
+                              </Badge>
+                            </div>
                           </div>
-                          <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                            {article.contenu.slice(0, 120)}...
+                          <p className="text-gray-600 text-sm mb-3 line-clamp-3">
+                            {article.contenu.slice(0, 550)}...
                           </p>
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4 text-xs text-gray-500">
+                            <div className="flex items-center gap-4 text-xs text-gray-900">
                               <span>{formatDate(article.datePub)}</span>
                               {/* <span>{article.tempsLecture}</span>
                               <span>{article.vues} vues</span> */}

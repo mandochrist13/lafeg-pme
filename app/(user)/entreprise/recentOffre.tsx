@@ -60,7 +60,7 @@ export function RecentOffersMiniCarousel({
 
   return (
     <div
-      className="group relative h-56 w-full overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm md:h-72 lg:h-80"
+      className="group relative h-56 w-4/5 overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm md:h-72 lg:h-80"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -75,7 +75,7 @@ export function RecentOffersMiniCarousel({
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#063a1e]/75 via-[#063a1e]/10 to-transparent" />
 
       <div className="absolute bottom-4 left-4 right-4 text-white">
-        <p className="text-xs text-white/80">{item.nom_structure}</p>
+        <p className="text-xs text-white/90">{item.nom_structure}</p>
         <p className="mt-1 text-lg font-semibold leading-tight line-clamp-2">
           {item.titre_offre}
         </p>

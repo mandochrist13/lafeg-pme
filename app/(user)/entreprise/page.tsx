@@ -21,6 +21,7 @@ import {
   PenTool,
   Megaphone,
   FileText,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -64,7 +65,7 @@ export default function EntreprisesServices() {
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [selectedEntreprise, setSelectedEntreprise] = useState<Offre | null>(
-    null
+    null,
   );
 
   const [secteurFiltre, setSecteurFiltre] = useState("tous");
@@ -78,7 +79,7 @@ export default function EntreprisesServices() {
     return offres.filter(
       (offre) =>
         offre.statut === "ACTIF" &&
-        (!offre.date_fin || new Date(offre.date_fin) >= now)
+        (!offre.date_fin || new Date(offre.date_fin) >= now),
     );
   };
 
@@ -96,7 +97,7 @@ export default function EntreprisesServices() {
           search: rechercheTexte || undefined,
         });
         const offresFiltrees = filtrerOffresActivesEtNonExpirees(
-          data.data || []
+          data.data || [],
         );
         setEntreprises(offresFiltrees);
       } catch (error: any) {
@@ -137,71 +138,197 @@ export default function EntreprisesServices() {
       </div>
       {/* Hero Section */}
       {isModalOpen && selectedEntreprise && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-lg max-w-2xl w-full p-6 shadow-xl relative">
-            <button
-              onClick={closeModal}
-              className="absolute top-2 right-2 text-gray-500 hover:text-black text-xl font-bold"
-            >
-              &times;
-            </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          {/* Click overlay to close (optional) */}
+          <div
+            className="absolute inset-0"
+            onClick={closeModal}
+            aria-hidden="true"
+          />
 
-            <h2 className="text-xl font-bold mb-4">
-              {selectedEntreprise.titre_offre}
-            </h2>
-
-            <Image
-              src={selectedEntreprise.bannier_url || "/placeholder.svg"}
-              alt={selectedEntreprise.bannier_nom || "Image de l'entreprise"}
-              width={600}
-              height={300}
-              className="w-full h-48 object-cover rounded"
-            />
-
-            <p className="mt-4 text-sm text-gray-700 leading-relaxed">
-              {selectedEntreprise.description || "Aucune description fournie."}
-            </p>
-
-            <div className="mt-4 text-sm text-gray-800 space-y-2">
-              <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4" />
-                <a href={`tel:${selectedEntreprise.contact}`}>
-                  {selectedEntreprise.contact}
-                </a>
-              </div>
-              <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                <a href={`mailto:${selectedEntreprise.email}`}>
-                  {selectedEntreprise.email}
-                </a>
-              </div>
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4" />
-                {selectedEntreprise.localisation}
-              </div>
-              <div>
-                Site web :{" "}
-                <a
-                  href={`https://${selectedEntreprise.site_web}`}
-                  target="_blank"
-                  className="text-blue-600 underline"
-                >
-                  {selectedEntreprise.site_web}
-                </a>
-              </div>
-              {selectedEntreprise.fichier_nom && (
-                <div>
-                  Cahier des charges :{" "}
-                  <a
-                    href={selectedEntreprise.fichier_url}
-                    target="_blank"
-                    className="text-green-600 underline"
-                    download
-                  >
-                    Télécharger le PDF
-                  </a>
+          <div
+            className="relative bg-white rounded-2xl w-full max-w-3xl shadow-2xl overflow-hidden"
+            role="dialog"
+            aria-modal="true"
+          >
+            {/* HEADER */}
+            <div className="sticky top-0 z-10 bg-white border-b">
+              <div className="flex items-start gap-3 p-4 sm:p-6">
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-lg sm:text-xl font-bold leading-snug break-words">
+                    {selectedEntreprise.titre_offre}
+                  </h2>
+                  <p className="mt-1 text-xs sm:text-sm text-gray-500 break-words">
+                    {selectedEntreprise.nom_structure}
+                  </p>
                 </div>
-              )}
+
+                <button
+                  onClick={closeModal}
+                  className="shrink-0 rounded-full p-2 text-gray-500 hover:text-black hover:bg-gray-100 transition"
+                  aria-label="Fermer"
+                >
+                  <span className="text-2xl leading-none">&times;</span>
+                </button>
+              </div>
+            </div>
+
+            {/* BODY (scroll here only) */}
+            <div className="max-h-[80vh] overflow-y-auto">
+              <div className="p-4 sm:p-6">
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                  {/* LEFT: Image */}
+                  <div className="lg:col-span-2">
+                    <div className="rounded-xl overflow-hidden bg-gray-100">
+                      <Image
+                        src={
+                          selectedEntreprise.bannier_url || "/placeholder.svg"
+                        }
+                        alt={
+                          selectedEntreprise.bannier_nom ||
+                          "Image de l'entreprise"
+                        }
+                        width={900}
+                        height={900}
+                        className="w-full h-auto object-cover"
+                      />
+                    </div>
+
+                    {/* PDF */}
+                    {selectedEntreprise.fichier_nom && (
+                      <a
+                        href={selectedEntreprise.fichier_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-4 inline-flex w-full items-center justify-center rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-700 hover:bg-green-100 transition"
+                        download
+                      >
+                        Télécharger le cahier des charges (PDF)
+                      </a>
+                    )}
+                  </div>
+
+                  {/* RIGHT: Content */}
+                  <div className="lg:col-span-3 space-y-5">
+                    {/* Description */}
+                    <div className="rounded-xl border bg-white p-4">
+                      <h3 className="text-sm font-semibold text-gray-900">
+                        Description
+                      </h3>
+                      <p className="mt-2 text-sm text-gray-700 leading-relaxed whitespace-pre-line break-words">
+                        {selectedEntreprise.description ||
+                          "Aucune description fournie."}
+                      </p>
+                    </div>
+
+                    {/* Contacts */}
+                    <div className="rounded-xl border bg-white p-4">
+                      <h3 className="text-sm font-semibold text-gray-900">
+                        Contacts
+                      </h3>
+
+                      <div className="mt-3 space-y-3 text-sm text-gray-800">
+                        {/* Tel */}
+                        {selectedEntreprise.contact && (
+                          <div className="flex items-start gap-3">
+                            <Phone className="h-4 w-4 mt-0.5 shrink-0" />
+                            <div className="min-w-0">
+                              <div className="text-xs text-gray-500">
+                                Téléphone
+                              </div>
+                              <a
+                                className="text-blue-600 underline break-all"
+                                href={`tel:${selectedEntreprise.contact}`}
+                              >
+                                {selectedEntreprise.contact}
+                              </a>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Email */}
+                        {selectedEntreprise.email && (
+                          <div className="flex items-start gap-3">
+                            <Mail className="h-4 w-4 mt-0.5 shrink-0" />
+                            <div className="min-w-0">
+                              <div className="text-xs text-gray-500">Email</div>
+                              <a
+                                className="text-blue-600 underline break-all"
+                                href={`mailto:${selectedEntreprise.email}`}
+                              >
+                                {selectedEntreprise.email}
+                              </a>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Localisation */}
+                        {selectedEntreprise.localisation && (
+                          <div className="flex items-start gap-3">
+                            <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
+                            <div className="min-w-0">
+                              <div className="text-xs text-gray-500">
+                                Localisation
+                              </div>
+                              <div className="break-words">
+                                {selectedEntreprise.localisation}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Site */}
+                        {selectedEntreprise.site_web && (
+                          <div className="flex items-start gap-3">
+                            <ExternalLink className="h-4 w-4 mt-0.5 shrink-0" />
+                            <div className="min-w-0">
+                              <div className="text-xs text-gray-500">
+                                Site web
+                              </div>
+                              <a
+                                href={
+                                  selectedEntreprise.site_web.startsWith("http")
+                                    ? selectedEntreprise.site_web
+                                    : `https://${selectedEntreprise.site_web}`
+                                }
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-blue-600 underline break-all"
+                              >
+                                {selectedEntreprise.site_web}
+                              </a>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Extra zone (optional) */}
+                    {/* <div className="rounded-xl border bg-white p-4">...</div> */}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* FOOTER */}
+            <div className="sticky bottom-0 bg-white border-t">
+              <div className="p-4 sm:p-6 flex flex-col sm:flex-row gap-3 sm:justify-end">
+                <button
+                  onClick={closeModal}
+                  className="w-full sm:w-auto rounded-xl border px-4 py-2 text-sm font-medium hover:bg-gray-50 transition"
+                >
+                  Fermer
+                </button>
+
+                {selectedEntreprise.email && (
+                  <a
+                    href={`mailto:${selectedEntreprise.email}`}
+                    className="w-full sm:w-auto text-center rounded-xl bg-black text-white px-4 py-2 text-sm font-medium hover:opacity-90 transition"
+                  >
+                    Contacter par email
+                  </a>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -316,7 +443,7 @@ export default function EntreprisesServices() {
                           <SelectItem key={type} value={type}>
                             {type}
                           </SelectItem>
-                        )
+                        ),
                       )}
                     </SelectContent>
                   </Select>
@@ -349,8 +476,6 @@ export default function EntreprisesServices() {
                   </Button>
                 </div>
               </div>
-                
-              
 
               {loading && (
                 <div className="text-center py-6 text-gray-500">
@@ -487,16 +612,16 @@ export default function EntreprisesServices() {
                   </Card>
                 ))}
               </div>
-               {entreprises.length === 0 && (
-                  <div className="text-center py-12 text-gray-500">
-                 <h4 className="text-lg font-semibold">Aucune offre pour l&apos;instant</h4>
-      <p className="mt-1 text-sm ">
-        Essayez de modifier les filtres ou revenez plus tard.
-      </p>
-                  </div>
-                     
-                )}
-
+              {entreprises.length === 0 && (
+                <div className="text-center py-12 text-gray-500">
+                  <h4 className="text-lg font-semibold">
+                    Aucune offre pour l&apos;instant
+                  </h4>
+                  <p className="mt-1 text-sm ">
+                    Essayez de modifier les filtres ou revenez plus tard.
+                  </p>
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="publier" className="mt-8">
@@ -635,7 +760,8 @@ export default function EntreprisesServices() {
                             </div>
                             <div>
                               <h4 className="font-semibold">
-                                Compléter le formulaire de souscription de publication
+                                Compléter le formulaire de souscription de
+                                publication
                               </h4>
                               <p className="text-white/85">
                                 Renseignez les informations clés sur votre
@@ -649,7 +775,6 @@ export default function EntreprisesServices() {
                               <Mail className="h-5 w-5 text-[#dcdaa4]" />
                             </div>
                             <div>
-                              
                               <h4 className="font-semibold">
                                 Envoyer les éléments requis par email
                               </h4>
@@ -660,7 +785,9 @@ export default function EntreprisesServices() {
                                 <a
                                   href="mailto:a.obiang@lafeg.ga"
                                   className="underline"
-                                >a.obiang@lafeg?ga</a>
+                                >
+                                  a.obiang@lafeg?ga
+                                </a>
                               </p>
                             </div>
                           </li>
@@ -764,7 +891,7 @@ export default function EntreprisesServices() {
 
                           <CardFooter className="p-4  bg-gradient-to-r from-[#063a1e] to-[#145c35]"></CardFooter>
                         </Card>
-                      )
+                      ),
                     )}
                     {Object.entries(tarifsPublication2).map(
                       ([forfait, tarifs]) => (
@@ -813,7 +940,7 @@ export default function EntreprisesServices() {
 
                           <CardFooter className="p-4  bg-[#dcdaa4]"></CardFooter>
                         </Card>
-                      )
+                      ),
                     )}
                   </div>
                 </div>

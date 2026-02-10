@@ -18,7 +18,7 @@ const financingOffers = [
     title: "Crédit Équipement Pro",
     institution: "BCEG - Banque",
     badge: "Taux préférentiel",
-    backgroundImage: "/images/institution/banque/bceg_logo.png",
+    // backgroundImage: "/images/institution/banque/bceg_logo.png",
     badgeColor: "bg-green-100 text-green-800",
     borderColor: "border-l-green-500",
     amount: "À partir de 1 000 000 F CFA",
@@ -32,7 +32,7 @@ const financingOffers = [
     title: "CRÉDIT D'INVESTISSEMENT",
     institution: "BCEG - Banque",
     badge: "Flexible",
-    backgroundImage: "/images/institution/banque/bceg_logo.png",
+    // backgroundImage: "/images/institution/banque/bceg_logo.png",
     badgeColor: "bg-blue-100 text-blue-800",
     borderColor: "border-l-blue-500",
     amount: "À partir de 3 000 000 F CFA",
@@ -47,7 +47,7 @@ const financingOffers = [
     title: "Crédit Investissement",
     institution: "FINAM - Microfinance",
     badge: "Accessible",
-    backgroundImage: "/images/institution/micro/finam.jpg",
+    // backgroundImage: "/images/institution/micro/finam.jpg",
     badgeColor: "bg-orange-100 text-orange-800",
     borderColor: "border-l-orange-500",
     amount: "Variable",
@@ -62,7 +62,7 @@ const financingOffers = [
     title: "INTRODUCTION EN BOURSE PME",
     institution: "BVMAC",
     badge: "Long terme",
-    backgroundImage: "/images/BVMAC.jpg",
+    // backgroundImage: "/images/BVMAC.jpg",
     badgeColor: "bg-purple-100 text-purple-800",
     borderColor: "border-l-purple-500",
     amount: "200 000 000 - 10 000 000 000 F CFA",
@@ -144,9 +144,9 @@ export default function FinancingOffersCarousel() {
                     {/* Image de banque */}
                     <div
                       className="absolute inset-0 bg-cover bg-center opacity-10 transition-transform duration-700 group-hover:scale-110"
-                      style={{
-                        backgroundImage: `url(${offer.backgroundImage})`,
-                      }}
+                      // style={{
+                      //   backgroundImage: `url(${offer.backgroundImage})`,
+                      // }}
                     />
 
                     {/* Overlay glass */}
