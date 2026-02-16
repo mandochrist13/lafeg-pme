@@ -95,6 +95,7 @@ export default function ActualiteForm({ open, onClose, actualite, onSaved }: Pro
                   <SelectItem value="Événement">Événement</SelectItem>
                   <SelectItem value="Publication">Publication</SelectItem>
                   <SelectItem value="Législation">Législation</SelectItem>
+                  <SelectItem value="Formation">Formation</SelectItem>
                   <SelectItem value="Autres">Autres</SelectItem>
                 </SelectContent>
               </Select>

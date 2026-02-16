@@ -63,7 +63,7 @@ export default function ServicesEntreprisesPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingService, setEditingService] = useState<Offre | null>(null);
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(
-    null
+    null,
   );
   const [isDetailsCardVisible, setIsDetailsCardVisible] =
     useState<boolean>(false);
@@ -108,25 +108,24 @@ export default function ServicesEntreprisesPage() {
   };
 
   const fetchServices = async () => {
-  try {
-    const response = await fetch("/api/offres");
-    if (response.ok) {
-      const data = await response.json();
-      // 🧠 Mise à jour locale des statuts expirés
-      const offresAvecStatut = marquerOffresExpirees(data.data || []);
-      setServices(offresAvecStatut);
+    try {
+      const response = await fetch("/api/offres");
+      if (response.ok) {
+        const data = await response.json();
+        // 🧠 Mise à jour locale des statuts expirés
+        const offresAvecStatut = marquerOffresExpirees(data.data || []);
+        setServices(offresAvecStatut);
+      }
+    } catch (error) {
+      console.error("Erreur lors du chargement des services:", error);
+      toast.error("Erreur lors du chargement des services");
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Erreur lors du chargement des services:", error);
-    toast.error("Erreur lors du chargement des services");
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
+    e: React.FormEvent<HTMLFormElement>,
   ): Promise<void> => {
     e.preventDefault();
     setLoading(true);
@@ -142,7 +141,7 @@ export default function ServicesEntreprisesPage() {
         ) {
           formDataToSend.append(
             key,
-            typeof value === "boolean" ? String(value) : value
+            typeof value === "boolean" ? String(value) : value,
           );
         }
       });
@@ -160,14 +159,14 @@ export default function ServicesEntreprisesPage() {
 
       if (!response || (response as any).error) {
         throw new Error(
-          (response as any).error || "Erreur lors de la sauvegarde"
+          (response as any).error || "Erreur lors de la sauvegarde",
         );
       }
 
       toast.success(
         editingService
           ? "Service modifié avec succès"
-          : "Service créé avec succès"
+          : "Service créé avec succès",
       );
       setIsDialogOpen(false);
       resetForm();
@@ -303,7 +302,15 @@ export default function ServicesEntreprisesPage() {
   };
 
   interface TypeBadgeProps {
-    type: "EMPLOI" | "STAGE" | "FORMATION" | "CONSULTATION" | string;
+    type:
+      | "EMPLOI"
+      | "STAGE"
+      | "FORMATION"
+      | "CONSULTATION"
+      | "FORUM"
+      | "EVENEMENT"
+      | "SERVICE"
+      | string;
   }
 
   const getTypeBadge = (type: TypeBadgeProps["type"]): ReactElement => {
@@ -312,6 +319,9 @@ export default function ServicesEntreprisesPage() {
       STAGE: "bg-purple-100 text-purple-800",
       FORMATION: "bg-green-100 text-green-800",
       CONSULTATION: "bg-orange-100 text-orange-800",
+      FORUM: "bg-teal-100 text-teal-800",
+      EVENEMENT: "bg-cyan-100 text-cyan-800",
+      SERVICE: "bg-indigo-100 text-indigo-800",
     };
     return (
       <Badge className={colors[type] || "bg-gray-100 text-gray-800"}>
@@ -416,6 +426,9 @@ export default function ServicesEntreprisesPage() {
                       <SelectItem value="STAGE">Stage</SelectItem>
                       <SelectItem value="FORMATION">Formation</SelectItem>
                       <SelectItem value="CONSULTATION">Consultation</SelectItem>
+                      <SelectItem value="FORUM">Forum</SelectItem>
+                      <SelectItem value="EVENEMENT">Événement</SelectItem>
+                      <SelectItem value="SERVICE">Service</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -567,7 +580,7 @@ export default function ServicesEntreprisesPage() {
                       setSelectedFile(
                         e.target.files && e.target.files[0]
                           ? e.target.files[0]
-                          : null
+                          : null,
                       )
                     }
                     required={!editingService}
@@ -597,7 +610,7 @@ export default function ServicesEntreprisesPage() {
                       setSelectedImage(
                         e.target.files && e.target.files[0]
                           ? e.target.files[0]
-                          : null
+                          : null,
                       )
                     }
                   />
@@ -625,7 +638,7 @@ export default function ServicesEntreprisesPage() {
                       setSelectedBanner(
                         e.target.files && e.target.files[0]
                           ? e.target.files[0]
-                          : null
+                          : null,
                       )
                     }
                   />
@@ -659,8 +672,8 @@ export default function ServicesEntreprisesPage() {
                   {loading
                     ? "Sauvegarde..."
                     : editingService
-                    ? "Modifier"
-                    : "Créer"}
+                      ? "Modifier"
+                      : "Créer"}
                 </Button>
               </DialogFooter>
             </form>
@@ -782,6 +795,9 @@ export default function ServicesEntreprisesPage() {
                   <SelectItem value="STAGE">Stage</SelectItem>
                   <SelectItem value="FORMATION">Formation</SelectItem>
                   <SelectItem value="CONSULTATION">Consultation</SelectItem>
+                  <SelectItem value="FORUM">Forum</SelectItem>
+                  <SelectItem value="EVENEMENT">Événement</SelectItem>
+                  <SelectItem value="SERVICE">Service</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -887,7 +903,7 @@ export default function ServicesEntreprisesPage() {
                       <div className="flex items-center text-sm text-gray-500">
                         <Calendar className="h-4 w-4 mr-1" />
                         {new Date(service.date_debut).toLocaleDateString(
-                          "fr-FR"
+                          "fr-FR",
                         )}
                       </div>
                     </TableCell>
@@ -963,152 +979,240 @@ export default function ServicesEntreprisesPage() {
             open={isDetailsCardVisible}
             onOpenChange={setIsDetailsCardVisible}
           >
-            <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
-              <div className="mb-4">
-                <Image
-                  src={selectedServiceDetails.bannier_url || "/ban_feg.png"}
-                  alt={`Bannière de ${selectedServiceDetails.nom_structure}`}
-                  width={50}
-                  height={50}
-                  className="rounded-md w-full object-cover object-center h-32"
-                />
-              </div>
-              <DialogHeader>
-                <div className="flex items-center gap-5">
-                  {selectedServiceDetails.image_url ? (
-                    <Image
-                      src={selectedServiceDetails.image_url}
-                      alt={`Logo de ${selectedServiceDetails.nom_structure}`}
-                      width={50}
-                      height={50}
-                      className="rounded-md"
-                    />
-                  ) : (
-                    <div className="h-24 w-24 rounded-lg bg-gray-200 flex items-center justify-center">
-                      <span className="text-sm text-gray-500">Pas de logo</span>
-                    </div>
-                  )}
-                  <div>
-                    <DialogTitle>
-                      {selectedServiceDetails.titre_offre}
-                    </DialogTitle>
-                    <DialogDescription>
-                      Détails de l'offre de service
-                    </DialogDescription>
-                  </div>
-                </div>
-              </DialogHeader>
+            <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto p-0">
+              {/* Bannière */}
+              <div className="relative">
+               <a
+  href={selectedServiceDetails.bannier_url || "/ban_feg.png"}
+  target="_blank"
+  rel="noreferrer"
+  className="block"
+  title="Ouvrir l'image en grand"
+>
+  <Image
+    src={selectedServiceDetails.bannier_url || "/ban_feg.png"}
+    alt={`Bannière de ${selectedServiceDetails.nom_structure}`}
+    width={1600}
+    height={600}
+    className="w-full h-40 object-cover object-center"
+  />
+</a>
 
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <h3 className="text-lg font-semibold">
-                    Informations générales
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4 mt-2">
-                    <div>
-                      <p className="text-sm text-muted-foreground">
-                        Entreprise
-                      </p>
-                      <p>{selectedServiceDetails.nom_structure}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Catégorie</p>
-                      <p>{selectedServiceDetails.type_offre}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">
-                        Partenaire FEG
-                      </p>
-                      <p>{selectedServiceDetails.membre_feg ? "Oui" : "Non"}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Statut</p>
-                      <p>
-                        {selectedServiceDetails.statut ? "ACTIF" : "INACTIF"}
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm text-muted-foreground">Site web</p>
-                      <p>
-                        {selectedServiceDetails.fichier_url ? (
-                          <a
-                            href={selectedServiceDetails.fichier_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline"
-                          >
-                            Voir le document
-                          </a>
-                        ) : (
-                          "Non renseigné"
-                        )}
-                      </p>
-                    </div>
-                    <div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">
-                          Date de début
-                        </p>
-                        <p>
-                          {new Date(
-                            selectedServiceDetails.createdAt
-                          ).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">
-                          Date de fin
-                        </p>
-                        <p>
-                          {new Date(
-                            selectedServiceDetails.updatedAt
-                          ).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <h3 className="text-lg font-semibold">Coordonnées</h3>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Adresse</p>
-                    <p>
-                      {selectedServiceDetails.localisation || "Non renseignée"}
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Contact</p>
-                    <p>{selectedServiceDetails.contact || "Non renseigné"}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Email</p>
-                    <p>{selectedServiceDetails.email || "Non renseigné"}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Site web</p>
-                    <p>
-                      {selectedServiceDetails.site_web ? (
-                        <a
-                          href={selectedServiceDetails.site_web}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline"
-                        >
-                          Visiter le site
-                        </a>
+
+
+                {/* Bloc logo + titre (overlay léger) */}
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/55 via-black/20 to-transparent">
+                  <div className="p-4 sm:p-6 flex items-end gap-4">
+                    <div className="shrink-0">
+                      {selectedServiceDetails.image_url ? (
+                        <Image
+                          src={selectedServiceDetails.image_url}
+                          alt={`Logo de ${selectedServiceDetails.nom_structure}`}
+                          width={72}
+                          height={72}
+                          className="h-16 w-16 sm:h-20 sm:w-20 rounded-xl object-cover bg-white"
+                        />
                       ) : (
-                        "Non renseigné"
+                        <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-xl bg-white/80 flex items-center justify-center">
+                          <span className="text-xs text-gray-600">
+                            Pas de logo
+                          </span>
+                        </div>
                       )}
-                    </p>
+                    </div>
+
+                    <div className="min-w-0 text-white">
+                      <DialogHeader>
+                        <DialogTitle className="text-lg sm:text-xl leading-snug break-words">
+                          {selectedServiceDetails.titre_offre}
+                        </DialogTitle>
+                        <DialogDescription className="text-white/80">
+                          Détails de l'offre de service
+                        </DialogDescription>
+                      </DialogHeader>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold">Description</h3>
-                <p className="whitespace-pre-line">
-                  {selectedServiceDetails.titre_offre ||
-                    "Aucune description disponible"}
-                </p>
+
+              {/* Contenu */}
+              <div className="p-4 sm:p-6 space-y-6">
+                {/* Grille principale */}
+                <div className="grid gap-6 md:grid-cols-2">
+                  {/* Infos générales */}
+                  <div className="rounded-xl border bg-white p-4">
+                    <h3 className="text-base font-semibold">
+                      Informations générales
+                    </h3>
+
+                    <dl className="mt-4 space-y-3 text-sm">
+                      <div className="flex justify-between gap-4">
+                        <dt className="text-muted-foreground">Entreprise</dt>
+                        <dd className="font-medium text-right break-words">
+                          {selectedServiceDetails.nom_structure ||
+                            "Non renseignée"}
+                        </dd>
+                      </div>
+
+                      <div className="flex justify-between gap-4">
+                        <dt className="text-muted-foreground">Catégorie</dt>
+                        <dd className="font-medium text-right break-words">
+                          {selectedServiceDetails.type_offre ||
+                            "Non renseignée"}
+                        </dd>
+                      </div>
+
+                      <div className="flex justify-between gap-4">
+                        <dt className="text-muted-foreground">
+                          Partenaire FEG
+                        </dt>
+                        <dd className="font-medium text-right">
+                          {selectedServiceDetails.membre_feg ? "Oui" : "Non"}
+                        </dd>
+                      </div>
+
+                      <div className="flex justify-between gap-4">
+                        <dt className="text-muted-foreground">Statut</dt>
+                        <dd className="font-medium text-right">
+                          <span
+                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs ${
+                              selectedServiceDetails.statut
+                                ? "bg-green-100 text-green-800"
+                                : "bg-gray-100 text-gray-700"
+                            }`}
+                          >
+                            {selectedServiceDetails.statut
+                              ? "ACTIF"
+                              : "INACTIF"}
+                          </span>
+                        </dd>
+                      </div>
+
+                      <div className="flex justify-between gap-4">
+                        <dt className="text-muted-foreground">Document</dt>
+                        <dd className="font-medium text-right break-all">
+                          {selectedServiceDetails.fichier_url ? (
+                            <a
+                              href={selectedServiceDetails.fichier_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline"
+                            >
+                              Voir le document
+                            </a>
+                          ) : (
+                            "Non renseigné"
+                          )}
+                        </dd>
+                      </div>
+
+                      <div className="pt-3 border-t">
+                        <div className="flex justify-between gap-4">
+                          <dt className="text-muted-foreground">
+                            Date de début
+                          </dt>
+                          <dd className="font-medium text-right">
+                            {selectedServiceDetails.createdAt
+                              ? new Date(
+                                  selectedServiceDetails.createdAt,
+                                ).toLocaleDateString()
+                              : "—"}
+                          </dd>
+                        </div>
+                        <div className="mt-2 flex justify-between gap-4">
+                          <dt className="text-muted-foreground">Date de fin</dt>
+                          <dd className="font-medium text-right">
+                            {selectedServiceDetails.updatedAt
+                              ? new Date(
+                                  selectedServiceDetails.updatedAt,
+                                ).toLocaleDateString()
+                              : "—"}
+                          </dd>
+                        </div>
+                      </div>
+                    </dl>
+                  </div>
+
+                  {/* Coordonnées */}
+                  <div className="rounded-xl border bg-white p-4">
+                    <h3 className="text-base font-semibold">Coordonnées</h3>
+
+                    <div className="mt-4 space-y-4 text-sm">
+                      <div>
+                        <p className="text-muted-foreground">Adresse</p>
+                        <p className="mt-1 break-words">
+                          {selectedServiceDetails.localisation ||
+                            "Non renseignée"}
+                        </p>
+                      </div>
+
+                      <div>
+                        <p className="text-muted-foreground">Contact</p>
+                        <p className="mt-1 break-words">
+                          {selectedServiceDetails.contact ? (
+                            <a
+                              className="text-blue-600 hover:underline break-all"
+                              href={`tel:${selectedServiceDetails.contact}`}
+                            >
+                              {selectedServiceDetails.contact}
+                            </a>
+                          ) : (
+                            "Non renseigné"
+                          )}
+                        </p>
+                      </div>
+
+                      <div>
+                        <p className="text-muted-foreground">Email</p>
+                        <p className="mt-1 break-words">
+                          {selectedServiceDetails.email ? (
+                            <a
+                              className="text-blue-600 hover:underline break-all"
+                              href={`mailto:${selectedServiceDetails.email}`}
+                            >
+                              {selectedServiceDetails.email}
+                            </a>
+                          ) : (
+                            "Non renseigné"
+                          )}
+                        </p>
+                      </div>
+
+                      <div>
+                        <p className="text-muted-foreground">Site web</p>
+                        <p className="mt-1 break-words">
+                          {selectedServiceDetails.site_web ? (
+                            <a
+                              href={
+                                selectedServiceDetails.site_web.startsWith(
+                                  "http",
+                                )
+                                  ? selectedServiceDetails.site_web
+                                  : `https://${selectedServiceDetails.site_web}`
+                              }
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline break-all"
+                            >
+                              Visiter le site
+                            </a>
+                          ) : (
+                            "Non renseigné"
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div className="rounded-xl border bg-white p-4">
+                  <h3 className="text-base font-semibold">Description</h3>
+                  <p className="mt-3 text-sm text-gray-700 leading-relaxed whitespace-pre-line break-words">
+                    {selectedServiceDetails.description ||
+                      "Aucune description disponible"}
+                  </p>
+                </div>
               </div>
             </DialogContent>
           </Dialog>

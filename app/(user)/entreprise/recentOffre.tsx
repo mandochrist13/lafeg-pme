@@ -17,18 +17,25 @@ export function RecentOffersMiniCarousel({
     return o.created_at
       ? new Date(o.created_at).getTime()
       : o.date_creation
-      ? new Date(o.date_creation).getTime()
-      : o.date_debut
-      ? new Date(o.date_debut).getTime()
-      : 0;
+        ? new Date(o.date_creation).getTime()
+        : o.date_debut
+          ? new Date(o.date_debut).getTime()
+          : 0;
   };
 
   const top = React.useMemo(() => {
-  const arr = [...(offres ?? [])].sort((a, b) => getTime(b) - getTime(a));
-  // ✅ minimum 1 si on a des offres, maximum 5
-  return arr.slice(0, Math.min(5, arr.length));
-}, [offres]);
+    const now = new Date();
 
+    const offresActives = (offres ?? []).filter(
+      (offre) =>
+        offre.statut === "ACTIF" &&
+        (!offre.date_fin || new Date(offre.date_fin) >= now),
+    );
+
+    const sorted = [...offresActives].sort((a, b) => getTime(b) - getTime(a));
+
+    return sorted.slice(0, Math.min(5, sorted.length));
+  }, [offres]);
 
   const [current, setCurrent] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
@@ -55,7 +62,7 @@ export function RecentOffersMiniCarousel({
       </div>
     );
   }
-//test
+  //test
   const item = top[current];
 
   return (
