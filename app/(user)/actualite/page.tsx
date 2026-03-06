@@ -265,6 +265,14 @@ export default function ActualitesPage() {
             {/* Liste des articles */}
             {viewMode === "grid" ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Mobile */}
+              <div className="flex lg:hidden w-full">
+                <AdBanner
+                  emplacement="ACTU"
+                  interval={7000}
+                  className="w-full max-w-96"
+                />
+              </div>
                 {filteredActualites.map((article, index) => (
                   <Card
                     key={article.id}
@@ -318,6 +326,14 @@ export default function ActualitesPage() {
               </div>
             ) : (
               <div className="space-y-4">
+                {/* Mobile */}
+              <div className="flex lg:hidden w-full">
+                <AdBanner
+                  emplacement="ACTU"
+                  interval={7000}
+                  className="w-full max-w-96"
+                />
+              </div>
                 {filteredActualites.map((article, index) => (
                   <Card
                     key={article.id}
@@ -447,14 +463,7 @@ export default function ActualitesPage() {
                 />
               </div>
 
-              {/* Mobile */}
-              <div className="flex lg:hidden w-full">
-                <AdBanner
-                  emplacement="ACTU"
-                  interval={7000}
-                  className="w-full max-w-96"
-                />
-              </div>
+              
             </div>
           </div>
         </div>
