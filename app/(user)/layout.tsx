@@ -8,7 +8,7 @@ import Image from "next/image";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <body className="">
+    <div className="">
       <div>
         {" "}
         <section className="py-4 bg-gray-100 border-b">
@@ -30,7 +30,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
             <AdBanner
               emplacement="HEADER"
-              className="w-full lg:max-w-[65%] md:h-32"
+              className="w-full lg:max-w-[45%] h-[212px]"
               interval={8000}
             />
           </div>
@@ -41,6 +41,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {children}
       <LegalChatBot />
       <Footer />
-    </body>
+    </div>
   );
 }
