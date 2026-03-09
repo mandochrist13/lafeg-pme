@@ -62,7 +62,7 @@ export default function AdBanner({
         rel="noopener noreferrer"
       >
         <Image
-          src={pub.image_url!}
+          src={pub.image_url?.trim()!}
           alt={pub.nom_structure}
           width={800}
           height={200}
