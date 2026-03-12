@@ -429,6 +429,7 @@ export default function ServicesEntreprisesPage() {
                       <SelectItem value="FORUM">Forum</SelectItem>
                       <SelectItem value="EVENEMENT">Événement</SelectItem>
                       <SelectItem value="SERVICE">Service</SelectItem>
+                      <SelectItem value="OFFRE">Appel d'Offre</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -798,6 +799,7 @@ export default function ServicesEntreprisesPage() {
                   <SelectItem value="FORUM">Forum</SelectItem>
                   <SelectItem value="EVENEMENT">Événement</SelectItem>
                   <SelectItem value="SERVICE">Service</SelectItem>
+                  <SelectItem value="OFFRE">Appel d'Offre</SelectItem>
                 </SelectContent>
               </Select>
             </div>
