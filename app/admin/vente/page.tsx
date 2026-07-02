@@ -5,7 +5,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { FormCreerPublicite } from "@/components/ads/FormCreerPublicite";
 import { FormModifierPublicite } from "@/components/ads/FormModifierPublicite";
 import {
@@ -17,7 +31,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Image from "next/image";
-import { fetchAllPublicites, Annonce } from "@/app/services/vente/api";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import {
+  fetchAllPublicites,
+  setPubliciteActif,
+  duplicatePublicite,
+  Annonce,
+} from "@/app/services/vente/api";
 import {
   Table,
   TableBody,
@@ -26,7 +47,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Edit, Search, Loader2 } from "lucide-react";
+import { Plus, Edit, Search, Loader2, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { DeleteConfirmationDialog } from "@/components/ads/DeleteConfirmationDialog";
 
@@ -51,6 +72,8 @@ export default function PublicitesPage({ trigger, onConfirm }: Props) {
   const [editingPublicite, setEditingPublicite] = useState<Annonce | null>(
     null
   );
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const [formValues, setFormValues] = useState({
     libelle: "",
     nom_structure: "",
@@ -61,26 +84,11 @@ export default function PublicitesPage({ trigger, onConfirm }: Props) {
     fetchPublicites();
   }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetchAllPublicites();
-        setPublicites(data);
-      } catch (error) {
-        console.error("Erreur lors du chargement :", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
   const fetchPublicites = async () => {
     try {
-      const response = await fetch("/api/vente");
-      if (response.ok) {
-        const data = await response.json();
-        setPublicites(Array.isArray(data) ? data : data.publicites);
-      }
+      setLoading(true);
+      const data = await fetchAllPublicites();
+      setPublicites(data);
     } catch (error) {
       console.error("Erreur lors du chargement des publicités:", error);
       toast.error("Erreur lors du chargement des publicités");
@@ -102,6 +110,46 @@ export default function PublicitesPage({ trigger, onConfirm }: Props) {
     setIsEditDialogOpen(true);
   };
 
+  // Activer / désactiver une publicité
+  const handleToggleActif = async (publicite: Annonce) => {
+    const nextActif = publicite.actif === false ? true : false;
+    // Mise à jour optimiste de l'affichage
+    setPublicites((prev) =>
+      prev.map((p) =>
+        p.id_vente === publicite.id_vente ? { ...p, actif: nextActif } : p
+      )
+    );
+    try {
+      await setPubliciteActif(publicite.id_vente, nextActif);
+      toast.success(
+        nextActif ? "Publicité activée." : "Publicité désactivée."
+      );
+    } catch (error) {
+      console.error(error);
+      // Retour arrière en cas d'échec
+      setPublicites((prev) =>
+        prev.map((p) =>
+          p.id_vente === publicite.id_vente
+            ? { ...p, actif: publicite.actif }
+            : p
+        )
+      );
+      toast.error("Erreur lors du changement de statut.");
+    }
+  };
+
+  // Dupliquer une publicité (copie désactivée par défaut)
+  const handleDuplicate = async (publicite: Annonce) => {
+    try {
+      await duplicatePublicite(publicite);
+      toast.success("Publicité dupliquée (désactivée).");
+      fetchPublicites();
+    } catch (error) {
+      console.error(error);
+      toast.error("Erreur lors de la duplication.");
+    }
+  };
+
   const filteredPublicites = (publicites || []).filter((pub) => {
     const matchesSearch =
       typeof pub.libelle === "string" &&
@@ -109,6 +157,21 @@ export default function PublicitesPage({ trigger, onConfirm }: Props) {
 
     return matchesSearch;
   });
+
+  // Réinitialise la pagination quand la recherche change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredPublicites.length / itemsPerPage)
+  );
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedPublicites = filteredPublicites.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   // if (loading && publicites.length === 0) {
   //   return (
@@ -242,11 +305,12 @@ export default function PublicitesPage({ trigger, onConfirm }: Props) {
                   <TableHead>Image</TableHead>
                   <TableHead>Nom de la structure</TableHead>
                   <TableHead>Lien</TableHead>
+                  <TableHead>Statut</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredPublicites.map((publicite) => (
+                {paginatedPublicites.map((publicite) => (
                   <TableRow key={publicite.id_vente}>
                     <TableCell className="font-medium">
                       {publicite.libelle}
@@ -266,6 +330,23 @@ export default function PublicitesPage({ trigger, onConfirm }: Props) {
                     <TableCell>{publicite.lien}</TableCell>
 
                     <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={publicite.actif !== false}
+                          onCheckedChange={() => handleToggleActif(publicite)}
+                          aria-label="Activer ou désactiver la publicité"
+                        />
+                        <Badge
+                          variant={
+                            publicite.actif !== false ? "default" : "secondary"
+                          }
+                        >
+                          {publicite.actif !== false ? "Actif" : "Inactif"}
+                        </Badge>
+                      </div>
+                    </TableCell>
+
+                    <TableCell>
                       <div className="flex space-x-2">
                         <Button
                           variant="outline"
@@ -273,6 +354,14 @@ export default function PublicitesPage({ trigger, onConfirm }: Props) {
                           onClick={() => handleEdit(publicite)}
                         >
                           <Edit className="h-4 w-4" />
+                        </Button>
+
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDuplicate(publicite)}
+                        >
+                          <Copy className="h-4 w-4" />
                         </Button>
 
                         <DeleteConfirmationDialog
@@ -317,6 +406,63 @@ export default function PublicitesPage({ trigger, onConfirm }: Props) {
             )}
           </div>
         </CardContent>
+        {filteredPublicites.length > 0 && (
+          <CardFooter className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="text-sm text-muted-foreground">
+              Affichage de {paginatedPublicites.length} sur{" "}
+              {filteredPublicites.length} publicités
+            </div>
+            <Pagination className="mx-0 w-auto justify-end">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e: React.MouseEvent) => {
+                      e.preventDefault();
+                      setCurrentPage((prev) => Math.max(prev - 1, 1));
+                    }}
+                    className={
+                      currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                    }
+                  />
+                </PaginationItem>
+
+                {[...Array(totalPages)].map((_, index) => {
+                  const page = index + 1;
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        href="#"
+                        isActive={currentPage === page}
+                        onClick={(e: React.MouseEvent) => {
+                          e.preventDefault();
+                          setCurrentPage(page);
+                        }}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                })}
+
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e: React.MouseEvent) => {
+                      e.preventDefault();
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+                    }}
+                    className={
+                      currentPage === totalPages
+                        ? "pointer-events-none opacity-50"
+                        : ""
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </CardFooter>
+        )}
       </Card>
     </div>
   );

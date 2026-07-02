@@ -58,6 +58,7 @@ model Vente {
   taille_image  Int?
   mime_type     String
   nom_structure String
+  actif         Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   lien          String?

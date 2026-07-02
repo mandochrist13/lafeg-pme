@@ -46,11 +46,13 @@ import {
   FileText,
   Eye,
   Loader2,
+  Power,
+  PowerOff,
 } from "lucide-react";
 import { toast } from "sonner";
 import { fetchOffres, Offre } from "@/app/services/offre/api";
 import Image from "next/image";
-import { createOffre, updateOffre } from "@/app/services/offre/api";
+import { createOffre, updateOffre, setOffreStatut } from "@/app/services/offre/api";
 
 export default function ServicesEntreprisesPage() {
   const [services, setServices] = useState<Offre[]>([]);
@@ -189,6 +191,34 @@ export default function ServicesEntreprisesPage() {
     setSelectedServiceId(service.id_offre);
     setSelectedServiceDetails(service);
     setIsDeleteDialogOpen(true);
+  };
+
+  // (Ré)activer ou désactiver rapidement une offre
+  const handleToggleStatut = async (service: Offre) => {
+    const nouveauStatut = service.statut === "ACTIF" ? "INACTIF" : "ACTIF";
+    // Mise à jour optimiste
+    setServices((prev) =>
+      prev.map((s) =>
+        s.id_offre === service.id_offre ? { ...s, statut: nouveauStatut } : s
+      )
+    );
+    try {
+      await setOffreStatut(service.id_offre, nouveauStatut);
+      toast.success(
+        nouveauStatut === "ACTIF" ? "Offre réactivée." : "Offre désactivée."
+      );
+    } catch (error) {
+      console.error(error);
+      // Rollback en cas d'échec
+      setServices((prev) =>
+        prev.map((s) =>
+          s.id_offre === service.id_offre
+            ? { ...s, statut: service.statut }
+            : s
+        )
+      );
+      toast.error("Erreur lors du changement de statut.");
+    }
   };
   interface DeleteResponse {
     ok: boolean;
@@ -937,6 +967,27 @@ export default function ServicesEntreprisesPage() {
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
+                        {service.statut === "ACTIF" ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleToggleStatut(service)}
+                            title="Désactiver l'offre"
+                            className="text-amber-600 hover:text-amber-700"
+                          >
+                            <PowerOff className="h-4 w-4" />
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleToggleStatut(service)}
+                            title="Réactiver l'offre"
+                            className="text-green-600 hover:text-green-700"
+                          >
+                            <Power className="h-4 w-4" />
+                          </Button>
+                        )}
                         {/* {service.site_web && (
                           <Button variant="outline" size="sm" onClick={() => window.open(service.site_web, "_blank")}>
                             <ExternalLink className="h-4 w-4" />
