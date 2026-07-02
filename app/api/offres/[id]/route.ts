@@ -505,7 +505,57 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
+// PATCH - Mise à jour partielle d'une offre (ex: (ré)activer / désactiver / archiver)
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { id } = params;
 
+    const offre = await prisma.offre.findUnique({ where: { id_offre: id } });
+    if (!offre) {
+      return NextResponse.json(
+        { success: false, error: "Offre non trouvée" },
+        { status: 404 }
+      );
+    }
+
+    const body = await request.json();
+    const data: any = {};
+
+    if (body.statut !== undefined) {
+      const statutsValides = ["ACTIF", "INACTIF", "ARCHIVE"];
+      if (!statutsValides.includes(body.statut)) {
+        return NextResponse.json(
+          { success: false, error: "Statut invalide" },
+          { status: 400 }
+        );
+      }
+      data.statut = body.statut;
+    }
+
+    if (Object.keys(data).length === 0) {
+      return NextResponse.json(
+        { success: false, error: "Aucun champ valide à mettre à jour" },
+        { status: 400 }
+      );
+    }
+
+    const updated = await prisma.offre.update({
+      where: { id_offre: id },
+      data,
+    });
+
+    return NextResponse.json(updated);
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour partielle de l'offre:", error);
+    return NextResponse.json(
+      { success: false, error: "Erreur serveur lors de la mise à jour de l'offre" },
+      { status: 500 }
+    );
+  }
+}
 
 /**
  * @swagger

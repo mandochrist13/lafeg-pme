@@ -1,3 +1,7 @@
+# Empêche pnpm de relancer une vérification/installation des dépendances
+# avant chaque `pnpm run` (sinon `pnpm run dev` échoue à cause des build scripts ignorés).
+verifyDepsBeforeRun: false
+
 ignoredBuiltDependencies:
   - '@scarf/scarf'
   - '@tree-sitter-grammars/tree-sitter-yaml'
@@ -13,3 +17,13 @@ packages:
 onlyBuiltDependencies:
   - '@prisma/engines'
   - prisma
+
+allowBuilds:
+  '@prisma/engines': set this to true or false
+  '@scarf/scarf': set this to true or false
+  '@tree-sitter-grammars/tree-sitter-yaml': set this to true or false
+  core-js-pure: set this to true or false
+  prisma: set this to true or false
+  sharp: set this to true or false
+  tree-sitter: set this to true or false
+  tree-sitter-json: set this to true or false

@@ -2,7 +2,8 @@
 import React, { useState } from "react";
 import {
   updatePubliciteWithImage,
-
+  uploadPubliciteImage,
+  MAX_IMAGE_SIZE,
 } from "@/app/services/vente/api";
 import { Loader2 } from "lucide-react";
 import { Input } from "../ui/input";
@@ -33,20 +34,44 @@ export function FormModifierPublicite({
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-
     e.preventDefault();
-    setLoading(true);
-    const formData = new FormData();
-    formData.append("libelle", formValues.libelle);
-    formData.append("nom_structure", formValues.nom_structure);
-    formData.append("lien", formValues.lien);
-    if (formValues.imageFile) {
-      formData.append("image", formValues.imageFile);
+
+    if (!formValues.libelle) {
+      toast.error("Veuillez sélectionner un emplacement.");
+      return;
     }
-    await updatePubliciteWithImage(publicite.id_vente, formData);
-    setLoading(false);
-    toast.success("Publicité mise à jour avec succès !");
-    onSuccess();
+    if (formValues.imageFile && formValues.imageFile.size > MAX_IMAGE_SIZE) {
+      toast.error("L’image est trop volumineuse (max 5 Mo).");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // Si une nouvelle image est fournie, on l'upload directement vers Supabase
+      const imageMeta = formValues.imageFile
+        ? await uploadPubliciteImage(formValues.imageFile)
+        : null;
+
+      await updatePubliciteWithImage(publicite.id_vente, {
+        libelle: formValues.libelle,
+        nom_structure: formValues.nom_structure,
+        lien: formValues.lien.trim() || null,
+        ...(imageMeta ?? {}),
+      });
+
+      toast.success("Publicité mise à jour avec succès !");
+      onSuccess();
+    } catch (error) {
+      console.error(error);
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Erreur lors de la mise à jour de la publicité.";
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -80,7 +105,7 @@ export function FormModifierPublicite({
       />
       <Input
         type="file"
-        accept="image/png"
+        accept="image/png,image/jpeg,image/gif"
         onChange={(e) => setFormValues({ ...formValues, imageFile: e.target.files?.[0] || null })}
       />
       <Input
@@ -96,7 +121,7 @@ export function FormModifierPublicite({
         <img src={publicite.image_url} alt="Image existante" style={{ maxWidth: 200 }} />
       )}
 
-      <Button variant="default" onClick={handleSubmit} type="submit">
+      <Button variant="default" type="submit" disabled={loading}>
         {loading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

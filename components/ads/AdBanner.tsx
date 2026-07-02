@@ -30,7 +30,9 @@ export default function AdBanner({
   useEffect(() => {
     fetchAllPublicites()
       .then((all) => {
-        const filtered = all.filter((p) => p.libelle === emplacement);
+        const filtered = all.filter(
+          (p) => p.libelle === emplacement && p.actif !== false
+        );
         setAds(filtered);
       })
       .catch((err) => console.error("Erreur fetch pubs :", err));

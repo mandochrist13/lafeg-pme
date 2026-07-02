@@ -138,12 +138,58 @@ export async function PUT(
     }
 
 
-    // Vérifier que la requête est bien de type multipart/form-data
-    const ContentType = request.headers.get("content-type");
+    const ContentType = request.headers.get("content-type") || "";
 
-    if (!ContentType || !ContentType.includes("multipart/form-data")) {
+    // ✅ Nouveau chemin : métadonnées JSON (image déjà uploadée vers Supabase côté navigateur)
+    if (ContentType.includes("application/json")) {
+      const body = await request.json();
+      const { libelle, nom_structure, lien } = body;
+
+      if (!libelle || !nom_structure) {
+        return NextResponse.json(
+          { erreur: "Le libellé et le nom de la structure sont obligatoires" },
+          { status: 400 },
+        );
+      }
+
+      const existing = await prisma.vente.findUnique({
+        where: { id_vente: id },
+      });
+      if (!existing) {
+        return NextResponse.json(
+          { erreur: "Publicité non trouvée" },
+          { status: 404 },
+        );
+      }
+
+      const data: any = {
+        libelle,
+        nom_structure,
+        lien:
+          typeof lien === "string" && lien.trim() !== "" ? lien.trim() : null,
+      };
+
+      // Champs image présents uniquement si une nouvelle image a été uploadée
+      if (typeof body.image_url === "string" && body.image_url) {
+        data.image_url = body.image_url;
+        data.image_nom = body.image_nom ?? existing.image_nom;
+        data.taille_image =
+          typeof body.taille_image === "number" ? body.taille_image : null;
+        data.mime_type = body.mime_type ?? existing.mime_type;
+      }
+
+      const updated = await prisma.vente.update({
+        where: { id_vente: id },
+        data,
+      });
+
+      return NextResponse.json(updated);
+    }
+
+    // Ancien chemin : multipart/form-data
+    if (!ContentType.includes("multipart/form-data")) {
       return NextResponse.json(
-        { erreur: "Le contenu doit être de type multipart/form-data" },
+        { erreur: "Le contenu doit être de type multipart/form-data ou application/json" },
         { status: 400 },
       );
     }
@@ -191,10 +237,10 @@ export async function PUT(
 
     // Traiter l'upload de l'image si une nouvelle est fournie
     if (file && file.size > 0) {
-      // Vérification du type de fichier
-      if (file.type !== "image/png") {
+      // Vérification du type de fichier (cohérent avec la création : JPEG/PNG/GIF)
+      if (!/^image\/(jpeg|png|gif)$/i.test(file.type)) {
         return NextResponse.json(
-          { erreur: "Seuls les fichiers PNG sont acceptés" },
+          { erreur: "L’image doit être au format JPEG, PNG ou GIF" },
           { status: 400 },
         );
       }
@@ -258,6 +304,65 @@ export async function PUT(
     return NextResponse.json(updatedVente);
   } catch (error) {
     console.error("Erreur lors de la mise à jour de la publicité:", error);
+    return NextResponse.json(
+      { error: "Erreur lors de la mise à jour de la publicité" },
+      { status: 500 },
+    );
+  }
+}
+
+// PATCH - Mise à jour partielle d'une publicité (ex: activer/désactiver)
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> | { id: string } },
+) {
+  try {
+    const { id } = await Promise.resolve(params);
+
+    if (!id) {
+      return NextResponse.json({ erreur: "ID manquant" }, { status: 400 });
+    }
+
+    const existing = await prisma.vente.findUnique({
+      where: { id_vente: id },
+    });
+    if (!existing) {
+      return NextResponse.json(
+        { erreur: "Publicité non trouvée" },
+        { status: 404 },
+      );
+    }
+
+    const body = await request.json();
+    const data: any = {};
+
+    // Seuls les champs fournis sont mis à jour
+    if (typeof body.actif === "boolean") data.actif = body.actif;
+    if (typeof body.libelle === "string") data.libelle = body.libelle;
+    if (typeof body.nom_structure === "string")
+      data.nom_structure = body.nom_structure;
+    if ("lien" in body) {
+      data.lien =
+        typeof body.lien === "string" && body.lien.trim() !== ""
+          ? body.lien.trim()
+          : null;
+    }
+
+    if (Object.keys(data).length === 0) {
+      return NextResponse.json(
+        { erreur: "Aucun champ valide à mettre à jour" },
+        { status: 400 },
+      );
+    }
+
+    const updated = await prisma.vente.update({
+      where: { id_vente: id },
+      data,
+    });
+
+    return NextResponse.json(updated);
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour partielle:", error);
     return NextResponse.json(
       { error: "Erreur lors de la mise à jour de la publicité" },
       { status: 500 },
