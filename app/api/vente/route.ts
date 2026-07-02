@@ -222,12 +222,42 @@ export async function GET(request: Request) {
 export async function POST(request: NextRequest) {
   
   try {
-    // Vérifier que la requête est bien de type multipart/form-data
-    const ContentType = request.headers.get('content-type')
+    const ContentType = request.headers.get('content-type') || ''
 
-    if (!ContentType || !ContentType.includes('multipart/form-data')) {
+    // ✅ Nouveau chemin : l'image a déjà été uploadée vers Supabase côté navigateur,
+    // on ne reçoit ici que des métadonnées JSON (payload léger, compatible Vercel).
+    if (ContentType.includes('application/json')) {
+      const body = await request.json()
+      const { libelle, nom_structure, lien, image_url, image_nom, taille_image, mime_type, actif } = body
+
+      if (!image_url || !libelle) {
+        return NextResponse.json(
+          { error: 'Champs requis manquants (libelle et image_url)' },
+          { status: 400 }
+        )
+      }
+
+      const annonce = await prisma.vente.create({
+        data: {
+          libelle,
+          image_url,
+          image_nom: image_nom ?? '',
+          taille_image: typeof taille_image === 'number' ? taille_image : null,
+          mime_type: mime_type ?? 'image/png',
+          nom_structure: nom_structure ?? '',
+          actif: typeof actif === 'boolean' ? actif : true,
+          lien:
+            typeof lien === 'string' && lien.trim() !== '' ? lien.trim() : null,
+        },
+      })
+
+      return NextResponse.json(annonce, { status: 201 })
+    }
+
+    // Ancien chemin : multipart/form-data (upload du fichier via la route API)
+    if (!ContentType.includes('multipart/form-data')) {
       return NextResponse.json(
-        { erreur: 'Le contenu doit être de type multipart/form-data' },
+        { erreur: 'Le contenu doit être de type multipart/form-data ou application/json' },
         { status: 400 }
       )
     }

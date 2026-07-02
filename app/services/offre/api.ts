@@ -123,6 +123,25 @@ export async function updateOffre(id: string, form: FormData): Promise<Offre> {
 }
 
 
+// --- Changer uniquement le statut d'une offre (activer / désactiver / archiver) ---
+export async function setOffreStatut(
+  id: string,
+  statut: "ACTIF" | "INACTIF" | "ARCHIVE"
+): Promise<Offre> {
+  const response = await fetch(`${API_BASE_URL}/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ statut }),
+  });
+
+  if (!response.ok) {
+    const errText = await response.text().catch(() => response.statusText);
+    throw new Error("Erreur lors du changement de statut de l'offre: " + errText);
+  }
+
+  return response.json();
+}
+
 // --- Supprimer une offre ---
 export async function deleteOffre(id: string): Promise<void> {
   try {

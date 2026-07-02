@@ -1,7 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { createPublicite } from "@/app/services/vente/api";
+import {
+  createPublicite,
+  uploadPubliciteImage,
+  MAX_IMAGE_SIZE,
+} from "@/app/services/vente/api";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
@@ -18,29 +22,53 @@ export function FormCreerPublicite({ onSuccess }: { onSuccess: () => void }) {
   const [formValues, setFormValues] = useState({
     libelle: "",
     nom_structure: "",
+    lien: "",
     imageFile: null as File | null,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-        setLoading(true);
-      const formData = new FormData();
-      formData.append("libelle", formValues.libelle);
-      formData.append("nom_structure", formValues.nom_structure);
-      if (formValues.imageFile) {
-        formData.append("image", formValues.imageFile); // ✅ important : pas imageFile, juste image
-      }
+    // Validation : l'emplacement et l'image sont obligatoires
+    if (!formValues.libelle) {
+      toast.error("Veuillez sélectionner un emplacement.");
+      return;
+    }
+    if (!formValues.imageFile) {
+      toast.error("Veuillez sélectionner une image.");
+      return;
+    }
+    if (formValues.imageFile.size > MAX_IMAGE_SIZE) {
+      toast.error("L’image est trop volumineuse (max 5 Mo).");
+      return;
+    }
 
-      await createPublicite(formData); // ✅ on envoie du FormData
+    try {
+      setLoading(true);
+
+      // 1) Upload de l'image directement vers Supabase (contourne la limite Vercel de 4,5 Mo)
+      const imageMeta = await uploadPubliciteImage(formValues.imageFile);
+
+      // 2) Création de la publicité avec les métadonnées (JSON léger)
+      await createPublicite({
+        libelle: formValues.libelle,
+        nom_structure: formValues.nom_structure,
+        lien: formValues.lien.trim() || null,
+        ...imageMeta,
+      });
+
       toast.success("Publicité créée avec succès !");
-      setFormValues({ libelle: "", nom_structure: "", imageFile: null });
+      setFormValues({ libelle: "", nom_structure: "", lien: "", imageFile: null });
       onSuccess();
-        setLoading(false);
     } catch (error) {
       console.error(error);
-      toast.error("Erreur lors de la création de la publicité.");
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Erreur lors de la création de la publicité.";
+      toast.error(message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -75,8 +103,16 @@ export function FormCreerPublicite({ onSuccess }: { onSuccess: () => void }) {
         </SelectContent>
       </Select>
       <Input
+        type="text"
+        placeholder="Lien (optionnel)"
+        value={formValues.lien}
+        onChange={(e) =>
+          setFormValues({ ...formValues, lien: e.target.value })
+        }
+      />
+      <Input
         type="file"
-        accept="image/png"
+        accept="image/png,image/jpeg,image/gif"
         onChange={(e) =>
           setFormValues({
             ...formValues,
@@ -84,8 +120,8 @@ export function FormCreerPublicite({ onSuccess }: { onSuccess: () => void }) {
           })
         }
       />
-      <Button variant="default" type="submit" onClick={handleSubmit}>
-       
+      <Button variant="default" type="submit" disabled={loading}>
+
         {loading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
