@@ -309,3 +309,20 @@ lafeg-pme
 
 ```
 ```
+
+## Envoi hebdomadaire « ON A LU POUR VOUS » (Resend)
+
+Chaque dimanche à 17:00 UTC (18 h à Libreville), Vercel Cron appelle `/api/cron/revue-hebdo` (voir `vercel.json`).
+La tâche :
+
+1. vérifie qu'une actualité dont le titre contient « on a lu pour vous » a été publiée sur le Guide depuis le lundi précédent (sinon : alerte, rien n'est programmé) ;
+2. lit le modèle Resend `RESEND_TEMPLATE_ID` (publié, HTML non vide) ;
+3. ajoute un pied « Se désinscrire » si `{{{RESEND_UNSUBSCRIBE_URL}}}` n'est pas dans un `href` ;
+4. vérifie qu'aucune campagne « ON A LU POUR VOUS » n'existe déjà pour ce lundi ;
+5. crée la campagne vers `RESEND_SEGMENT_ID`, programmée le lundi à 08:00 UTC (9 h à Libreville) ;
+6. envoie un compte rendu à `REVUE_ALERTES`.
+
+Variables : voir `.env.example`. `REVUE_RESEND_MODE` vaut `off` (par défaut), `brouillon` ou `programmer`.
+
+- `pnpm resend:ids` : liste les segments et les modèles Resend avec leurs identifiants.
+- `pnpm test` : tests (Resend simulé).
