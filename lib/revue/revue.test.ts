@@ -2,7 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 import { lireConfig, type ConfigRevue } from "./config";
 import { debutFenetre, lundiSuivant } from "./dates";
 import { aLienDesinscription, garantirDesinscription } from "./html";
-import { executerRevue, type ClientResend } from "./run";
+import { executerRevue, type ClientResend, type PublicationGuide } from "./run";
+import { determinerVolume, volumeDeCampagne, volumeDuDocument } from "./volume";
 
 // Dimanche 11/10/2026 à 18 h, heure de Libreville.
 const DIMANCHE_18H = new Date("2026-10-11T17:00:00Z");
@@ -17,6 +18,7 @@ const config = (surcharge: Partial<ConfigRevue> = {}): ConfigRevue => ({
   segmentId: "seg_123",
   templateId: "tpl_123",
   alertes: ["alertes@lafeg.ga"],
+  volumeDepart: 33,
   ...surcharge,
 });
 
@@ -57,7 +59,12 @@ function resendSimule(options: {
   return resend satisfies ClientResend;
 }
 
-const publicationTrouvee = async () => new Date("2026-10-08T10:00:00Z");
+const publication = (titre = "On a lu pour vous", fichiers: string[] = []): PublicationGuide => ({
+  titre,
+  fichiers,
+  createdAt: new Date("2026-10-08T10:00:00Z"),
+});
+const publicationTrouvee = async () => publication();
 
 describe("dates", () => {
   it("calcule le lundi suivant 08:00Z depuis le dimanche 18 h (Libreville)", () => {
@@ -103,8 +110,8 @@ describe("lien de désinscription", () => {
 
 describe("config", () => {
   it("signale les variables obligatoires manquantes et le mode invalide", () => {
-    const { erreurs } = lireConfig({ REVUE_RESEND_MODE: "envoyer" });
-    expect(erreurs).toHaveLength(5);
+    const { erreurs } = lireConfig({ REVUE_RESEND_MODE: "envoyer", REVUE_VOLUME_DEPART: "trente" });
+    expect(erreurs).toHaveLength(6);
   });
 
   it("lit les listes et les valeurs facultatives", () => {
@@ -121,6 +128,8 @@ describe("config", () => {
     expect(c.alertes).toEqual(["a@x.ga", "b@x.ga"]);
     expect(c.replyTo).toEqual(["r@x.ga"]);
     expect(c.from).toBeUndefined();
+    expect(c.volumeDepart).toBe(33);
+    expect(lireConfig({ REVUE_VOLUME_DEPART: " 50 " }).config.volumeDepart).toBe(50);
   });
 });
 
@@ -134,10 +143,10 @@ describe("executerRevue", () => {
     expect(resend.broadcasts.create).toHaveBeenCalledWith({
       segmentId: "seg_123",
       from: "FEG <revue@lafeg.ga>",
-      subject: "ON A LU POUR VOUS",
+      subject: "ON A LU POUR VOUS VOL. 33",
       replyTo: ["contact@lafeg.ga"],
       html: HTML_OK,
-      name: "ON A LU POUR VOUS — 12/10/2026",
+      name: "ON A LU POUR VOUS VOL. 33 — 12/10/2026",
       send: true,
       scheduledAt: LUNDI,
     });
@@ -148,10 +157,10 @@ describe("executerRevue", () => {
     expect(r.compteRenduEnvoye).toBe(true);
   });
 
-  it("applique REVUE_FROM, REVUE_REPLY_TO et REVUE_SUBJECT", async () => {
+  it("applique REVUE_FROM et REVUE_REPLY_TO ; l'objet numéroté remplace celui du modèle", async () => {
     const resend = resendSimule();
     await executerRevue({
-      config: config({ from: "Autre <a@lafeg.ga>", replyTo: ["b@lafeg.ga"], subject: "Revue" }),
+      config: config({ from: "Autre <a@lafeg.ga>", replyTo: ["b@lafeg.ga"] }),
       resend,
       maintenant: DIMANCHE_18H,
       trouverPublication: publicationTrouvee,
@@ -159,13 +168,13 @@ describe("executerRevue", () => {
     expect(resend.broadcasts.create.mock.calls[0][0]).toMatchObject({
       from: "Autre <a@lafeg.ga>",
       replyTo: ["b@lafeg.ga"],
-      subject: "Revue",
+      subject: "ON A LU POUR VOUS VOL. 33",
     });
   });
 
   it("ne crée pas de doublon si une campagne est déjà programmée pour ce lundi", async () => {
     const resend = resendSimule({
-      campagnes: [{ id: "bc_old", name: "ON A LU POUR VOUS — 12/10/2026", status: "queued", scheduled_at: "2026-10-12 08:00:00+00" }],
+      campagnes: [{ id: "bc_old", name: "ON A LU POUR VOUS VOL. 40 — 12/10/2026", status: "queued", scheduled_at: "2026-10-12 08:00:00+00" }],
     });
     const r = await executerRevue({ config: config(), resend, maintenant: DIMANCHE_18H, trouverPublication: publicationTrouvee });
     expect(r.statut).toBe("doublon");
@@ -177,12 +186,13 @@ describe("executerRevue", () => {
   it("ignore un brouillon de test et les campagnes d'autres lundis en mode programmer", async () => {
     const resend = resendSimule({
       campagnes: [
-        { id: "bc_draft", name: "ON A LU POUR VOUS — 12/10/2026", status: "draft", scheduled_at: null },
-        { id: "bc_prev", name: "ON A LU POUR VOUS — 05/10/2026", status: "sent", scheduled_at: "2026-10-05T08:00:00Z" },
+        { id: "bc_draft", name: "ON A LU POUR VOUS VOL. 41 — 12/10/2026", status: "draft", scheduled_at: null },
+        { id: "bc_prev", name: "ON A LU POUR VOUS VOL. 40 — 05/10/2026", status: "sent", scheduled_at: "2026-10-05T08:00:00Z" },
       ],
     });
     const r = await executerRevue({ config: config(), resend, maintenant: DIMANCHE_18H, trouverPublication: publicationTrouvee });
     expect(r.statut).toBe("programmee");
+    expect(r.volume).toBe(41);
   });
 
   it("refuse un modèle non publié", async () => {
@@ -281,5 +291,126 @@ describe("executerRevue", () => {
     expect(resend.broadcasts.create).not.toHaveBeenCalled();
     expect(resend.emails.send.mock.calls[0][0].from).toBe("FEG <revue@lafeg.ga>");
     expect(r.compteRenduEnvoye).toBe(true);
+  });
+
+  it("le compte rendu indique le numéro de volume et sa provenance", async () => {
+    const resend = resendSimule();
+    const r = await executerRevue({ config: config(), resend, maintenant: DIMANCHE_18H, trouverPublication: publicationTrouvee });
+    expect(r).toMatchObject({ volume: 33, sourceVolume: "depart" });
+    const mail = resend.emails.send.mock.calls[0][0];
+    expect(mail.text).toContain("Numéro : ON A LU POUR VOUS VOL. 33 (REVUE_VOLUME_DEPART");
+  });
+});
+
+describe("numéro de volume", () => {
+  it("lit le numéro dans le titre, le nom du fichier ou le lien", () => {
+    expect(volumeDuDocument({ titre: "ON A LU POUR VOUS VOL. 34" })).toBe(34);
+    expect(volumeDuDocument({ titre: "On a lu pour vous – Volume 35" })).toBe(35);
+    expect(volumeDuDocument({ titre: "On a lu pour vous n° 36" })).toBe(36);
+    expect(
+      volumeDuDocument({
+        titre: "On a lu pour vous",
+        fichiers: ["https://x.supabase.co/storage/v1/object/public/actualites/1728000000000-On-a-lu-pour-vous-vol-37.png"],
+      })
+    ).toBe(37);
+    expect(volumeDuDocument({ titre: "On a lu pour vous", fichiers: [null, "https://lafeg.ga/docs/OALPV_VOL38.pdf"] })).toBe(38);
+    expect(volumeDuDocument({ titre: "On a lu pour vous", fichiers: ["https://x/1728000000000-revue.png"] })).toBeNull();
+  });
+
+  it("lit le numéro d'un nom de campagne", () => {
+    expect(volumeDeCampagne("ON A LU POUR VOUS VOL. 34 — 12/10/2026")).toBe(34);
+    expect(volumeDeCampagne("ON A LU POUR VOUS — 12/10/2026")).toBeNull();
+  });
+
+  it("cas a : le numéro du document téléversé l'emporte", async () => {
+    const resend = resendSimule({
+      campagnes: [{ id: "bc_1", name: "ON A LU POUR VOUS VOL. 40 — 05/10/2026", status: "sent", scheduled_at: "2026-10-05T08:00:00Z" }],
+    });
+    const r = await executerRevue({
+      config: config(),
+      resend,
+      maintenant: DIMANCHE_18H,
+      trouverPublication: async () => publication("ON A LU POUR VOUS VOL. 45"),
+    });
+    expect(r).toMatchObject({ statut: "programmee", volume: 45, sourceVolume: "document" });
+    expect(resend.broadcasts.create.mock.calls[0][0]).toMatchObject({
+      subject: "ON A LU POUR VOUS VOL. 45",
+      name: "ON A LU POUR VOUS VOL. 45 — 12/10/2026",
+    });
+  });
+
+  it("cas b : numéro le plus élevé des campagnes envoyées ou programmées + 1 (brouillons et annulées exclues)", async () => {
+    const resend = resendSimule({
+      campagnes: [
+        { id: "bc_d", name: "ON A LU POUR VOUS VOL. 90 — 12/10/2026", status: "draft", scheduled_at: null },
+        { id: "bc_c", name: "ON A LU POUR VOUS VOL. 80 — 19/10/2026", status: "canceled", scheduled_at: null },
+        { id: "bc_2", name: "ON A LU POUR VOUS VOL. 36 — 05/10/2026", status: "sent", scheduled_at: "2026-10-05T08:00:00Z" },
+        { id: "bc_1", name: "ON A LU POUR VOUS VOL. 35 — 28/09/2026", status: "sent", scheduled_at: "2026-09-28T08:00:00Z" },
+        { id: "bc_x", name: "Autre campagne VOL. 99", status: "sent", scheduled_at: null },
+      ],
+    });
+    const r = await executerRevue({ config: config(), resend, maintenant: DIMANCHE_18H, trouverPublication: publicationTrouvee });
+    expect(r).toMatchObject({ statut: "programmee", volume: 37, sourceVolume: "campagnes" });
+    expect(resend.broadcasts.create.mock.calls[0][0].subject).toBe("ON A LU POUR VOUS VOL. 37");
+  });
+
+  it("cas b : une campagne programmée (queued) compte aussi", () => {
+    expect(
+      determinerVolume({ titre: "On a lu pour vous" }, [{ name: "ON A LU POUR VOUS VOL. 50 — 19/10/2026", status: "queued" }], 33)
+    ).toEqual({ volume: 51, source: "campagnes" });
+  });
+
+  it("cas c : aucune campagne numérotée, on part de REVUE_VOLUME_DEPART", async () => {
+    const resend = resendSimule({
+      campagnes: [{ id: "bc_old", name: "ON A LU POUR VOUS — 05/10/2026", status: "sent", scheduled_at: "2026-10-05T08:00:00Z" }],
+    });
+    const r = await executerRevue({
+      config: config({ volumeDepart: 33 }),
+      resend,
+      maintenant: DIMANCHE_18H,
+      trouverPublication: publicationTrouvee,
+    });
+    expect(r).toMatchObject({ statut: "programmee", volume: 33, sourceVolume: "depart" });
+  });
+
+  it("semaine sans envoi : pas de numéro consommé, la semaine suivante reprend au dernier + 1", async () => {
+    // Semaine du 05/10 : aucune publication, rien n'est créé.
+    const sansEnvoi = resendSimule({
+      campagnes: [{ id: "bc_1", name: "ON A LU POUR VOUS VOL. 34 — 28/09/2026", status: "sent", scheduled_at: "2026-09-28T08:00:00Z" }],
+    });
+    const r1 = await executerRevue({
+      config: config(),
+      resend: sansEnvoi,
+      maintenant: new Date("2026-10-04T17:00:00Z"),
+      trouverPublication: async () => null,
+    });
+    expect(r1.statut).toBe("pas-de-publication");
+    expect(r1.volume).toBeUndefined();
+    expect(sansEnvoi.broadcasts.create).not.toHaveBeenCalled();
+
+    // Semaine du 12/10 : le dernier envoi reste VOL. 34 (28/09), on programme VOL. 35.
+    const suivante = resendSimule({
+      campagnes: [{ id: "bc_1", name: "ON A LU POUR VOUS VOL. 34 — 28/09/2026", status: "sent", scheduled_at: "2026-09-28T08:00:00Z" }],
+    });
+    const r2 = await executerRevue({ config: config(), resend: suivante, maintenant: DIMANCHE_18H, trouverPublication: publicationTrouvee });
+    expect(r2).toMatchObject({ statut: "programmee", volume: 35 });
+    expect(suivante.broadcasts.create.mock.calls[0][0].name).toBe("ON A LU POUR VOUS VOL. 35 — 12/10/2026");
+  });
+
+  it("numéro déjà utilisé par une autre campagne : erreur, rien de créé", async () => {
+    const resend = resendSimule({
+      campagnes: [{ id: "bc_34", name: "ON A LU POUR VOUS VOL. 34 — 05/10/2026", status: "sent", scheduled_at: "2026-10-05T08:00:00Z" }],
+    });
+    const r = await executerRevue({
+      config: config(),
+      resend,
+      maintenant: DIMANCHE_18H,
+      trouverPublication: async () => publication("ON A LU POUR VOUS VOL. 34"),
+    });
+    expect(r.statut).toBe("erreur");
+    expect(r.message).toContain("VOL. 34");
+    expect(r.message).toContain("https://resend.com/broadcasts/bc_34");
+    expect(resend.broadcasts.create).not.toHaveBeenCalled();
+    expect(resend.emails.send.mock.calls[0][0].text).toContain("Numéro : ON A LU POUR VOUS VOL. 34");
   });
 });

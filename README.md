@@ -319,8 +319,9 @@ La tâche :
 2. lit le modèle Resend `RESEND_TEMPLATE_ID` (publié, HTML non vide) ;
 3. ajoute un pied « Se désinscrire » si `{{{RESEND_UNSUBSCRIBE_URL}}}` n'est pas dans un `href` ;
 4. vérifie qu'aucune campagne « ON A LU POUR VOUS » n'existe déjà pour ce lundi ;
-5. crée la campagne vers `RESEND_SEGMENT_ID`, programmée le lundi à 08:00 UTC (9 h à Libreville) ;
-6. envoie un compte rendu à `REVUE_ALERTES`.
+5. détermine le numéro de volume : celui indiqué sur l'actualité (titre, fichier ou lien), sinon le plus élevé des campagnes « ON A LU POUR VOUS VOL. » envoyées ou programmées + 1, sinon `REVUE_VOLUME_DEPART` (33) ; vérifie qu'aucune autre campagne ne porte ce numéro ;
+6. crée la campagne « ON A LU POUR VOUS VOL. <n> — <date> » (objet « ON A LU POUR VOUS VOL. <n> ») vers `RESEND_SEGMENT_ID`, programmée le lundi à 08:00 UTC (9 h à Libreville) ;
+7. envoie un compte rendu à `REVUE_ALERTES`, avec le numéro utilisé.
 
 Variables : voir `.env.example`. `REVUE_RESEND_MODE` vaut `off` (par défaut), `brouillon` ou `programmer`.
 
