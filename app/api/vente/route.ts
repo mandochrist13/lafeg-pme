@@ -1,16 +1,17 @@
 import prisma from "@/lib/prisma";
 import { supabase } from "@/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
+import { exigerAdmin } from "@/lib/api-auth";
+import { fichierFourni, lirePagination, lireTri, nomFichierSur } from "@/lib/api-utils";
 
-
-
+const CHAMPS_TRI = ["createdAt", "updatedAt", "libelle", "nom_structure", "actif"] as const;
+const TYPES_IMAGE = /^image\/(jpeg|png|gif)$/i;
 
 /**
  * @swagger
- * /api/annonces:
+ * /api/vente:
  *   get:
  *     summary: Récupère une liste paginée des publicités
- *     description: Retourne une liste paginée des publicités avec options de filtrage et de tri
  *     tags:
  *       - Publicités
  *     parameters:
@@ -19,328 +20,201 @@ import { NextRequest, NextResponse } from "next/server";
  *         schema:
  *           type: integer
  *           default: 1
- *           minimum: 1
- *         description: Numéro de page pour la pagination
  *       - in: query
  *         name: limit
  *         schema:
  *           type: integer
  *           default: 10
- *           minimum: 1
- *           maximum: 100
- *         description: Nombre d'éléments par page
+ *           maximum: 1000
  *       - in: query
  *         name: sort
  *         schema:
  *           type: string
- *           default: createdAt
- *         description: Champ sur lequel effectuer le tri
+ *           enum: [createdAt, updatedAt, libelle, nom_structure, actif]
  *       - in: query
  *         name: order
  *         schema:
  *           type: string
  *           enum: [asc, desc]
- *           default: desc
- *         description: Ordre de tri (ascendant ou descendant)
  *       - in: query
- *         name: status
+ *         name: libelle
+ *         description: Emplacement exact (HEADER, HERO, MIDDLE, ACTU, INSTITUTION, SEA)
  *         schema:
  *           type: string
- *         description: Filtre par statut de la publicité (actif, inactif, etc.)
  *       - in: query
- *         name: dateDebut
+ *         name: actif
  *         schema:
  *           type: string
- *           format: date
- *         description: Filtre les publicités débutant après cette date
+ *           enum: ["true", "false"]
  *       - in: query
- *         name: dateFin
+ *         name: keyword
+ *         description: Recherche dans le libellé et le nom de la structure
  *         schema:
  *           type: string
- *           format: date
- *         description: Filtre les publicités se terminant avant cette date
  *     responses:
  *       200:
  *         description: Liste des publicités récupérée avec succès
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/annoncee'
- *                 pagination:
- *                   type: object
- *                   properties:
- *                     page:
- *                       type: integer
- *                       example: 1
- *                     limit:
- *                       type: integer
- *                       example: 10
- *                     total:
- *                       type: integer
- *                       example: 42
- *                     totalPages:
- *                       type: integer
- *                       example: 5
  *       500:
- *         description: Erreur lors de la récupération des publicités
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Erreur lors de la récupération des publicités
+ *         description: Erreur serveur
  */
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    // Récupération des paramètres de l'URL
-    const url = new URL(request.url);
-    const searchParams = url.searchParams;
-    
-    // Paramètres de pagination avec valeurs par défaut
-    const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
-    const limit = Math.max(1, Math.min(100, parseInt(searchParams.get('limit') || '10')));
-    const skip = (page - 1) * limit;
-    
-    // Paramètres de tri avec valeurs par défaut
-    const sortField = searchParams.get('sort') || 'createdAt';
-    const sortOrder = searchParams.get('order') === 'asc' ? 'asc' : 'desc';
-    
-    // Construction du filtre
+    const searchParams = request.nextUrl.searchParams;
+    const { page, limit, skip } = lirePagination(searchParams, { limitDefaut: 10, limitMax: 1000 });
+    const { champ, ordre } = lireTri(searchParams, CHAMPS_TRI, "createdAt");
+
     const where: any = {};
-    
-    // Filtrage par statut
-    const status = searchParams.get('status');
-    if (status) where.status = status;
-    
-    // Filtrage par date de début
-    const dateDebut = searchParams.get('dateDebut');
-    if (dateDebut) {
-      where.dateDebut = {
-        gte: new Date(dateDebut)
-      };
-    }
-    
-    // Filtrage par date de fin
-    const dateFin = searchParams.get('dateFin');
-    if (dateFin) {
-      where.dateFin = {
-        lte: new Date(dateFin)
-      };
-    }
-    
-    // Recherche par mot-clé (exemple sur le titre et la description)
-    const keyword = searchParams.get('keyword');
+
+    const libelle = searchParams.get("libelle");
+    if (libelle) where.libelle = libelle;
+
+    const actif = searchParams.get("actif") ?? searchParams.get("status");
+    if (actif === "true" || actif === "false") where.actif = actif === "true";
+
+    const keyword = searchParams.get("keyword");
     if (keyword) {
       where.OR = [
-        { titre: { contains: keyword, mode: 'insensitive' } },
-        { description: { contains: keyword, mode: 'insensitive' } }
+        { libelle: { contains: keyword, mode: "insensitive" } },
+        { nom_structure: { contains: keyword, mode: "insensitive" } },
       ];
     }
-    
-    // Exécution des requêtes en parallèle
+
     const [data, total] = await Promise.all([
-      prisma.vente.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: { [sortField]: sortOrder }
-      }),
-      prisma.vente.count({ where })
+      prisma.vente.findMany({ where, skip, take: limit, orderBy: { [champ]: ordre } }),
+      prisma.vente.count({ where }),
     ]);
-    
-    // Réponse structurée avec données et pagination
-    return NextResponse.json({
-      data,
-      pagination: { 
-        page, 
-        limit, 
-        total, 
-        totalPages: Math.ceil(total / limit) 
-      }
-    }, { status: 200 });
-    
-  } catch (error) {
-    console.error('Erreur lors de la récupération des publicités:', error);
+
     return NextResponse.json(
-      { error: 'Erreur lors de la récupération des publicités' }, 
+      { data, pagination: { page, limit, total, totalPages: Math.max(1, Math.ceil(total / limit)) } },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Erreur lors de la récupération des publicités:", error);
+    return NextResponse.json(
+      { error: "Erreur lors de la récupération des publicités" },
       { status: 500 }
     );
   }
 }
 
-
-
 /**
  * @swagger
- * /api/annonces:
+ * /api/vente:
  *   post:
  *     summary: Crée une nouvelle publicité
- *     description: Crée une nouvelle publicité avec les données fournies dans le formulaire
+ *     description: |
+ *       Deux formats acceptés : `application/json` (image déjà téléversée côté navigateur,
+ *       champs `libelle`, `image_url`, `nom_structure`, `lien`, `image_nom`, `taille_image`, `mime_type`, `actif`)
+ *       ou `multipart/form-data` (champ `image` JPEG/PNG/GIF). Authentification administrateur requise.
  *     tags: [Publicités]
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             properties:
- *               libelle:
- *                 type: string
- *                 description: Libellé de la publicité
- *               image:
- *                 type: string
- *                 format: binary
- *                 description: Image de la publicité (JPEG ou PNG)
- *               nom_structure:
- *                 type: string
- *                 description: Nom de la structure associée à la publicité
  *     responses:
  *       201:
  *         description: Publicité créée avec succès
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/annonce'
  *       400:
- *         description: Erreur de validation des données d'entrée
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
+ *         description: Erreur de validation
+ *       401:
+ *         description: Non autorisé
+ *       500:
+ *         description: Erreur serveur
  */
-
 export async function POST(request: NextRequest) {
-  
-  try {
-    const ContentType = request.headers.get('content-type') || ''
+  const refus = await exigerAdmin();
+  if (refus) return refus;
 
-    // ✅ Nouveau chemin : l'image a déjà été uploadée vers Supabase côté navigateur,
-    // on ne reçoit ici que des métadonnées JSON (payload léger, compatible Vercel).
-    if (ContentType.includes('application/json')) {
-      const body = await request.json()
-      const { libelle, nom_structure, lien, image_url, image_nom, taille_image, mime_type, actif } = body
+  try {
+    const ContentType = request.headers.get("content-type") || "";
+
+    // Chemin principal : l'image a déjà été téléversée vers Supabase côté navigateur,
+    // on ne reçoit que des métadonnées JSON (payload léger, compatible Vercel).
+    if (ContentType.includes("application/json")) {
+      const body = await request.json();
+      const { libelle, nom_structure, lien, image_url, image_nom, taille_image, mime_type, actif } = body;
 
       if (!image_url || !libelle) {
         return NextResponse.json(
-          { error: 'Champs requis manquants (libelle et image_url)' },
+          { error: "Champs requis manquants (libelle et image_url)" },
           { status: 400 }
-        )
+        );
       }
 
       const annonce = await prisma.vente.create({
         data: {
           libelle,
           image_url,
-          image_nom: image_nom ?? '',
-          taille_image: typeof taille_image === 'number' ? taille_image : null,
-          mime_type: mime_type ?? 'image/png',
-          nom_structure: nom_structure ?? '',
-          actif: typeof actif === 'boolean' ? actif : true,
-          lien:
-            typeof lien === 'string' && lien.trim() !== '' ? lien.trim() : null,
+          image_nom: image_nom ?? "",
+          taille_image: typeof taille_image === "number" ? taille_image : null,
+          mime_type: mime_type ?? "image/png",
+          nom_structure: nom_structure ?? "",
+          actif: typeof actif === "boolean" ? actif : true,
+          lien: typeof lien === "string" && lien.trim() !== "" ? lien.trim() : null,
         },
-      })
+      });
 
-      return NextResponse.json(annonce, { status: 201 })
+      return NextResponse.json(annonce, { status: 201 });
     }
 
     // Ancien chemin : multipart/form-data (upload du fichier via la route API)
-    if (!ContentType.includes('multipart/form-data')) {
+    if (!ContentType.includes("multipart/form-data")) {
       return NextResponse.json(
-        { erreur: 'Le contenu doit être de type multipart/form-data ou application/json' },
-        { status: 400 }
-      )
-    }
-
-    // Traitement du formulaire
-    const formData = await request.formData();
-    const file = formData.get('image') as File
-
-
-    if (!file) {
-      return NextResponse.json(
-        { erreur: 'Fichier requis' },
+        { error: "Le contenu doit être de type multipart/form-data ou application/json" },
         { status: 400 }
       );
     }
 
-    // ✅ autoriser JPEG/PNG/GIF
-if (!/^image\/(jpeg|png|gif)$/i.test(file.type)) {
-  return NextResponse.json(
-    { error: "L’image doit être au format JPEG, PNG ou GIF" },
-    { status: 400 }
-  );
-}
+    const formData = await request.formData();
+    const file = formData.get("image");
 
-    // Création d'un nom de fichier unique
-    const timestamp = Date.now();
-    const fileExtension = file.name.split('.').pop();
-    const FileName = `${timestamp}-${file.name.replace(/\s+/g, '-')}`;
-    const FilePath = `annonces/${FileName}`;
-
-    // Upload du fichier vers Supabase Storage
-    const { data, error } = await supabase.storage
-      .from('feg')
-      .upload(FilePath, file, {
-        cacheControl: '3600',
-        upsert: false,
-        contentType: file.type,
-      })
-
-    // Vérification de l'upload
-    if (error) {
-      console.error(`Erreur de l'upload:`, error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+    if (!fichierFourni(file)) {
+      return NextResponse.json({ error: "Fichier requis" }, { status: 400 });
     }
 
-    const { data: urlData } = supabase
-      .storage
-      .from('feg')
-      .getPublicUrl(FilePath)
+    if (!TYPES_IMAGE.test(file.type)) {
+      return NextResponse.json(
+        { error: "L’image doit être au format JPEG, PNG ou GIF" },
+        { status: 400 }
+      );
+    }
 
-    // Récupération des données du formulaire
-    const libelle = formData.get('libelle') as string;
-    const nom_structure = formData.get('nom_structure') as string;
+    const libelle = ((formData.get("libelle") as string | null) ?? "").trim();
+    if (!libelle) {
+      return NextResponse.json({ error: "Le libellé (emplacement) est requis" }, { status: 400 });
+    }
 
-    // Créer la publicité dans la base de données
+    const FileName = nomFichierSur(file.name);
+    const FilePath = `annonces/${FileName}`;
+
+    const { error } = await supabase.storage
+      .from("feg")
+      .upload(FilePath, file, { cacheControl: "3600", upsert: false, contentType: file.type });
+
+    if (error) {
+      console.error("Erreur de l'upload:", error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    const { data: urlData } = supabase.storage.from("feg").getPublicUrl(FilePath);
+
     const lienRaw = formData.get("lien");
-const lien = typeof lienRaw === "string" && lienRaw.trim() !== "" ? lienRaw.trim() : null;
+    const lien = typeof lienRaw === "string" && lienRaw.trim() !== "" ? lienRaw.trim() : null;
 
-    const annonce = await prisma.vente.create(
-      {
-        data: {
-          libelle: formData.get('libelle') as string,
-          image_url: urlData.publicUrl,
-          image_nom: file.name,
-          lien,
-          taille_image: file.size,
-          mime_type: file.type,
-          nom_structure: formData.get('nom_structure') as string,
-        }
-      }
-    )
+    const annonce = await prisma.vente.create({
+      data: {
+        libelle,
+        image_url: urlData.publicUrl,
+        image_nom: FileName,
+        lien,
+        taille_image: file.size,
+        mime_type: file.type,
+        nom_structure: ((formData.get("nom_structure") as string | null) ?? "").trim(),
+      },
+    });
 
     return NextResponse.json(annonce, { status: 201 });
-
   } catch (error) {
-
-    console.error('Erreur lors de la création de la publicité:', error);
-
+    console.error("Erreur lors de la création de la publicité:", error);
     return NextResponse.json(
-      { error: 'Erreur lors de la création de la publicité' },
+      { error: "Erreur lors de la création de la publicité" },
       { status: 500 }
     );
-
   }
 }
-

@@ -40,7 +40,8 @@ useEffect(() => {
   const loadOffres = async () => {
     try {
       setOffresLoading(true);
-      const res = await fetchOffres({}); // ou sans filtre
+      // Offres actives récentes (sans `limit`, l'API ne renvoie que 10 offres toutes confondues).
+      const res = await fetchOffres({ statut: "ACTIF", limit: 50 });
       setOffres(res?.data ?? []);
     } catch (e) {
       console.error("Erreur fetchOffres:", e);

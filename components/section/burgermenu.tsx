@@ -26,7 +26,7 @@ const HamburgerMenu = () => {
     { label: "Textes Juridiques", href: "/textes-juridiques" },
     { label: "Institutions Financières", href: "/institutions-financieres" },
     {
-      label: "Structure d'Ecadremente et d'Accompagnement",
+      label: "Structure d'Encadrement et d'Accompagnement",
       href: "/structures-accompagnement",
     },
     {

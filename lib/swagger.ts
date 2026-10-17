@@ -10,10 +10,17 @@ const options = {
     },
     servers: [
       {
-        url: process.env.NODE_ENV === 'production' 
-          ? 'https://votre-domaine.com' 
-          : 'http://localhost:3000',
-        description: process.env.NODE_ENV === 'production' ? 'Serveur de production' : 'Serveur de développement',
+        // L'URL de production venait d'un placeholder (« votre-domaine.com ») :
+        // on utilise maintenant l'URL réelle du site.
+        url:
+          process.env.NODE_ENV === 'production'
+            ? process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, '') ||
+              'https://guide-numerique.lafeg.ga'
+            : 'http://localhost:3000',
+        description:
+          process.env.NODE_ENV === 'production'
+            ? 'Serveur de production'
+            : 'Serveur de développement',
       },
     ],
   },

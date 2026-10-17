@@ -1,9 +1,9 @@
-// hash-passwords.cjs
-require("dotenv").config();
-
-const { PrismaClient } = require("../generated/prisma");
-const { PrismaPg } = require("@prisma/adapter-pg");
-const { hash } = require("bcryptjs");
+// Hache les mots de passe encore stockés en clair dans la table `utilisateur`.
+// Usage : pnpm tsx scripts/hashPasswords.ts
+import "dotenv/config";
+import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { hash } from "bcryptjs";
 
 const prisma = new PrismaClient({
   adapter: new PrismaPg({
@@ -16,7 +16,7 @@ async function run() {
   const users = await prisma.utilisateur.findMany();
 
   for (const user of users) {
-    if (user.mot_de_passe && !user.mot_de_passe.startsWith("$2b$")) {
+    if (user.mot_de_passe && !/^\$2[aby]\$/.test(user.mot_de_passe)) {
       const hashed = await hash(user.mot_de_passe, 10);
 
       await prisma.utilisateur.update({

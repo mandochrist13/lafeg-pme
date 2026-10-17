@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { createActualite, updateActualite, type Actualite } from "@/app/services/actualite/api"
+import { CATEGORIES_ACTUALITE } from "@/lib/categories-actualite"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -18,13 +19,25 @@ type Props = {
 }
 
 export default function ActualiteForm({ open, onClose, actualite, onSaved }: Props) {
-  const [titre, setTitre] = useState(actualite?.titre ?? "")
-  const [contenu, setContenu] = useState(actualite?.contenu ?? "")
-  const [categorie, setCategorie] = useState(actualite?.categorie ?? "")
-  const [source, setSource] = useState(actualite?.source ?? "")
-  const [lienSource, setLienSource] = useState(actualite?.lienSource ?? "")
+  const [titre, setTitre] = useState("")
+  const [contenu, setContenu] = useState("")
+  const [categorie, setCategorie] = useState("")
+  const [source, setSource] = useState("")
+  const [lienSource, setLienSource] = useState("")
   const [file, setFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
+
+  // Le dialogue reste monté en permanence : on (ré)initialise les champs à chaque ouverture,
+  // sinon le formulaire de modification s'affichait vide.
+  useEffect(() => {
+    if (!open) return
+    setTitre(actualite?.titre ?? "")
+    setContenu(actualite?.contenu ?? "")
+    setCategorie(actualite?.categorie ?? "")
+    setSource(actualite?.source ?? "")
+    setLienSource(actualite?.lienSource ?? "")
+    setFile(null)
+  }, [open, actualite])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -92,11 +105,11 @@ export default function ActualiteForm({ open, onClose, actualite, onSaved }: Pro
                   <SelectValue placeholder="Choisir..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Événement">Événement</SelectItem>
-                  <SelectItem value="Publication">Publication</SelectItem>
-                  <SelectItem value="Législation">Législation</SelectItem>
-                  <SelectItem value="Formation">Formation</SelectItem>
-                  <SelectItem value="Autres">Autres</SelectItem>
+                  {CATEGORIES_ACTUALITE.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {c}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -104,6 +117,9 @@ export default function ActualiteForm({ open, onClose, actualite, onSaved }: Pro
             <div className="space-y-2">
               <Label htmlFor="image">Image (optionnelle)</Label>
               <Input id="image" type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+              {actualite?.imageUrl && !file && (
+                <p className="text-xs text-muted-foreground">Une image est déjà associée ; laissez vide pour la conserver.</p>
+              )}
             </div>
           </div>
 
@@ -114,7 +130,13 @@ export default function ActualiteForm({ open, onClose, actualite, onSaved }: Pro
 
           <div className="space-y-2">
             <Label htmlFor="lienSource">Lien source</Label>
-            <Input id="lienSource" value={lienSource} onChange={(e) => setLienSource(e.target.value)} />
+            <Input
+              id="lienSource"
+              type="url"
+              placeholder="https://..."
+              value={lienSource}
+              onChange={(e) => setLienSource(e.target.value)}
+            />
           </div>
 
           <DialogFooter>

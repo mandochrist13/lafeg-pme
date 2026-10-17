@@ -1,10 +1,14 @@
-
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import type { NextAuthConfig } from "next-auth";
 import prisma from "./prisma";
 
 export const authOptions: NextAuthConfig = {
+  // Indispensable derrière un proxy (Vercel, reverse proxy) : sans cela, Auth.js v5
+  // refuse toutes les requêtes avec « UntrustedHost », ce qui rendait la connexion
+  // à l'espace administrateur totalement impossible en production.
+  trustHost: true,
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -20,24 +24,29 @@ export const authOptions: NextAuthConfig = {
           throw new Error("Email et mot de passe requis.");
         }
 
-        return prisma.utilisateur
-          .findUnique({ where: { email } })
-          .then(async (user) => {
-            if (!user) {
-              throw new Error("Aucun utilisateur trouvé avec cet email.");
-            }
+        const user = await prisma.utilisateur.findUnique({ where: { email } });
+        if (!user) {
+          throw new Error("Aucun utilisateur trouvé avec cet email.");
+        }
 
-            const isValid = await compare(password, user.mot_de_passe);
-            if (!isValid) {
-              throw new Error("Mot de passe incorrect.");
-            }
+        const isValid = await compare(password, user.mot_de_passe);
+        if (!isValid) {
+          throw new Error("Mot de passe incorrect.");
+        }
 
-            return {
-              id: user.id_utilisateur,
-              email: user.email,
-              name: `${user.prenom} ${user.nom}`,
-            };
-          });
+        // Mémorise la dernière connexion (non bloquant).
+        prisma.utilisateur
+          .update({
+            where: { id_utilisateur: user.id_utilisateur },
+            data: { derniere_connexion: new Date() },
+          })
+          .catch(() => {});
+
+        return {
+          id: user.id_utilisateur,
+          email: user.email,
+          name: `${user.prenom} ${user.nom}`,
+        };
       },
     }),
   ],
@@ -45,7 +54,6 @@ export const authOptions: NextAuthConfig = {
     strategy: "jwt",
     maxAge: 60 * 60,      // 1 heure
     updateAge: 60 * 60,   // Ne renouvelle pas automatiquement
-
   },
   jwt: {
     maxAge: 60 * 60,      // 1 heure
@@ -68,3 +76,7 @@ export const authOptions: NextAuthConfig = {
     },
   },
 };
+
+// `handlers` alimente la route /api/auth/[...nextauth] ;
+// `auth()` permet de lire la session côté serveur (routes API, server components).
+export const { handlers, auth, signIn, signOut } = NextAuth(authOptions);

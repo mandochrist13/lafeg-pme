@@ -1,11 +1,23 @@
-const { PrismaClient: PrismaClientGenerated } = require("../generated/prisma");
-const { hash: bcryptHash } = require("bcryptjs");
+// Crée un administrateur ou réinitialise son mot de passe.
+// Usage : pnpm tsx scripts/resetPassword.ts <email> <mot_de_passe> [nom] [prenom]
+// (les identifiants ne sont plus écrits en dur dans le dépôt).
+import "dotenv/config";
+import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { hash as bcryptHash } from "bcryptjs";
 
-const prismaClient = new PrismaClientGenerated();
+const prismaClient = new PrismaClient({
+  adapter: new PrismaPg({
+    connectionString: process.env.DIRECT_URL || process.env.DATABASE_URL,
+  }),
+});
 
 async function main() {
-  const email = "coeurllyb@gmail.com";
-  const plainPassword = "coeurlly";
+  const [email, plainPassword, nom = "ADMIN", prenom = "Admin"] = process.argv.slice(2);
+  if (!email || !plainPassword) {
+    console.error("Usage : pnpm tsx scripts/resetPassword.ts <email> <mot_de_passe> [nom] [prenom]");
+    process.exit(1);
+  }
 
   console.log("🔍 Vérification ou création de l'utilisateur :", email);
 
@@ -21,8 +33,8 @@ async function main() {
 
     const newUser = await prismaClient.utilisateur.create({
       data: {
-        nom: "BOUROBOU",
-        prenom: "Coeurlly",
+        nom,
+        prenom,
         email,
         mot_de_passe: hashed,
         role: "ADMIN",
@@ -45,4 +57,5 @@ main()
   .catch((e) => {
     console.error("❌ Erreur :", e);
     prismaClient.$disconnect();
+    process.exit(1);
   });

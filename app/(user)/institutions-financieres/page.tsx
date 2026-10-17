@@ -178,7 +178,7 @@ export default function InstitutionsFinancieres() {
                               <div className="flex items-center gap-3">
                                 <div className="w-12 h-12 bg-[#063a1e]/10 rounded-md flex items-center justify-center">
                                   <Image
-                                    src={item.image_url}
+                                    src={item.image_url || "/placeholder-logo.png"}
                                     alt="Logo banque"
                                     width={1000}
                                     height={1000}
@@ -192,7 +192,9 @@ export default function InstitutionsFinancieres() {
                                   </CardDescription>
                                 </div>
                               </div>
-                              <div>{item.partenaire_feg}</div>
+                              {item.partenaire_feg && (
+                                <Badge variant="secondary">Partenaire FEG</Badge>
+                              )}
                             </div>
                           </CardHeader>
                           <CardContent>
@@ -254,7 +256,7 @@ export default function InstitutionsFinancieres() {
                             <Badge variant="outline" className="text-[#063a1e]">
                               {item.service}
                             </Badge>
-                            <Link target="_blank" href={item.site_web}>
+                            <Link target="_blank" href={item.site_web || "#"}>
                               <Button
                                 variant="outline"
                                 size="sm"
@@ -291,7 +293,7 @@ export default function InstitutionsFinancieres() {
                           <div className="flex items-center gap-3">
                             <div className="w-12 h-12 bg-[#063a1e]/10 rounded-md flex items-center justify-center">
                               <Image
-                                src={item.image_url}
+                                src={item.image_url || "/placeholder-logo.png"}
                                 alt="Logo banque"
                                 width={1000}
                                 height={1000}
@@ -305,7 +307,9 @@ export default function InstitutionsFinancieres() {
                               </CardDescription>
                             </div>
                           </div>
-                          <div>{item.partenaire_feg}</div>
+                          {item.partenaire_feg && (
+                                <Badge variant="secondary">Partenaire FEG</Badge>
+                              )}
                         </div>
                       </CardHeader>
                       <CardContent>
@@ -360,7 +364,7 @@ export default function InstitutionsFinancieres() {
                         <Badge variant="outline" className="text-[#063a1e]">
                           {item.service}
                         </Badge>
-                        <Link target="_blank" href={item.site_web}>
+                        <Link target="_blank" href={item.site_web || "#"}>
                           <Button
                             variant="outline"
                             size="sm"
@@ -393,7 +397,7 @@ export default function InstitutionsFinancieres() {
                           <div className="flex items-center gap-3">
                             <div className="w-12 h-12 bg-[#063a1e]/10 rounded-md flex items-center justify-center">
                               <Image
-                                src={item.image_url}
+                                src={item.image_url || "/placeholder-logo.png"}
                                 alt="Logo banque"
                                 width={1000}
                                 height={1000}
@@ -407,7 +411,9 @@ export default function InstitutionsFinancieres() {
                               </CardDescription>
                             </div>
                           </div>
-                          <div>{item.partenaire_feg}</div>
+                          {item.partenaire_feg && (
+                                <Badge variant="secondary">Partenaire FEG</Badge>
+                              )}
                         </div>
                       </CardHeader>
                       <CardContent>
@@ -462,7 +468,7 @@ export default function InstitutionsFinancieres() {
                         <Badge variant="outline" className="text-[#063a1e]">
                           {item.service}
                         </Badge>
-                        <Link target="_blank" href={item.site_web}>
+                        <Link target="_blank" href={item.site_web || "#"}>
                           <Button
                             variant="outline"
                             size="sm"

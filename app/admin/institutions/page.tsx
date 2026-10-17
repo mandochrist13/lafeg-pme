@@ -86,9 +86,9 @@ import Image from "next/image";
 
 import { toast } from "sonner";
 
-export default function InstitutionsPage({}: {
-  refreshInstitutions: () => void;
-}) {
+// Une page Next.js ne reçoit que `params` / `searchParams` : l'ancienne signature
+// déclarait une prop `refreshInstitutions` qui n'était jamais fournie.
+export default function InstitutionsPage() {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
 
@@ -160,6 +160,9 @@ export default function InstitutionsPage({}: {
   };
 
   const [loading, setLoading] = useState(true);
+  // Chargement initial uniquement : `loading` ne doit plus remplacer toute la page
+  // (cela démontait les dialogues pendant une création / modification).
+  const [chargementInitial, setChargementInitial] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const refreshInstitutions = async () => {
@@ -178,12 +181,12 @@ export default function InstitutionsPage({}: {
     const loadData = async () => {
       try {
         const data = await fetchFinancialInstitutions();
-        console.log("🔎 Institutions récupérées :", data);
         setInstitutions(data);
       } catch (err: any) {
         setError(err.message || "Erreur inconnue");
       } finally {
         setLoading(false);
+        setChargementInitial(false);
       }
     };
 
@@ -194,7 +197,7 @@ export default function InstitutionsPage({}: {
     setCurrentPage(1);
   }, [searchTerm, typeFilter]);
 
-  if (loading) return <p>Chargement...</p>;
+  if (chargementInitial) return <p>Chargement...</p>;
   if (error) return <p>Erreur : {error}</p>;
 
   const openEditDialog = (institution: Institutions) => {
@@ -236,8 +239,6 @@ export default function InstitutionsPage({}: {
     try {
       setLoading(true);
 
-      console.log("🏁 Début création institution");
-      console.log("📦 Données à envoyer :", newInstitution);
 
       // Vérification des champs requis
       if (!newInstitution.nom || !newInstitution.categorie) {
@@ -286,7 +287,6 @@ export default function InstitutionsPage({}: {
         return;
       }
 
-      console.log("✅ Institution créée :", result);
       await refreshInstitutions(); // rafraîchit la liste
       resetNewInstitutionForm(); // reset du formulaire
       setIsAddDialogOpen(false); // ferme le dialog
@@ -333,13 +333,10 @@ export default function InstitutionsPage({}: {
   // };
 
   const submitEditInstitution = async () => {
-    console.log("submitEditInstitution called");
-
     if (!selectedInstitutionId || !editedInstitution) return;
     setLoading(true);
     try {
       setLoading(true);
-      console.log("selectedInstitutionId", selectedInstitutionId);
 
       const formData = new FormData();
       formData.append("nom", editedInstitution.nom ?? "");
@@ -377,16 +374,14 @@ export default function InstitutionsPage({}: {
 
       if (!response.ok) throw new Error("Erreur lors de la mise à jour");
 
-      // await refreshInstitutions();
-      
+      await refreshInstitutions();
       setIsEditDialogOpen(false);
-      setLoading(false);
       toast.success("Institution mise à jour avec succès");
     } catch (error) {
       console.error(error);
       toast.error("Erreur lors de la mise à jour de l'institution");
     } finally {
-     
+      setLoading(false);
     }
   };
 
@@ -796,7 +791,7 @@ export default function InstitutionsPage({}: {
                 className="w-full"
                 onClick={() => {
                   setSearchTerm("");
-                  setTypeFilter("");
+                  setTypeFilter("all");
                 }}
               >
                 <Filter className="mr-2 h-4 w-4" /> Réinitialiser les filtres
@@ -1313,7 +1308,7 @@ export default function InstitutionsPage({}: {
                   <Image
                     src={
                       selectedInstitutionDetails?.image_url ||
-                      "/images/default-logo.png"
+                      "/placeholder-logo.png"
                     }
                     alt="Logo de l'institution"
                     width={48}

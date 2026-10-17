@@ -128,7 +128,7 @@ export async function duplicatePublicite(annonce: Annonce): Promise<Annonce> {
 export async function fetchAllPublicites(): Promise<Annonce[]> {
   // On demande une grande limite pour récupérer toutes les publicités
   // (sinon l'API n'en renvoie que 10 par défaut)
-  const response = await fetch(`${API_BASE_URL}?limit=100`);
+  const response = await fetch(`${API_BASE_URL}?limit=1000`);
 
   if (!response.ok) {
     throw new Error(`Erreur HTTP! statut: ${response.status}`);

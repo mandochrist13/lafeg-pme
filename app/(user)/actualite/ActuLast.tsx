@@ -88,7 +88,11 @@ export default function DernieresActualites() {
               <p className="text-muted-foreground mb-4 line-clamp-3">
                 {article.contenu.slice(0, 180)}...
               </p>
-               <Link href={`${article.lienSource || "#"}`} target={article.lienSource ? "_blank" : "_self"} rel="noopener noreferrer">
+               <Link
+                href={article.lienSource || `/actualite/${article.id}`}
+                target={article.lienSource ? "_blank" : undefined}
+                rel={article.lienSource ? "noopener noreferrer" : undefined}
+              >
                 <Button
                   variant="ghost"
                   className="text-[#063a1e] hover:bg-[#063a1e]/10 p-0"

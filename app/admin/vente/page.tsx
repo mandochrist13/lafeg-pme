@@ -51,12 +51,7 @@ import { Plus, Edit, Search, Loader2, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { DeleteConfirmationDialog } from "@/components/ads/DeleteConfirmationDialog";
 
-type Props = {
-  trigger: React.ReactNode;
-  onConfirm: () => Promise<void>;
-};
-
-export default function PublicitesPage({ trigger, onConfirm }: Props) {
+export default function PublicitesPage() {
   const [publicites, setPublicites] = useState<Annonce[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -319,7 +314,7 @@ export default function PublicitesPage({ trigger, onConfirm }: Props) {
                     <TableCell>
                       <Image
                         className="object-cover object-center"
-                        src={publicite.image_url || "/placeholder.png"}
+                        src={publicite.image_url || "/placeholder.svg"}
                         width={50}
                         height={50}
                         alt={publicite.libelle || "Publicité"}

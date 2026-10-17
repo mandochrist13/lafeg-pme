@@ -25,15 +25,18 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   typescript: {
-    ignoreBuildErrors: true,
+    // Les erreurs de types ne sont plus ignorées : ce drapeau masquait de vrais
+    // bugs (signatures de routes, props de pages, props de composants).
+    ignoreBuildErrors: false,
   },
   images: {
     unoptimized: true,
   },
   experimental: {
-    webpackBuildWorker: true,
-    parallelServerBuildTraces: true,
-    parallelServerCompiles: true,
+    // `webpackBuildWorker`, `parallelServerCompiles` et `parallelServerBuildTraces`
+    // sont retirés : sur Node 24 / Windows ils faisaient planter le worker de build
+    // de façon intermittente (STATUS_STACK_BUFFER_OVERRUN / WasmHash). Ils
+    // n'accéléraient que la compilation, sans effet sur le comportement du site.
     serverActions: {
       bodySizeLimit: '15mb',
     }
