@@ -6,11 +6,16 @@ function joinUrl(base: string, path: string) {
   return `${base.replace(/\/+$/, "")}/${path.replace(/^\/+/, "")}`;
 }
 
+/** Ajoute `https://` si l'URL n'a pas de protocole (VERCEL_URL n'en a pas, mais un .env local peut en avoir un). */
+function avecProtocole(url: string) {
+  return /^https?:\/\//i.test(url) ? url : `https://${url}`;
+}
+
 export function getBaseUrl() {
   if (!isServer) return ""; // 👉 côté navigateur : URL relative → même origin
-  const vercel = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null;
+  const vercel = process.env.VERCEL_URL ? avecProtocole(process.env.VERCEL_URL) : null;
   const custom = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || null;
-  return vercel || custom || "http://localhost:3000";
+  return vercel || (custom ? avecProtocole(custom) : null) || "http://localhost:3000";
 }
 
 /** Construit un objet URL toujours valide (client + serveur) */

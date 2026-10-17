@@ -111,7 +111,8 @@ export default function ServicesEntreprisesPage() {
 
   const fetchServices = async () => {
     try {
-      const response = await fetch("/api/offres");
+      // Sans `limit`, l'API ne renvoie que les 10 dernières offres.
+      const response = await fetch("/api/offres?limit=1000");
       if (response.ok) {
         const data = await response.json();
         // 🧠 Mise à jour locale des statuts expirés
@@ -220,12 +221,8 @@ export default function ServicesEntreprisesPage() {
       toast.error("Erreur lors du changement de statut.");
     }
   };
-  interface DeleteResponse {
-    ok: boolean;
-  }
-
   const handleDelete = async (id: string): Promise<void> => {
-    setLoading(id !== null);
+    setLoading(true);
     try {
       const response = await fetch(`/api/offres/${id}`, {
         method: "DELETE",
@@ -242,12 +239,13 @@ export default function ServicesEntreprisesPage() {
     } catch (error: any) {
       console.error("Erreur:", error);
       toast.error(error.message || "Erreur lors de la suppression");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleEdit = (service: Offre): void => {
     setEditingService(service);
-    console.log("Service sélectionné pour édition:", service);
     setFormData({
       titre_offre: service.titre_offre,
       nom_structure: service.nom_structure,
@@ -312,12 +310,6 @@ export default function ServicesEntreprisesPage() {
   }
 
   const getStatusBadge = (statut: StatusBadgeProps["statut"]): ReactElement => {
-    const variants: Record<string, string> = {
-      ACTIF: "default",
-      INACTIF: "secondary",
-      ARCHIVE: "destructive",
-      BROUILLON: "outline",
-    };
     const colors: Record<string, string> = {
       ACTIF: "bg-green-100 text-green-800",
       INACTIF: "bg-gray-100 text-gray-800",
@@ -480,7 +472,6 @@ export default function ServicesEntreprisesPage() {
                       <SelectItem value="ACTIF">Actif</SelectItem>
                       <SelectItem value="INACTIF">Inactif</SelectItem>
                       <SelectItem value="ARCHIVE">Expiré</SelectItem>
-                      <SelectItem value="BROUILLON">Brouillon</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -568,6 +559,7 @@ export default function ServicesEntreprisesPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, date_debut: e.target.value })
                     }
+                    required
                   />
                 </div>
                 <div>
@@ -576,9 +568,11 @@ export default function ServicesEntreprisesPage() {
                     id="date_fin"
                     type="date"
                     value={formData.date_fin}
+                    min={formData.date_debut || undefined}
                     onChange={(e) =>
                       setFormData({ ...formData, date_fin: e.target.value })
                     }
+                    required
                   />
                 </div>
               </div>
@@ -1127,17 +1121,7 @@ export default function ServicesEntreprisesPage() {
                       <div className="flex justify-between gap-4">
                         <dt className="text-muted-foreground">Statut</dt>
                         <dd className="font-medium text-right">
-                          <span
-                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs ${
-                              selectedServiceDetails.statut
-                                ? "bg-green-100 text-green-800"
-                                : "bg-gray-100 text-gray-700"
-                            }`}
-                          >
-                            {selectedServiceDetails.statut
-                              ? "ACTIF"
-                              : "INACTIF"}
-                          </span>
+                          {getStatusBadge(selectedServiceDetails.statut)}
                         </dd>
                       </div>
 
@@ -1165,20 +1149,20 @@ export default function ServicesEntreprisesPage() {
                             Date de début
                           </dt>
                           <dd className="font-medium text-right">
-                            {selectedServiceDetails.createdAt
+                            {selectedServiceDetails.date_debut
                               ? new Date(
-                                  selectedServiceDetails.createdAt,
-                                ).toLocaleDateString()
+                                  selectedServiceDetails.date_debut,
+                                ).toLocaleDateString("fr-FR")
                               : "—"}
                           </dd>
                         </div>
                         <div className="mt-2 flex justify-between gap-4">
                           <dt className="text-muted-foreground">Date de fin</dt>
                           <dd className="font-medium text-right">
-                            {selectedServiceDetails.updatedAt
+                            {selectedServiceDetails.date_fin
                               ? new Date(
-                                  selectedServiceDetails.updatedAt,
-                                ).toLocaleDateString()
+                                  selectedServiceDetails.date_fin,
+                                ).toLocaleDateString("fr-FR")
                               : "—"}
                           </dd>
                         </div>
@@ -1309,7 +1293,7 @@ export default function ServicesEntreprisesPage() {
                     Suppression…
                   </>
                 ) : (
-                  "Supprimer l'institution"
+                  "Supprimer l'offre"
                 )}
               </Button>
             </DialogFooter>

@@ -90,7 +90,10 @@ export default function EntreprisesServices() {
       setFetchError(null);
 
       try {
+        // Seules les offres actives sont affichées ; sans `limit`, l'API n'en renvoyait que 10.
         const data = await fetchOffres({
+          statut: "ACTIF",
+          limit: 200,
           type_offre: secteurFiltre !== "tous" ? secteurFiltre : undefined,
           localisation:
             localisationFiltre !== "toutes" ? localisationFiltre : undefined,
@@ -598,16 +601,23 @@ export default function EntreprisesServices() {
                         </Button> */}
                       </div>
 
-                      <div className="text-xs text-gray-500 w-full text-center">
-                        Site web :{" "}
-                        <a
-                          href={`${entreprise.site_web}`}
-                          target="_blank"
-                          className="text-blue-600 underline"
-                        >
-                          {entreprise.site_web}
-                        </a>
-                      </div>
+                      {entreprise.site_web && (
+                        <div className="text-xs text-gray-500 w-full text-center">
+                          Site web :{" "}
+                          <a
+                            href={
+                              entreprise.site_web.startsWith("http")
+                                ? entreprise.site_web
+                                : `https://${entreprise.site_web}`
+                            }
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-blue-600 underline break-all"
+                          >
+                            {entreprise.site_web}
+                          </a>
+                        </div>
+                      )}
                     </CardFooter>
                   </Card>
                 ))}
@@ -651,7 +661,7 @@ export default function EntreprisesServices() {
                           Icon: Users,
                         },
                         {
-                          title: "Offres Valoriséées",
+                          title: "Offres Valorisées",
                           desc: "Vos offres sont mises en avant dans une section dédiée du guide",
                           img: "/pub_offre1.jpeg",
                           Icon: ShieldCheck,
@@ -786,7 +796,7 @@ export default function EntreprisesServices() {
                                   href="mailto:a.obiang@lafeg.ga"
                                   className="underline"
                                 >
-                                  a.obiang@lafeg?ga
+                                  a.obiang@lafeg.ga
                                 </a>
                               </p>
                             </div>

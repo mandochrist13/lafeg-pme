@@ -164,9 +164,11 @@ export default function Nav() {
                               
                             </NavigationMenuLink>
                           </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{item.tooltip}</p>
-                          </TooltipContent>
+                          {item.tooltip && (
+                            <TooltipContent>
+                              <p>{item.tooltip}</p>
+                            </TooltipContent>
+                          )}
                         </Tooltip>
                       </TooltipProvider>
                     </NavigationMenuItem>

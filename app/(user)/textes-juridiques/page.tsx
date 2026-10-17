@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -26,7 +26,6 @@ import {
 import {
   Pagination,
   PaginationContent,
-  // PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -44,11 +43,29 @@ const tabNames = {
   administrations: "Textes des administrations",
 };
 
+const TYPES_TEXTE = [
+  "Loi",
+  "Décret",
+  "Arrêté",
+  "Code",
+  "Acte uniforme OHADA",
+  "Convention",
+  "Directive",
+  "Circulaire",
+  "Accord",
+  "Ordonnance",
+  "Traité",
+  "Règlement",
+];
+
+const PAR_PAGE = 10;
+
 export default function TextesJuridiques() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("pmes");
   const [page, setPage] = useState(1);
-  const [textes, setTextes] = useState<TexteJuridique[]>([]); // <-- Utilisez l'interface du 3ème bloc
+  const [textes, setTextes] = useState<TexteJuridique[]>([]);
+  const [total, setTotal] = useState(0);
 
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
@@ -59,15 +76,25 @@ export default function TextesJuridiques() {
     []
   );
 
+  // Recherche envoyée au serveur avec un léger délai (évite un appel API à chaque frappe).
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchTerm.trim()), 300);
+    return () => clearTimeout(t);
+  }, [searchTerm]);
+
+  const typesParam =
+    selectedTypes.length > 0 ? selectedTypes.join(",") : undefined;
+
   // Fonction pour gérer la recherche
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
+    setPage(1);
   };
 
   // Fonction pour gérer le changement d'onglet
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    // Réinitialiser les suggestions lors du changement d'onglet
     setSuggestedTab(null);
     setPage(1);
   };
@@ -77,162 +104,122 @@ export default function TextesJuridiques() {
     setSortOption(value);
   };
   const resetTypeFilter = () => {
-    setSelectedTypes([]); // Réinitialise le tableau
+    setSelectedTypes([]);
+    setPage(1);
   };
 
   // Fonction pour gérer les filtres de type
   const handleTypeFilter = (type: string) => {
-    setSelectedTypes([type]); // remplace tout par le nouveau type
+    setSelectedTypes([type]); // un seul type à la fois (boutons radio)
+    setPage(1);
   };
 
-  // Filtrer les textes en fonction de la recherche et des filtres
-  // Filtrer les textes en fonction de la recherche et des filtres
-  const filteredTextes = textes.filter((texte: TexteJuridique) => {
-    // 1. Filtre par onglet actif
-    if (texte.categorie !== activeTab) return false;
-
-    // 2. Filtre par terme de recherche (avec gestion des null/undefined)
-    if (searchTerm) {
-      const searchTermLower = searchTerm.toLowerCase();
-      const hasMatchInTitle =
-        texte.titre?.toLowerCase().includes(searchTermLower) ?? false;
-      const hasMatchInDescription =
-        texte.description?.toLowerCase().includes(searchTermLower) ?? false;
-      // const hasMatchInTags = texte.tags?.some(tag =>
-      //   tag?.toLowerCase().includes(searchTermLower)
-      // ) ?? false;
-
-      if (!hasMatchInTitle && !hasMatchInDescription /* && !hasMatchInTags */) {
-        return false;
+  // Chargement depuis l'API : onglet, type, recherche et pagination sont appliqués côté serveur
+  // (auparavant la recherche ne portait que sur les 10 textes de la page affichée).
+  useEffect(() => {
+    let annule = false;
+    const loadTextes = async () => {
+      setLoading(true);
+      try {
+        const { data, pagination } = await fetchTextesJuridiques(
+          page,
+          PAR_PAGE,
+          activeTab,
+          typesParam,
+          debouncedSearch || undefined
+        );
+        if (annule) return;
+        setTextes(data);
+        setTotal(pagination.total);
+        setTotalPages(Math.max(1, pagination.totalPages));
+      } catch (error) {
+        console.error("Erreur :", error);
+      } finally {
+        if (!annule) setLoading(false);
       }
+    };
+
+    loadTextes();
+    return () => {
+      annule = true;
+    };
+  }, [page, activeTab, typesParam, debouncedSearch]);
+
+  // Suggestions : aucun résultat dans l'onglet actif → on cherche dans les autres onglets.
+  useEffect(() => {
+    if (loading || !debouncedSearch || textes.length > 0) {
+      setSuggestedTab(null);
+      setSuggestedResults([]);
+      return;
     }
+    let annule = false;
+    (async () => {
+      try {
+        const { data } = await fetchTextesJuridiques(
+          1,
+          100,
+          undefined,
+          typesParam,
+          debouncedSearch
+        );
+        if (annule) return;
+        const parOnglet: Record<string, TexteJuridique[]> = {};
+        data.forEach((t) => {
+          if (t.categorie !== activeTab && t.categorie in tabNames) {
+            (parOnglet[t.categorie] ??= []).push(t);
+          }
+        });
+        let bestTab: string | null = null;
+        let maxResults = 0;
+        Object.entries(parOnglet).forEach(([tab, results]) => {
+          if (results.length > maxResults) {
+            maxResults = results.length;
+            bestTab = tab;
+          }
+        });
+        setSuggestedTab(bestTab);
+        setSuggestedResults(bestTab ? parOnglet[bestTab] : []);
+      } catch {
+        if (!annule) {
+          setSuggestedTab(null);
+          setSuggestedResults([]);
+        }
+      }
+    })();
+    return () => {
+      annule = true;
+    };
+  }, [loading, debouncedSearch, textes.length, activeTab, typesParam]);
 
-    // 3. Filtre par type de texte (avec vérification de sécurité)
-    if (selectedTypes.length > 0 && !selectedTypes.includes(texte.type_texte)) {
-      return false;
-    }
-
-    return true;
-  });
-
-  // Trier les textes
+  // Tri côté client de la page courante (copie : ne pas trier l'état en place)
   const filteredAndSortedTextes = useMemo(() => {
-    let filtered = textes;
-
-    if (searchTerm) {
-      filtered = filtered.filter((texte) =>
-        texte.titre.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
+    const liste = [...textes];
     switch (sortOption) {
       case "az":
-        filtered.sort((a, b) => a.titre.localeCompare(b.titre));
+        liste.sort((a, b) => a.titre.localeCompare(b.titre));
         break;
       case "za":
-        filtered.sort((a, b) => b.titre.localeCompare(a.titre));
+        liste.sort((a, b) => b.titre.localeCompare(a.titre));
         break;
       case "old":
-        filtered.sort(
+        liste.sort(
           (a, b) =>
             new Date(a.date_parution).getTime() -
             new Date(b.date_parution).getTime()
         );
         break;
       default:
-        filtered.sort(
+        liste.sort(
           (a, b) =>
             new Date(b.date_parution).getTime() -
             new Date(a.date_parution).getTime()
         );
     }
+    return liste;
+  }, [textes, sortOption]);
 
-    return filtered;
-  }, [textes, searchTerm, sortOption]);
-
-  // Trouver des résultats dans d'autres onglets lorsqu'aucun résultat n'est trouvé
-  useEffect(() => {
-    if (searchTerm && filteredTextes.length === 0) {
-      // Chercher dans les autres onglets
-      const otherTabsResults: Record<string, TexteJuridique[]> = {};
-
-      Object.keys(tabNames).forEach((tab) => {
-        if (tab !== activeTab) {
-          const filteredResults = textes.filter((texte) => {
-            // Filtre par catégorie (onglet)
-            if (texte.categorie !== tab) return false;
-
-            // Filtre par recherche texte (si searchTerm existe)
-            if (searchTerm) {
-              const searchLower = searchTerm.toLowerCase();
-              const matchesSearch =
-                texte.titre.toLowerCase().includes(searchLower) ||
-                (texte.description &&
-                  texte.description.toLowerCase().includes(searchLower));
-              // (texte.tags && texte.tags.some(tag => tag.toLowerCase().includes(searchLower)));
-
-              if (!matchesSearch) return false;
-            }
-
-            // Filtre par type (si types sélectionnés)
-            if (
-              selectedTypes.length > 0 &&
-              !selectedTypes.includes(texte.type_texte)
-            ) {
-              return false;
-            }
-
-            return true;
-          });
-
-          otherTabsResults[tab] = filteredResults;
-        }
-      });
-
-      // Trouver l'onglet avec le plus de résultats
-      let bestTab = null;
-      let maxResults = 0;
-
-      Object.entries(otherTabsResults).forEach(([tab, results]) => {
-        if (results.length > maxResults) {
-          maxResults = results.length;
-          bestTab = tab;
-        }
-      });
-
-      if (bestTab && maxResults > 0) {
-        setSuggestedTab(bestTab);
-        setSuggestedResults(otherTabsResults[bestTab]);
-      } else {
-        setSuggestedTab(null);
-        setSuggestedResults([]);
-      }
-    } else {
-      setSuggestedTab(null);
-      setSuggestedResults([]);
-    }
-
-    const loadTextes = async () => {
-      setLoading(true);
-      try {
-        const { data, pagination } = await fetchTextesJuridiques(
-          page,
-          10,
-          activeTab,
-          selectedTypes.length > 0 ? selectedTypes.join(",") : undefined
-        );
-        console.log("data reçu :", data);
-        setTextes(data);
-        setTotalPages(pagination.totalPages);
-      } catch (error) {
-        console.error("Erreur :", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadTextes();
-  }, [searchTerm, page, activeTab, selectedTypes, filteredTextes.length]);
+  const debutAffichage = total === 0 ? 0 : (page - 1) * PAR_PAGE + 1;
+  const finAffichage = Math.min(page * PAR_PAGE, total);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -252,7 +239,7 @@ export default function TextesJuridiques() {
       {/* Main Content */}
       <div className="md:container w-full py-8 ">
         <div className="flex flex-col md:flex-row gap-8">
-          
+
           <div className=" gap-10 flex  ">
             {/* Sidebar */}
             <div className="bg-white hidden lg:block w-64 rounded-lg shadow-md overflow-hidden">
@@ -292,24 +279,8 @@ export default function TextesJuridiques() {
                       Réinitialiser le filtre
                     </button>
 
-                    {/* <p className="text-xs text-red-600 mt-1">
-                      ⚠️ Veuillez sélectionner un seul type à la fois.
-                    </p> */}
                     <div className="mt-2 space-y-2">
-                      {[
-                        "Loi",
-                        "Décret",
-                        "Arrêté",
-                        "Code",
-                        "Acte uniforme OHADA",
-                        "Convention",
-                        "Directive",
-                        "Circulaire",
-                        "Accord",
-                        "Ordonnance",
-                        "Traité",
-                        "Règlement",
-                      ].map((type, index) => (
+                      {TYPES_TEXTE.map((type, index) => (
                         <div className="flex items-center" key={index}>
                           <input
                             id={`type${index}`}
@@ -400,12 +371,8 @@ export default function TextesJuridiques() {
                         ) : (
                           <>
                             Affichage de{" "}
-                            {filteredAndSortedTextes.length > 0
-                              ? `1-${filteredAndSortedTextes.length}`
-                              : "0"}{" "}
-                            sur{" "}
-                            {textes.filter((t) => t.categorie === tab).length}{" "}
-                            résultats
+                            {total > 0 ? `${debutAffichage}-${finAffichage}` : "0"}{" "}
+                            sur {total} résultat{total > 1 ? "s" : ""}
                             {searchTerm && ` pour "${searchTerm}"`}
                           </>
                         )}
@@ -462,7 +429,7 @@ export default function TextesJuridiques() {
                                         className="text-xs font-extralight"
                                       >
                                         <FileText className="h-4 w-4 inline-block mr-1" />
-                                        {(texte.taille_fichier / 1024).toFixed(
+                                        {((texte.taille_fichier ?? 0) / 1024).toFixed(
                                           2
                                         )}{" "}
                                         Ko
@@ -555,15 +522,19 @@ export default function TextesJuridiques() {
                 </Tabs>
 
                 {/* Pagination */}
-                {filteredAndSortedTextes.length > 0 && (
+                {totalPages > 1 && (
                   <div className="mt-6 ">
                     <Pagination>
                       <PaginationContent>
                         <PaginationItem>
                           <PaginationPrevious
                             href="#"
-                            onClick={() =>
-                              setPage((prev) => Math.max(prev - 1, 1))
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setPage((prev) => Math.max(prev - 1, 1));
+                            }}
+                            className={
+                              page === 1 ? "pointer-events-none opacity-50" : ""
                             }
                           />
                         </PaginationItem>
@@ -572,7 +543,10 @@ export default function TextesJuridiques() {
                             <PaginationLink
                               href="#"
                               isActive={page === i + 1}
-                              onClick={() => setPage(i + 1)}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setPage(i + 1);
+                              }}
                             >
                               {i + 1}
                             </PaginationLink>
@@ -581,8 +555,14 @@ export default function TextesJuridiques() {
                         <PaginationItem>
                           <PaginationNext
                             href="#"
-                            onClick={() =>
-                              setPage((prev) => Math.min(prev + 1, totalPages))
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setPage((prev) => Math.min(prev + 1, totalPages));
+                            }}
+                            className={
+                              page === totalPages
+                                ? "pointer-events-none opacity-50"
+                                : ""
                             }
                           />
                         </PaginationItem>

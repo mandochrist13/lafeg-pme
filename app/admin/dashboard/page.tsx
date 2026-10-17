@@ -44,7 +44,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchTextesData = async () => {
       try {
-        const { data } = await fetchTextesJuridiques();
+        const { data } = await fetchTextesJuridiques(1, 1000);
         setTextes(data);
       } catch (error) {
         console.error("Erreur lors du chargement des textes :", error);
@@ -412,7 +412,7 @@ useEffect(() => {
           </CardContent>
           <CardFooter>
             <Button variant="outline" className="w-full" asChild>
-              <Link href="/admin/contenu?tab=institutions">
+              <Link href="/admin/institutions">
                 Gérer les institutions
               </Link>
             </Button>
@@ -464,7 +464,7 @@ useEffect(() => {
           </CardContent>
           <CardFooter>
             <Button variant="outline" className="w-full" asChild>
-              <Link href="/admin/contenu?tab=structures">
+              <Link href="/admin/structures">
                 Gérer les structures
               </Link>
             </Button>
@@ -593,7 +593,9 @@ useEffect(() => {
             ) : (
               <div className="text-center py-4">
                 <div className="text-4xl font-bold text-[#063a1e]">{totalPublicites}</div>
-                <p className="text-sm text-gray-500 mt-1">publicités actives</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  publicités enregistrées ({publicites.filter((p) => p.actif !== false).length} actives)
+                </p>
               </div>
             )}
           </CardContent>

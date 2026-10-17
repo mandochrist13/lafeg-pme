@@ -1,5 +1,4 @@
-// src/services/seaApi.ts
-
+// Service d'accès à /api/sea (structures d'encadrement et d'accompagnement)
 const API_BASE_URL = "/api/sea";
 
 export interface SEA {
@@ -23,48 +22,75 @@ export interface SEA {
   updatedAt: string;
 }
 
+const CHAMPS = [
+  "nom",
+  "description",
+  "type_sea",
+  "categorie",
+  "adresse",
+  "contact",
+  "mail",
+  "site_web",
+  "rs_1",
+  "rs_2",
+] as const;
+
+/**
+ * L'API attend du multipart/form-data pour la création et la mise à jour
+ * complète (le logo est un fichier) : un envoi JSON était refusé en 400.
+ * Le champ fichier s'appelle `image` à la création et `logo` à la modification.
+ */
+function versFormData(data: Partial<SEA>, champFichier: "image" | "logo"): FormData {
+  const formData = new FormData();
+  for (const champ of CHAMPS) {
+    const valeur = data[champ];
+    if (valeur !== undefined && valeur !== null) formData.append(champ, String(valeur));
+  }
+  if (data.services) formData.append("services", JSON.stringify(data.services));
+  if (data.partenaire_feg !== undefined) {
+    formData.append("partenaire_feg", String(Boolean(data.partenaire_feg)));
+  }
+  if (data.logoFile) formData.append(champFichier, data.logoFile);
+  return formData;
+}
+
+async function lireErreur(response: Response, defaut: string): Promise<never> {
+  let message = defaut;
+  try {
+    const json = await response.json();
+    message = json?.error || json?.erreur || defaut;
+  } catch {
+    // réponse sans corps JSON
+  }
+  throw new Error(message);
+}
+
 // CREATE - Créer une nouvelle SEA
 export async function createSEA(
-  data: Omit<SEA, 'id_sea' | 'createdAt' | 'updatedAt'>
+  data: Omit<SEA, "id_sea" | "createdAt" | "updatedAt">
 ): Promise<SEA> {
   const response = await fetch(API_BASE_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
+    method: "POST",
+    body: versFormData(data, "image"),
   });
 
-  if (!response.ok) {
-    throw new Error(`Erreur lors de la création: ${response.statusText}`);
-  }
+  if (!response.ok) await lireErreur(response, "Erreur lors de la création");
 
   return response.json();
 }
 
 // READ - Récupérer toutes les SEA
 export async function fetchAllSEAs(): Promise<SEA[]> {
-  const response = await fetch(API_BASE_URL);
+  const response = await fetch(`${API_BASE_URL}?limit=1000`, { cache: "no-store" });
 
   if (!response.ok) {
     throw new Error(`Erreur HTTP! statut: ${response.status}`);
   }
 
-  // const data = await response.json();
-  // console.log("✅ Données reçues :", data); // Pour le débogage, tu peux garder ça
-  
-
   const raw = await response.json();
-  console.log("✅ Données brutes reçues :", raw);
-
-  // Cas où la réponse est enveloppée
   const data = Array.isArray(raw) ? raw : raw.data;
 
-  if (!Array.isArray(data)) {
-    throw new Error("❌ Les données récupérées ne sont pas un tableau !");
-  }
-
-  return data; // Assurez-vous que la structure de la réponse est correcte
+  return Array.isArray(data) ? data : [];
 }
 
 // READ - Récupérer une SEA par ID
@@ -78,53 +104,35 @@ export async function fetchSEAById(id: string): Promise<SEA> {
   return response.json();
 }
 
-// UPDATE (PUT) - Remplacer complètement une SEA
-export async function updateSEA(
-  id: string,
-  data: Partial<SEA>
-): Promise<SEA> {
+// UPDATE (PUT) - Mise à jour complète (multipart, logo facultatif)
+export async function updateSEA(id: string, data: Partial<SEA>): Promise<SEA> {
   const response = await fetch(`${API_BASE_URL}/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
+    method: "PUT",
+    body: versFormData(data, "logo"),
   });
 
-  if (!response.ok) {
-    throw new Error(`Erreur lors de la mise à jour: ${response.statusText}`);
-  }
+  if (!response.ok) await lireErreur(response, "Erreur lors de la mise à jour");
 
   return response.json();
 }
 
-// PATCH - Mise à jour partielle
-export async function patchSEA(
-  id: string,
-  data: Partial<SEA>
-): Promise<SEA> {
+// PATCH - Mise à jour partielle (JSON, sans logo)
+export async function patchSEA(id: string, data: Partial<SEA>): Promise<SEA> {
+  const { logoFile, ...champs } = data;
   const response = await fetch(`${API_BASE_URL}/${id}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(champs),
   });
 
-  if (!response.ok) {
-    throw new Error(`Erreur lors de la modification partielle: ${response.statusText}`);
-  }
+  if (!response.ok) await lireErreur(response, "Erreur lors de la modification partielle");
 
   return response.json();
 }
 
 // DELETE - Supprimer une SEA
 export async function deleteSEA(id: string): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/${id}`, {
-    method: 'DELETE',
-  });
+  const response = await fetch(`${API_BASE_URL}/${id}`, { method: "DELETE" });
 
-  if (!response.ok) {
-    throw new Error(`Erreur lors de la suppression: ${response.statusText}`);
-  }
+  if (!response.ok) await lireErreur(response, "Erreur lors de la suppression");
 }
