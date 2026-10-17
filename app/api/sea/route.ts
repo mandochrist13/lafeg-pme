@@ -1,19 +1,28 @@
-import prisma from '@/lib/prisma';
-import { supabase } from '@/lib/supabase';
-import { NextResponse } from 'next/server';
+import prisma from "@/lib/prisma";
+import { supabase } from "@/lib/supabase";
+import { NextRequest, NextResponse } from "next/server";
+import { exigerAdmin } from "@/lib/api-auth";
+import { fichierFourni, lirePagination, lireTri, nomFichierSur } from "@/lib/api-utils";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
+const CHAMPS_TRI = ["createdAt", "updatedAt", "nom", "categorie", "type_sea"] as const;
+
+/** `services` arrive en JSON (chaîne) depuis le formulaire ; on tolère aussi une liste séparée par des virgules. */
+function lireServices(valeur: FormDataEntryValue | null): string[] {
+  if (typeof valeur !== "string" || !valeur.trim()) return [];
+  try {
+    const parse = JSON.parse(valeur);
+    if (Array.isArray(parse)) return parse.map(String).map((s) => s.trim()).filter(Boolean);
+  } catch {
+    // pas du JSON : liste séparée par des virgules
+  }
+  return valeur.split(",").map((s) => s.trim()).filter(Boolean);
 }
 
 /**
  * @swagger
  * /api/sea:
  *   get:
- *     summary: Récupère une liste paginée des données SEA
- *     description: Retourne une liste paginée des enregistrements SEA avec options de filtrage et de tri
+ *     summary: Récupère une liste paginée des SEA
  *     tags:
  *       - SEA
  *     parameters:
@@ -22,306 +31,153 @@ export const config = {
  *         schema:
  *           type: integer
  *           default: 1
- *           minimum: 1
- *         description: Numéro de page pour la pagination
  *       - in: query
  *         name: limit
  *         schema:
  *           type: integer
- *           default: 10
- *           minimum: 1
- *           maximum: 100
- *         description: Nombre d'éléments par page
+ *           default: 100
+ *           maximum: 1000
  *       - in: query
  *         name: sort
  *         schema:
  *           type: string
- *           default: createdAt
- *         description: Champ sur lequel effectuer le tri
+ *           enum: [createdAt, updatedAt, nom, categorie, type_sea]
  *       - in: query
  *         name: order
  *         schema:
  *           type: string
  *           enum: [asc, desc]
- *           default: desc
- *         description: Ordre de tri (ascendant ou descendant)
  *       - in: query
  *         name: type
+ *         description: Filtre sur `type_sea`
  *         schema:
  *           type: string
- *         description: Filtre par type de SEA
+ *       - in: query
+ *         name: categorie
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
- *         description: Liste des données SEA récupérée avec succès
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/SEAt'
- *                 pagination:
- *                   type: object
- *                   properties:
- *                     page:
- *                       type: integer
- *                       example: 1
- *                     limit:
- *                       type: integer
- *                       example: 10
- *                     total:
- *                       type: integer
- *                       example: 42
- *                     totalPages:
- *                       type: integer
- *                       example: 5
+ *         description: Liste des SEA récupérée avec succès
  *       500:
- *         description: Erreur lors de la récupération des données
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Erreur lors de la récupération des données SEA
+ *         description: Erreur serveur
  */
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    // Récupération des paramètres de l'URL
-    const url = new URL(request.url);
-    const searchParams = url.searchParams;
-    
-    // Paramètres de pagination avec valeurs par défaut
-    const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
-    const limit = Math.max(1, Math.min(100, parseInt(searchParams.get('limit') || '100')));
-    const skip = (page - 1) * limit;
-    
-    // Paramètres de tri avec valeurs par défaut
-    const sortField = searchParams.get('sort') || 'createdAt'; // Ajustez selon votre schéma
-    const sortOrder = searchParams.get('order') === 'asc' ? 'asc' : 'desc';
-    
-    // Construction du filtre (exemple avec un champ 'type')
+    const searchParams = request.nextUrl.searchParams;
+    const { page, limit, skip } = lirePagination(searchParams, { limitDefaut: 100, limitMax: 1000 });
+    const { champ, ordre } = lireTri(searchParams, CHAMPS_TRI, "createdAt");
+
     const where: any = {};
-    const type = searchParams.get('type');
-    if (type) where.type = type;
-    
-    // Exécution des requêtes en parallèle
+    const type = searchParams.get("type");
+    if (type) where.type_sea = type;
+    const categorie = searchParams.get("categorie");
+    if (categorie) where.categorie = categorie;
+
     const [data, total] = await Promise.all([
-      prisma.sEA.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: { [sortField]: sortOrder }
-      }),
-      prisma.sEA.count({ where })
+      prisma.sEA.findMany({ where, skip, take: limit, orderBy: { [champ]: ordre } }),
+      prisma.sEA.count({ where }),
     ]);
-    
-    // Réponse structurée avec données et pagination
-    return NextResponse.json({
-      data,
-      pagination: { 
-        page, 
-        limit, 
-        total, 
-        totalPages: Math.ceil(total / limit) 
-      }
-    }, { status: 200 });
-    
-  } catch (error) {
-    console.error('Erreur lors de la récupération des données SEA:', error);
+
     return NextResponse.json(
-      { error: 'Erreur lors de la récupération des données SEA' }, 
+      { data, pagination: { page, limit, total, totalPages: Math.max(1, Math.ceil(total / limit)) } },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Erreur lors de la récupération des données SEA:", error);
+    return NextResponse.json(
+      { error: "Erreur lors de la récupération des données SEA" },
       { status: 500 }
     );
   }
 }
-
 
 /**
  * @swagger
  * /api/sea:
  *   post:
  *     summary: Crée un nouveau SEA
- *     description: Ajoute un nouveau Système Economique Alternatif (SEA) avec possibilité d'uploader un logo
+ *     description: Ajoute une structure d'accompagnement (multipart/form-data, logo facultatif en JPEG/PNG). Authentification administrateur requise.
  *     tags: [SEA]
- *     consumes:
- *       - multipart/form-data
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             required:
- *               - nom
- *               - type_sea
- *               - categorie
- *             properties:
- *               nom:
- *                 type: string
- *                 description: Nom du SEA
- *               type_sea:
- *                 type: string
- *                 description: Type de SEA
- *               categorie:
- *                 type: string
- *                 description: Catégorie du SEA
- *               description:
- *                 type: string
- *                 description: Description détaillée du SEA
- *               services:
- *                 type: string
- *                 description: Liste des services au format JSON string (sera parsé en array)
- *                 example: '["Service 1", "Service 2"]'
- *               adresse:
- *                 type: string
- *                 description: Adresse physique du SEA
- *               contact:
- *                 type: string
- *                 description: Numéro de contact du SEA
- *               mail:
- *                 type: string
- *                 description: Adresse email du SEA
- *               site_web:
- *                 type: string
- *                 description: Site web du SEA
- *               rs_1:
- *                 type: string
- *                 description: Lien vers le premier réseau social
- *               rs_2:
- *                 type: string
- *                 description: Lien vers le deuxième réseau social
- *               partenaire_feg:
- *                 type: string
- *                 enum: ['true', 'false']
- *                 description: Indique si le SEA est partenaire FEG (envoyé comme "true" ou "false")
- *               image:
- *                 type: string
- *                 format: binary
- *                 description: Fichier image du logo du SEA (JPEG ou PNG uniquement)
  *     responses:
  *       201:
  *         description: SEA créé avec succès
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/SEAS'
  *       400:
  *         description: Données invalides
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   examples:
- *                     champsManquants:
- *                       value: "Les champs nom, type_sea et categorie sont requis."
- *                     formatInvalide:
- *                       value: "Le logo doit être au format JPEG ou PNG"
- *                     contentType:
- *                       value: "Le contenu doit être de type multipart/form-data"
+ *       401:
+ *         description: Non autorisé
  *       500:
  *         description: Erreur serveur
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   examples:
- *                     uploadError:
- *                       value: "Erreur lors de l'upload du logo"
- *                     serverError:
- *                       value: "Erreur lors de la création"
  */
+export async function POST(request: NextRequest) {
+  const refus = await exigerAdmin();
+  if (refus) return refus;
 
-export async function POST(request: Request) {
   try {
-    // Vérifier que la requête est bien de type multipart/form-data
-    const contentType = request.headers.get('content-type');
-    if (!contentType || !contentType.includes('multipart/form-data')) {
+    const contentType = request.headers.get("content-type");
+    if (!contentType || !contentType.includes("multipart/form-data")) {
       return NextResponse.json(
-        { error: 'Le contenu doit être de type multipart/form-data' },
+        { error: "Le contenu doit être de type multipart/form-data" },
         { status: 400 }
       );
     }
 
-    // Traitement du formulaire
     const formData = await request.formData();
-    
-    // Récupération des données du formulaire
-    const nom = formData.get('nom') as string;
-    const type_sea = formData.get('type_sea') as string;
-    const categorie = formData.get('categorie') as string;
-    const description = formData.get('description') as string || '';
-    const services = JSON.parse(formData.get('services') as string || '[]');
-    const adresse = formData.get('adresse') as string || '';
-    const contact = formData.get('contact') as string || null;
-    const mail = formData.get('mail') as string || null;
-    const site_web = formData.get('site_web') as string || null;
-    const rs_1 = formData.get('rs_1') as string || null;
-    const rs_2 = formData.get('rs_2') as string || null;
-    const partenaire_feg = formData.get('partenaire_feg') === 'true';
 
-    // Validation des champs requis
+    const nom = ((formData.get("nom") as string | null) ?? "").trim();
+    const type_sea = ((formData.get("type_sea") as string | null) ?? "").trim();
+    const categorie = ((formData.get("categorie") as string | null) ?? "").trim();
+    const description = (formData.get("description") as string | null) || "";
+    const services = lireServices(formData.get("services"));
+    const adresse = (formData.get("adresse") as string | null) || "";
+    const contact = (formData.get("contact") as string | null) || null;
+    const mail = (formData.get("mail") as string | null) || null;
+    const site_web = (formData.get("site_web") as string | null) || null;
+    const rs_1 = (formData.get("rs_1") as string | null) || null;
+    const rs_2 = (formData.get("rs_2") as string | null) || null;
+    const partenaire_feg = formData.get("partenaire_feg") === "true";
+
     if (!nom || !type_sea || !categorie) {
       return NextResponse.json(
-        { error: 'Les champs nom, type_sea et categorie sont requis.' },
+        { error: "Les champs nom, type_sea et categorie sont requis." },
         { status: 400 }
       );
     }
 
-    let logo_url = null;
-    let logo_nom = null;
+    let logo_url: string | null = null;
+    let logo_nom: string | null = null;
+    let taille_logo: number | null = null;
+    let logo_mime_type: string | undefined;
 
-    // Traitement du logo s'il est fourni
-    const logo = formData.get('image') as File;
-    if (logo) {
-      // Vérification du type de fichier
+    // Le formulaire envoie le logo sous `image` (création) ou `logo` (modification).
+    const logo = formData.get("image") ?? formData.get("logo");
+    if (fichierFourni(logo)) {
       if (!logo.type.match(/^image\/(jpeg|png)$/)) {
         return NextResponse.json(
-          { error: 'Le logo doit être au format JPEG ou PNG' },
+          { error: "Le logo doit être au format JPEG ou PNG" },
           { status: 400 }
         );
       }
 
-      // Création d'un nom unique pour le fichier
-      const timestamp = Date.now();
-      const fileName = `${timestamp}-${logo.name.replace(/\s+/g, '-')}`;
+      const fileName = nomFichierSur(logo.name);
       const filePath = `sea/${fileName}`;
 
-      // Upload du fichier vers Supabase Storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('feg')
-        .upload(filePath, logo, {
-          cacheControl: '3600',
-          upsert: false
-        });
+      const { error: uploadError } = await supabase.storage
+        .from("feg")
+        .upload(filePath, logo, { cacheControl: "3600", upsert: false, contentType: logo.type });
 
       if (uploadError) {
-        console.error('Erreur lors de l\'upload du logo:', uploadError);
-        return NextResponse.json(
-          { error: 'Erreur lors de l\'upload du logo' },
-          { status: 500 }
-        );
+        console.error("Erreur lors de l'upload du logo:", uploadError);
+        return NextResponse.json({ error: "Erreur lors de l'upload du logo" }, { status: 500 });
       }
 
-      // Récupération de l'URL publique
-      const { data: urlData } = supabase.storage
-        .from('feg')
-        .getPublicUrl(filePath);
-
-      logo_url = urlData.publicUrl;
-      logo_nom = logo.name;
+      logo_url = supabase.storage.from("feg").getPublicUrl(filePath).data.publicUrl;
+      // On mémorise le nom réellement stocké (avec horodatage) pour pouvoir le supprimer plus tard.
+      logo_nom = fileName;
+      taille_logo = logo.size;
+      logo_mime_type = logo.type;
     }
 
-    // Création dans la base de données
     const newSea = await prisma.sEA.create({
       data: {
         nom,
@@ -337,18 +193,15 @@ export async function POST(request: Request) {
         rs_2,
         logo_url,
         logo_nom,
+        taille_logo,
+        ...(logo_mime_type ? { logo_mime_type } : {}),
         partenaire_feg,
-        createdAt: new Date(),
-        updatedAt: new Date(),
       },
     });
 
     return NextResponse.json(newSea, { status: 201 });
   } catch (error) {
-    console.error('Erreur lors de la création:', error);
-    return NextResponse.json(
-      { error: 'Erreur lors de la création' },
-      { status: 500 }
-    );
+    console.error("Erreur lors de la création:", error);
+    return NextResponse.json({ error: "Erreur lors de la création" }, { status: 500 });
   }
 }

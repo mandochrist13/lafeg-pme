@@ -95,8 +95,8 @@ const [viewing, setViewing] = useState<Actualite | null>(null)
         limit,
         categorie: selectedCategorie,
       }) as { data: Actualite[], pagination: PageMeta };
-      setItems(res.data);
-      setMeta(res.pagination);
+      setItems(res.data ?? []);
+      setMeta(res.pagination ?? { page: p, limit, total: res.data?.length ?? 0, totalPages: 1 });
     } catch (e: any) {
       setError(e?.message || "Erreur de chargement");
     } finally {

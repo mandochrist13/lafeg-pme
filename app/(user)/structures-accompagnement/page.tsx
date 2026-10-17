@@ -38,11 +38,6 @@ export default function Structure() {
       try {
         setLoading(true);
         const data = await fetchAllSEAs();
-        console.log("SEA data:", data);
-        console.log(
-          "✅ Données SEA reçues :",
-          data.map((d) => d.categorie)
-        );
         setSea(data);
       } catch (error) {
         console.error("Erreur lors du chargement des données:", error);
@@ -57,9 +52,18 @@ export default function Structure() {
   const filtrerSeas = (categorie: string) => {
     if (!Array.isArray(sea)) return [];
 
-    return sea.filter(
-      (item) => item.categorie === categorie && item.nom?.includes(search)
-    );
+    // Recherche insensible à la casse et aux accents (auparavant `nom.includes(search)`
+    // ne trouvait rien dès que la casse différait).
+    const terme = search.trim().toLowerCase();
+    return sea.filter((item) => {
+      if (item.categorie !== categorie) return false;
+      if (!terme) return true;
+      return (
+        item.nom?.toLowerCase().includes(terme) ||
+        item.description?.toLowerCase().includes(terme) ||
+        item.type_sea?.toLowerCase().includes(terme)
+      );
+    });
   };
 
   const incubateursFiltres = filtrerSeas("incubateurs");

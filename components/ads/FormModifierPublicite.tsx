@@ -99,6 +99,7 @@ export function FormModifierPublicite({
       </Select>
       <Input
         type="text"
+        placeholder="Nom de la structure"
         value={formValues.nom_structure}
         onChange={(e) => setFormValues({ ...formValues, nom_structure: e.target.value })}
         required
@@ -110,9 +111,9 @@ export function FormModifierPublicite({
       />
       <Input
         type="text"
+        placeholder="Lien (optionnel)"
         value={formValues.lien}
         onChange={(e) => setFormValues({ ...formValues, lien: e.target.value })}
-        required
       />
       </div>
       

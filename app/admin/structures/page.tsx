@@ -83,8 +83,6 @@ export default function StructuresPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState<boolean>(false);
   const [selectedStructure, setSelectedStructure] = useState<SEA | null>(null);
-  const [logoUploading, setLogoUploading] = useState<File | null>(null);
-  const [filteredTextes, setFilteredTextes] = useState<SEA[]>([]);
 
   // Structure par défaut pour la création
   const defaultStructure: Omit<SEA, "id_sea" | "createdAt" | "updatedAt"> & {
@@ -112,12 +110,6 @@ export default function StructuresPage() {
   };
 
   const itemsPerPage = 5;
-
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedTexte = filteredTextes.slice(startIndex, endIndex);
-
-  const totalPages = Math.ceil(filteredTextes.length / itemsPerPage);
   const [newStructure, setNewStructure] = useState<SEA>(defaultStructure);
 
   useEffect(() => {
@@ -158,6 +150,15 @@ export default function StructuresPage() {
         return matchesSearch;
       })
     : [];
+
+  // Pagination calculée sur la liste filtrée (auparavant basée sur un état jamais rempli).
+  const totalPages = Math.max(1, Math.ceil(filteredStructures.length / itemsPerPage));
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedStructures = filteredStructures.slice(startIndex, startIndex + itemsPerPage);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   // Créer une nouvelle structure
   const handleAddStructure = async () => {
@@ -215,6 +216,8 @@ export default function StructuresPage() {
       toast.error("Erreur lors de la création de la structure", {
         description: message,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -280,6 +283,8 @@ export default function StructuresPage() {
       toast.error("Erreur lors de la mise à jour de la structure", {
         description: error.message || "Veuillez réessayer plus tard.",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -311,6 +316,8 @@ export default function StructuresPage() {
       toast.error("Erreur lors de la suppression de la structure", {
         description: error.message || "Veuillez réessayer plus tard.",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -756,7 +763,7 @@ export default function StructuresPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredStructures.map((structure) => (
+                  paginatedStructures.map((structure) => (
                     <TableRow key={structure.id_sea}>
                       <TableCell className="font-medium">
                         <div className="flex items-center gap-3">

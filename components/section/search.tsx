@@ -20,10 +20,10 @@ export default function TextSearch() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [pagination, setPagination] = useState({
-    page: 100,
-    limit: 100,
-    total: 100,
-    totalPages: 100,
+    page: 1,
+    limit: 20,
+    total: 0,
+    totalPages: 1,
   });
   const [hasSearched, setHasSearched] = useState(false);
 
@@ -33,26 +33,17 @@ export default function TextSearch() {
       setError("");
       setResults([]);
 
+      // La recherche (titre + description) est faite côté serveur sur l'ensemble des textes.
       const { data, pagination: paginationData } = await fetchTextesJuridiques(
         newPage,
         pagination.limit,
         undefined,
         undefined,
         searchQuery.trim()
-        // titreRecherche,
       );
 
-      const filteredResults = searchQuery.trim()
-        ? data.filter((text) =>
-            text.titre.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-        : [];
-
-      setResults(filteredResults);
-      setPagination({
-        ...paginationData,
-        total: filteredResults.length, // Met à jour le total avec les résultats filtrés
-      });
+      setResults(data);
+      setPagination(paginationData);
       setHasSearched(true);
     } catch (err) {
       setError("Erreur lors de la recherche");

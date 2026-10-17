@@ -27,19 +27,13 @@ import {
   type Actualite,
 } from "@/app/services/public/actualite";
 import AdBanner from "@/components/ads/AdBanner";
-// import slugify from "slugify"
+import { CATEGORIES_ACTUALITE, CATEGORIE_A_LA_UNE } from "@/lib/categories-actualite";
 
-const categories = [
-  "Toutes",
-  "Réglementation",
-  "Événements",
-  "Financement",
-  "Innovation",
-  "Commerce",
-  "Formation",
-  "Publication",
-  "Autres",
-];
+// Même liste que le formulaire admin (sinon les filtres ne correspondent à rien).
+const categories = ["Toutes", ...CATEGORIES_ACTUALITE];
+
+/** Lien « Lire » : la source externe si elle existe, sinon la page de détail interne. */
+const lienArticle = (article: Actualite) => article.lienSource || `/actualite/${article.id}`;
 
 export default function ActualitesPage() {
   // ✅ Les hooks doivent être dans le composant
@@ -92,7 +86,7 @@ export default function ActualitesPage() {
   }, [searchTerm, selectedCategory, sortBy, actualites]);
 
   const featuredArticles = actualites
-    .filter((a) => a.categorie === "Événements")
+    .filter((a) => a.categorie === CATEGORIE_A_LA_UNE)
     .slice(0, 2);
 
   const formatDate = (dateString: any) => {
@@ -181,7 +175,11 @@ export default function ActualitesPage() {
                         </div>
                       </div>
                     </div>
-                    <Link href={`/actualites/${article.id}`}>
+                    <Link
+                      href={lienArticle(article)}
+                      target={article.lienSource ? "_blank" : undefined}
+                      rel={article.lienSource ? "noopener noreferrer" : undefined}
+                    >
                       <Button className="bg-[#063a1e] hover:bg-[#063a1e]/90 w-full">
                         Lire l'article
                         <ArrowRight className="w-4 h-4 ml-2" />
@@ -315,7 +313,11 @@ export default function ActualitesPage() {
     Lire la suite
   </Button>
 </Link> */}
-                      <Link href={`${article.lienSource}`}>
+                      <Link
+                        href={lienArticle(article)}
+                        target={article.lienSource ? "_blank" : undefined}
+                        rel={article.lienSource ? "noopener noreferrer" : undefined}
+                      >
                         <Button variant="default" size="sm" className="w-full">
                           Lire la suite
                         </Button>
@@ -378,7 +380,11 @@ export default function ActualitesPage() {
                               {/* <span>{article.tempsLecture}</span>
                               <span>{article.vues} vues</span> */}
                             </div>
-                            <Link href={`${article.lienSource}`}>
+                            <Link
+                              href={lienArticle(article)}
+                              target={article.lienSource ? "_blank" : undefined}
+                              rel={article.lienSource ? "noopener noreferrer" : undefined}
+                            >
                               <Button variant="outline" size="sm">
                                 Lire
                                 <ArrowRight className="w-3 h-3 ml-1" />

@@ -135,7 +135,7 @@ export default function TextesJuridiquesAdmin() {
   const refreshTextes = async () => {
     setLoading(true);
     try {
-      const { data } = await fetchTextesJuridiques();
+      const { data } = await fetchTextesJuridiques(1, 1000);
       setTextesJuridiques(data);
     } catch (err: any) {
       setError(err.message || "Erreur inconnue");
@@ -147,7 +147,7 @@ export default function TextesJuridiquesAdmin() {
   useEffect(() => {
     async function loadTextes() {
       try {
-        const { data } = await fetchTextesJuridiques();
+        const { data } = await fetchTextesJuridiques(1, 1000);
         setTextesJuridiques(data);
         setFilteredTextes(data); // ou appliquer ton filtre ici si besoin
       } catch (error) {
@@ -191,7 +191,6 @@ export default function TextesJuridiquesAdmin() {
 
     try {
       setLoading(true);
-      console.log("Texte à envoyer :", newTexte);
 
       const createdTexte = await createTexteJuridique({
         titre: newTexte.titre,
@@ -205,7 +204,6 @@ export default function TextesJuridiquesAdmin() {
       toast.success("Texte ajouté avec succès", {
         description: "Le texte juridique a été ajouté avec succès.",
       });
-      console.log("Texte créé :", createdTexte);
 
       setTextesJuridiques([...textesJuridiques, createdTexte]);
       setShowAddForm(false);
@@ -289,13 +287,6 @@ export default function TextesJuridiquesAdmin() {
       }
 
       await updateTexteJuridique(String(selectedTexteId), formData);
-      console.log(
-        "selectedTexteId type :",
-        typeof selectedTexteId,
-        "valeur :",
-        selectedTexteId
-      );
-
       await refreshTextes();
 
       setIsEditDialogOpen(false);
@@ -397,7 +388,6 @@ export default function TextesJuridiquesAdmin() {
                       <SelectValue placeholder="Sélectionner un type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Tous les types</SelectItem>
                       <SelectItem value="Loi">Loi</SelectItem>
                       <SelectItem value="Décret">Décret</SelectItem>
                       <SelectItem value="Acte uniforme OHADA">
@@ -429,7 +419,6 @@ Acte uniforme OHADA</SelectItem>
                       <SelectValue placeholder="Sélectionner une catégorie" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Toutes les catégories</SelectItem>
                       <SelectItem value="pmes">Textes pour les PME</SelectItem>
                       <SelectItem value="administrations">
                         Textes des administrations
@@ -907,7 +896,7 @@ Acte uniforme OHADA
                     </label>
                     <Input
                       type="date"
-                      value={editedTexte.date_parution}
+                      value={editedTexte.date_parution?.slice(0, 10) ?? ""}
                       onChange={(e) =>
                         setEditedTexte({
                           ...editedTexte,
@@ -952,7 +941,7 @@ Acte uniforme OHADA
             <DialogHeader>
               <DialogTitle>Confirmer la suppression</DialogTitle>
               <DialogDescription>
-                Êtes-vous sûr de vouloir supprimer l'institution "
+                Êtes-vous sûr de vouloir supprimer le texte "
                 {selectedTexte?.titre}" ? Cette action est irréversible.
               </DialogDescription>
             </DialogHeader>
