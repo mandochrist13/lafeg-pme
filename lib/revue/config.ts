@@ -10,9 +10,12 @@ export interface ConfigRevue {
   alertes: string[];
   from?: string;
   replyTo?: string[];
-  subject?: string;
   alertesFrom?: string;
+  /** Numéro du premier volume, quand aucune campagne numérotée n'existe encore. */
+  volumeDepart: number;
 }
+
+const VOLUME_DEPART_DEFAUT = 33;
 
 const MODES: ModeRevue[] = ["off", "brouillon", "programmer"];
 
@@ -53,9 +56,15 @@ export function lireConfig(env: Record<string, string | undefined> = process.env
     alertes: liste(env.REVUE_ALERTES),
     from: texte(env.REVUE_FROM),
     replyTo: liste(env.REVUE_REPLY_TO).length ? liste(env.REVUE_REPLY_TO) : undefined,
-    subject: texte(env.REVUE_SUBJECT),
     alertesFrom: texte(env.REVUE_ALERTES_FROM),
+    volumeDepart: VOLUME_DEPART_DEFAUT,
   };
+
+  const depart = texte(env.REVUE_VOLUME_DEPART);
+  if (depart !== undefined) {
+    if (/^\d+$/.test(depart)) config.volumeDepart = Number(depart);
+    else erreurs.push(`REVUE_VOLUME_DEPART invalide (« ${depart} ») : attendu un nombre entier.`);
+  }
 
   if (!config.apiKey) erreurs.push("RESEND_API_KEY manquante.");
   if (!config.segmentId) erreurs.push("RESEND_SEGMENT_ID manquant.");

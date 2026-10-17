@@ -1,13 +1,29 @@
-// Tâche hebdomadaire : programme via Resend la campagne « ON A LU POUR VOUS »
+// Tâche hebdomadaire : programme via Resend la campagne « ON A LU POUR VOUS VOL. <n> »
 // du lundi suivant (9 h, Libreville) à partir du modèle Resend publié.
 
 import type { ConfigRevue } from "./config";
 import { debutFenetre, jjmm, jjmmaaaa, lundiSuivant } from "./dates";
 import { garantirDesinscription } from "./html";
+import {
+  LIBELLE_SOURCE,
+  PREFIXE_VOLUME,
+  campagneActive,
+  determinerVolume,
+  volumeDeCampagne,
+  type DocumentGuide,
+  type SourceVolume,
+} from "./volume";
 
 export const PREFIXE_CAMPAGNE = "ON A LU POUR VOUS";
 
 type ReponseResend<T> = { data: T; error: null } | { data: null; error: { message: string; name?: string } };
+
+interface CampagneResend {
+  id: string;
+  name: string;
+  status: string;
+  scheduled_at: string | null;
+}
 
 /** Sous-ensemble du client Resend utilisé (permet de le simuler dans les tests). */
 export interface ClientResend {
@@ -24,10 +40,7 @@ export interface ClientResend {
   };
   broadcasts: {
     list(options?: { limit?: number; after?: string }): Promise<
-      ReponseResend<{
-        has_more: boolean;
-        data: { id: string; name: string; status: string; scheduled_at: string | null }[];
-      }>
+      ReponseResend<{ has_more: boolean; data: CampagneResend[] }>
     >;
     create(payload: Record<string, unknown>): Promise<ReponseResend<{ id: string }>>;
   };
@@ -43,21 +56,25 @@ export type StatutRevue = "off" | "programmee" | "brouillon" | "doublon" | "pas-
 export interface ResultatRevue {
   statut: StatutRevue;
   lundi?: string;
+  volume?: number;
+  sourceVolume?: SourceVolume;
   broadcastId?: string;
   message: string;
   avertissements: string[];
   compteRenduEnvoye: boolean;
 }
 
+/** Publication « ON A LU POUR VOUS » trouvée sur le Guide. */
+export interface PublicationGuide extends DocumentGuide {
+  createdAt: Date;
+}
+
 export interface OptionsRevue {
   config: ConfigRevue;
   resend: ClientResend;
   maintenant?: Date;
-  /**
-   * Renvoie la date de la dernière publication « ON A LU POUR VOUS » téléversée
-   * depuis `depuis`, ou null s'il n'y en a pas.
-   */
-  trouverPublication: (depuis: Date) => Promise<Date | null>;
+  /** Dernière publication « ON A LU POUR VOUS » téléversée depuis `depuis`, ou null. */
+  trouverPublication: (depuis: Date) => Promise<PublicationGuide | null>;
 }
 
 class ErreurRevue extends Error {}
@@ -81,9 +98,11 @@ export async function executerRevue({
   }
 
   const lundi = lundiSuivant(maintenant);
-  const nom = `${PREFIXE_CAMPAGNE} — ${jjmmaaaa(lundi)}`;
+  const suffixeDate = ` — ${jjmmaaaa(lundi)}`;
   const avertissements: string[] = [];
   let expediteurModele: string | undefined;
+  let volume: number | undefined;
+  let sourceVolume: SourceVolume | undefined;
 
   let resultat: Omit<ResultatRevue, "compteRenduEnvoye">;
   try {
@@ -107,17 +126,25 @@ export async function executerRevue({
       if (!modele.html?.trim()) throw new ErreurRevue(`Le modèle Resend ${config.templateId} a un HTML vide.`);
 
       const from = config.from ?? modele.from ?? undefined;
-      const subject = config.subject ?? modele.subject ?? undefined;
       const replyTo = config.replyTo ?? modele.reply_to ?? undefined;
       if (!from) throw new ErreurRevue("Aucun expéditeur : renseignez « from » dans le modèle ou REVUE_FROM.");
-      if (!subject) throw new ErreurRevue("Aucun objet : renseignez « subject » dans le modèle ou REVUE_SUBJECT.");
 
       // 3. Lien de désinscription.
       const { html, avertissement } = garantirDesinscription(modele.html);
       if (avertissement) avertissements.push(avertissement);
 
-      // 4. Pas de doublon.
-      const doublon = await chercherDoublon(resend, config.mode, nom, lundi);
+      // 4. Pas de doublon pour ce lundi.
+      const campagnes = await listerCampagnes(resend);
+      const doublon = campagnes.find((b) => {
+        if (!b.name?.toUpperCase().startsWith(PREFIXE_CAMPAGNE)) return false;
+        const memeLundi =
+          b.name.endsWith(suffixeDate) ||
+          (b.scheduled_at ? new Date(b.scheduled_at).getTime() === lundi.getTime() : false);
+        // En mode brouillon, un brouillon existant suffit à éviter un doublon ;
+        // en mode programmer, seules comptent les campagnes envoyées ou programmées.
+        return memeLundi && (config.mode === "brouillon" ? !/cancel/i.test(b.status) : campagneActive(b.status));
+      });
+
       if (doublon) {
         resultat = {
           statut: "doublon",
@@ -127,7 +154,17 @@ export async function executerRevue({
           avertissements,
         };
       } else {
-        // 5. Création de la campagne.
+        // 5. Numéro de volume, puis vérification qu'il n'est pas déjà pris.
+        ({ volume, source: sourceVolume } = determinerVolume(publication, campagnes, config.volumeDepart));
+        const dejaPris = campagnes.find((b) => volumeDeCampagne(b.name) === volume && campagneActive(b.status));
+        if (dejaPris) {
+          throw new ErreurRevue(
+            `Le numéro VOL. ${volume} (${LIBELLE_SOURCE[sourceVolume]}) est déjà utilisé par la campagne « ${dejaPris.name} » (https://resend.com/broadcasts/${dejaPris.id}).`
+          );
+        }
+        const subject = `${PREFIXE_VOLUME} ${volume}`;
+
+        // 6. Création de la campagne.
         const programmer = config.mode === "programmer";
         const cree = verifier(
           await resend.broadcasts.create({
@@ -136,7 +173,7 @@ export async function executerRevue({
             subject,
             ...(replyTo?.length ? { replyTo } : {}),
             html,
-            name: nom,
+            name: `${subject}${suffixeDate}`,
             ...(programmer ? { send: true, scheduledAt: lundi.toISOString() } : { send: false }),
           }),
           "Création de la campagne Resend"
@@ -161,6 +198,7 @@ export async function executerRevue({
       avertissements,
     };
   }
+  if (volume !== undefined) resultat = { ...resultat, volume, sourceVolume };
 
   let expediteur = config.alertesFrom ?? config.from ?? expediteurModele;
   if (!expediteur) {
@@ -175,24 +213,16 @@ export async function executerRevue({
   return { ...resultat, compteRenduEnvoye };
 }
 
-async function chercherDoublon(resend: ClientResend, mode: ConfigRevue["mode"], nom: string, lundi: Date) {
+async function listerCampagnes(resend: ClientResend): Promise<CampagneResend[]> {
+  const toutes: CampagneResend[] = [];
   let after: string | undefined;
   for (let page = 0; page < 20; page++) {
     const liste = verifier(await resend.broadcasts.list({ limit: 100, ...(after ? { after } : {}) }), "Liste des campagnes Resend");
-    const trouve = liste.data.find((b) => {
-      if (!b.name?.toUpperCase().startsWith(PREFIXE_CAMPAGNE)) return false;
-      // En mode brouillon, tout brouillon du même nom suffit à éviter un doublon.
-      if (mode === "brouillon") return b.name === nom;
-      // En mode programmer, seules comptent les campagnes réellement programmées ou envoyées.
-      if (b.status === "draft") return false;
-      const memeHeure = b.scheduled_at ? new Date(b.scheduled_at).getTime() === lundi.getTime() : false;
-      return memeHeure || b.name === nom;
-    });
-    if (trouve) return trouve;
-    if (!liste.has_more || !liste.data.length) return null;
+    toutes.push(...liste.data);
+    if (!liste.has_more || !liste.data.length) break;
     after = liste.data[liste.data.length - 1].id;
   }
-  return null;
+  return toutes;
 }
 
 async function envoyerCompteRendu(
@@ -216,9 +246,19 @@ async function envoyerCompteRendu(
     erreur: `ERREUR ON A LU POUR VOUS — campagne du lundi ${jour} non créée`,
   }[r.statut];
 
-  const lignes = [r.message, ...(lien ? [`Lien : ${lien}`] : []), ...r.avertissements.map((a) => `Attention : ${a}`)];
+  const numero =
+    r.volume !== undefined && r.sourceVolume
+      ? `Numéro : ${PREFIXE_VOLUME} ${r.volume} (${LIBELLE_SOURCE[r.sourceVolume]})`
+      : undefined;
+  const lignes = [
+    r.message,
+    ...(numero ? [numero] : []),
+    ...(lien ? [`Lien : ${lien}`] : []),
+    ...r.avertissements.map((a) => `Attention : ${a}`),
+  ];
   const html =
     `<p>${echapper(r.message)}</p>` +
+    (numero ? `<p>${echapper(numero)}</p>` : "") +
     (lien ? `<p><a href="${lien}">${lien}</a></p>` : "") +
     (r.avertissements.length ? `<ul>${r.avertissements.map((a) => `<li>${echapper(a)}</li>`).join("")}</ul>` : "");
 
