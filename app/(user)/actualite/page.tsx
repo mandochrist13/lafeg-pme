@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -26,8 +26,21 @@ import {
   fetchActualites,
   type Actualite,
 } from "@/app/services/public/actualite";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import AdBanner from "@/components/ads/AdBanner";
 import { CATEGORIES_ACTUALITE, CATEGORIE_A_LA_UNE } from "@/lib/categories-actualite";
+import { numerosDePage, trancheDePage } from "@/lib/pagination";
+
+/** Nombre d'articles par page (grille de 3 colonnes). */
+const PAR_PAGE = 9;
 
 // Même liste que le formulaire admin (sinon les filtres ne correspondent à rien).
 const categories = ["Toutes", ...CATEGORIES_ACTUALITE];
@@ -45,6 +58,8 @@ export default function ActualitesPage() {
   const [selectedCategory, setSelectedCategory] = useState("Toutes");
   const [viewMode, setViewMode] = useState("grid");
   const [sortBy, setSortBy] = useState("recent");
+  const [page, setPage] = useState(1);
+  const hautDeListe = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function load() {
@@ -84,6 +99,24 @@ export default function ActualitesPage() {
 
     return filtered;
   }, [searchTerm, selectedCategory, sortBy, actualites]);
+
+  // Pagination : la liste complète est filtrée puis découpée en pages.
+  const {
+    page: pageCourante,
+    debut,
+    elements: articlesPage,
+    totalPages,
+  } = trancheDePage(filteredActualites, page, PAR_PAGE);
+
+  // Un changement de filtre, de recherche ou de tri ramène à la première page.
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, selectedCategory, sortBy]);
+
+  const allerALaPage = (n: number) => {
+    setPage(Math.min(Math.max(n, 1), totalPages));
+    hautDeListe.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const featuredArticles = actualites
     .filter((a) => a.categorie === CATEGORIE_A_LA_UNE)
@@ -260,6 +293,18 @@ export default function ActualitesPage() {
               </CardContent>
             </Card>
 
+            {/* Repère de défilement + compteur */}
+            <div ref={hautDeListe} className="scroll-mt-24" />
+            {filteredActualites.length > 0 && (
+              <p className="mb-4 text-sm text-muted-foreground">
+                Affichage de {debut + 1}&ndash;
+                {Math.min(debut + PAR_PAGE, filteredActualites.length)} sur{" "}
+                {filteredActualites.length} article
+                {filteredActualites.length > 1 ? "s" : ""}
+                {searchTerm && ` pour « ${searchTerm} »`}
+              </p>
+            )}
+
             {/* Liste des articles */}
             {viewMode === "grid" ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -271,7 +316,7 @@ export default function ActualitesPage() {
                   className="w-full max-w-96"
                 />
               </div>
-                {filteredActualites.map((article, index) => (
+                {articlesPage.map((article, index) => (
                   <Card
                     key={article.id}
                     className="overflow-hidden hover:shadow-lg transition-shadow duration-300"
@@ -289,12 +334,12 @@ export default function ActualitesPage() {
                       <div className="absolute top-4 right-4">
                         <Badge
                           className={
-                            index === 0
+                            pageCourante === 1 && index === 0
                               ? "bg-red-500/80 text-white"
                               : "bg-[#063a1e]/0 text-white"
                           }
                         >
-                          {index === 0 ? "À LA UNE" : " "}
+                          {pageCourante === 1 && index === 0 ? "À LA UNE" : " "}
                         </Badge>
                       </div>
                     </div>
@@ -336,7 +381,7 @@ export default function ActualitesPage() {
                   className="w-full max-w-96"
                 />
               </div>
-                {filteredActualites.map((article, index) => (
+                {articlesPage.map((article, index) => (
                   <Card
                     key={article.id}
                     className="overflow-hidden hover:shadow-lg transition-shadow duration-300"
@@ -359,12 +404,12 @@ export default function ActualitesPage() {
                             <div>
                               <Badge
                                 className={
-                                  index === 0
+                                  pageCourante === 1 && index === 0
                                     ? "bg-red-500/80 text-white"
                                     : "bg-[#063a1e]/0 text-white"
                                 }
                               >
-                                {index === 0 ? "À LA UNE" : " "}
+                                {pageCourante === 1 && index === 0 ? "À LA UNE" : " "}
                               </Badge>
                               <Badge variant="secondary" className="ml-2">
                                 {article.categorie}
@@ -397,6 +442,65 @@ export default function ActualitesPage() {
                   </Card>
                 ))}
               </div>
+            )}
+
+            {/* Pagination : permet de remonter aux actualités précédentes */}
+            {totalPages > 1 && (
+              <Pagination className="mt-8">
+                <PaginationContent className="flex-wrap">
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      aria-label="Page précédente"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        allerALaPage(pageCourante - 1);
+                      }}
+                      className={
+                        pageCourante === 1 ? "pointer-events-none opacity-50" : ""
+                      }
+                    />
+                  </PaginationItem>
+
+                  {numerosDePage(pageCourante, totalPages).map((n, i) =>
+                    n === "..." ? (
+                      <PaginationItem key={`ellipsis-${i}`}>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    ) : (
+                      <PaginationItem key={n}>
+                        <PaginationLink
+                          href="#"
+                          isActive={n === pageCourante}
+                          aria-label={`Page ${n}`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            allerALaPage(n);
+                          }}
+                        >
+                          {n}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )
+                  )}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      aria-label="Page suivante"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        allerALaPage(pageCourante + 1);
+                      }}
+                      className={
+                        pageCourante === totalPages
+                          ? "pointer-events-none opacity-50"
+                          : ""
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
             )}
 
             {filteredActualites.length === 0 && (
